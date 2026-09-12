@@ -21,6 +21,7 @@ Usa "combinacion de varias" solo cuando la descripción contenga con claridad el
 
 Reglas de contenido:
 - Escribe en español de México, en tono claro y profesional, dirigido a alguien sin formación jurídica.
+- El campo "categoria" se escribe SIN acentos, exactamente como aparece en la lista de arriba. En TODOS los demás campos escribe en español correcto, con acentos y eñes: "diseño industrial", nunca "diseno industrial".
 - No prometas registrabilidad ni resultados. No cites artículos ni números de ley.
 - No inventes datos del usuario: si falta información, dilo en "advertencias".
 - "explicacion": máximo 80 palabras, en prosa, sin listas.
