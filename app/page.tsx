@@ -2,6 +2,16 @@
 
 import { useState } from "react";
 import {
+  Button,
+  Card,
+  ExampleChip,
+  LegalDisclaimer,
+  LoadingSteps,
+  OfficialResourceLink,
+  RecommendationCard,
+  Textarea,
+} from "./components";
+import {
   AVISO_LEGAL,
   EJEMPLOS,
   ETIQUETAS_CATEGORIA,
@@ -11,9 +21,11 @@ import {
 } from "./lib";
 
 const MAXIMO = 2000;
+const MINIMO = 15;
 
 export default function Pagina() {
   const [idea, setIdea] = useState("");
+  const [ejemploActivo, setEjemploActivo] = useState<number | null>(null);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resultado, setResultado] = useState<Analisis | null>(null);
@@ -21,8 +33,8 @@ export default function Pagina() {
 
   async function analizar() {
     const texto = idea.trim();
-    if (texto.length < 15) {
-      setError("Describe tu idea con un poco más de detalle (mínimo 15 caracteres).");
+    if (texto.length < MINIMO) {
+      setError(`Describe tu idea con un poco más de detalle (mínimo ${MINIMO} caracteres).`);
       return;
     }
 
@@ -55,174 +67,170 @@ export default function Pagina() {
 
   function limpiar() {
     setIdea("");
+    setEjemploActivo(null);
     setResultado(null);
     setError(null);
   }
 
   return (
-    <main className="envoltura">
-      <span className="marca">Orientación preliminar · México</span>
-      <h1>
-        PI en <span>1 minuto</span>
-      </h1>
-      <p className="subtitulo">Descubre una ruta inicial para proteger tu idea en México</p>
-
-      <section className="tarjeta">
-        <label className="pregunta" htmlFor="idea">
-          ¿Qué creaste y qué parte te interesa proteger?
-        </label>
-        <textarea
-          id="idea"
-          value={idea}
-          maxLength={MAXIMO}
-          placeholder="Ejemplo: armé un taller de pan de masa madre, le puse nombre y diseñé un empaque distinto…"
-          onChange={(evento) => setIdea(evento.target.value)}
-          onKeyDown={(evento) => {
-            if ((evento.metaKey || evento.ctrlKey) && evento.key === "Enter") analizar();
-          }}
-        />
-        <div className="pie-campo">
-          {idea.length} / {MAXIMO}
+    <>
+      <header className="pi-header">
+        <div className="pi-shell pi-header-inner">
+          <img
+            className="pi-logo"
+            src="/brand/pi-en-1-minuto-logo.png"
+            alt="PI en 1 Minuto"
+            width={2172}
+            height={724}
+          />
+          <p className="pi-header-note">Orientación preliminar · México</p>
         </div>
+      </header>
 
-        <p className="titulo-ejemplos">O empieza con un ejemplo</p>
-        <div className="ejemplos">
-          {EJEMPLOS.map((ejemplo) => (
-            <button
-              key={ejemplo}
-              type="button"
-              className="ejemplo"
-              onClick={() => {
-                setIdea(ejemplo);
-                setError(null);
-              }}
-            >
-              {ejemplo}
-            </button>
-          ))}
-        </div>
-
-        <div className="acciones">
-          <button
-            type="button"
-            className="boton-principal"
-            onClick={analizar}
-            disabled={cargando || idea.trim().length < 15}
-          >
-            {cargando ? "Analizando…" : "Analizar mi idea"}
-          </button>
-          {(idea || resultado) && !cargando && (
-            <button type="button" className="boton-texto" onClick={limpiar}>
-              Empezar de nuevo
-            </button>
-          )}
-        </div>
-
-        {error && (
-          <p className="error" role="alert">
-            {error}
+      <main className="pi-shell pi-main">
+        <div className="pi-hero">
+          <p className="pi-eyebrow">Propiedad industrial en México</p>
+          <h1>Descubre una ruta inicial para proteger tu idea</h1>
+          <p>
+            Describe con tus palabras lo que creaste. En un minuto obtienes una orientación
+            preliminar sobre qué figura de propiedad industrial podrías investigar ante el IMPI.
           </p>
-        )}
-      </section>
+        </div>
 
-      {resultado && (
-        <section className="resultado" aria-live="polite">
-          {demo && (
-            <p className="aviso-demo">
-              Modo demo: resultado simulado localmente porque OPENROUTER_API_KEY no está
-              configurada.
+        <Card>
+          <Textarea
+            id="idea"
+            label="¿Qué creaste y qué parte te interesa proteger?"
+            hint="Cuéntalo como se lo explicarías a un amigo. No necesitas términos legales."
+            value={idea}
+            maxLength={MAXIMO}
+            placeholder="Por ejemplo: armé un taller de pan de masa madre, le puse nombre y diseñé un empaque distinto…"
+            contador={`${idea.length} / ${MAXIMO}`}
+            onChange={(evento) => {
+              setIdea(evento.target.value);
+              setEjemploActivo(null);
+            }}
+            onKeyDown={(evento) => {
+              if ((evento.metaKey || evento.ctrlKey) && evento.key === "Enter") analizar();
+            }}
+          />
+
+          <p className="pi-hint" style={{ marginTop: "24px", marginBottom: 0 }} id="etiqueta-ejemplos">
+            O empieza con un ejemplo
+          </p>
+          <div className="pi-chips" role="group" aria-labelledby="etiqueta-ejemplos">
+            {EJEMPLOS.map((ejemplo, i) => (
+              <ExampleChip
+                key={ejemplo.etiqueta}
+                label={ejemplo.etiqueta}
+                selected={ejemploActivo === i}
+                onSelect={() => {
+                  setIdea(ejemplo.texto);
+                  setEjemploActivo(i);
+                  setError(null);
+                }}
+              />
+            ))}
+          </div>
+
+          <div className="pi-actions">
+            <Button onClick={analizar} disabled={cargando || idea.trim().length < MINIMO}>
+              {cargando ? "Analizando…" : "Analizar mi idea"}
+            </Button>
+            {(idea || resultado) && !cargando && (
+              <Button variant="tertiary" onClick={limpiar}>
+                Empezar de nuevo
+              </Button>
+            )}
+          </div>
+
+          {error && (
+            <p className="pi-alert" role="alert">
+              {error}
             </p>
           )}
+        </Card>
 
-          <article className="tarjeta">
-            <div className="encabezado-resultado">
-              <div>
-                <p className="etiqueta">Protección principal sugerida</p>
-                <p className="categoria">{resultado.proteccion_principal}</p>
-                <p className="tipo">
-                  Clasificación preliminar: {ETIQUETAS_CATEGORIA[resultado.categoria]}
-                </p>
-              </div>
-              <span className={`confianza confianza-${resultado.confianza}`}>
-                <span className="punto" aria-hidden="true" />
-                Confianza: {resultado.confianza}
-              </span>
-            </div>
-            <p className="explicacion">{resultado.explicacion}</p>
-          </article>
-
-          <div className="rejilla">
-            <article className="tarjeta bloque">
-              <h3>Qué podrías proteger</h3>
-              <ul>
-                {resultado.elementos_protegibles.map((elemento, i) => (
-                  <li key={i}>{elemento}</li>
-                ))}
-              </ul>
-            </article>
-
-            <article className="tarjeta bloque">
-              <h3>Tres siguientes pasos</h3>
-              <ol>
-                {resultado.siguientes_pasos.map((paso, i) => (
-                  <li key={i}>{paso}</li>
-                ))}
-              </ol>
-            </article>
+        {cargando && (
+          <div className="pi-result">
+            <LoadingSteps />
           </div>
+        )}
 
-          <div className="rejilla">
-            {resultado.figuras_complementarias.length > 0 && (
-              <article className="tarjeta bloque">
-                <h3>Figuras complementarias</h3>
-                <ul>
-                  {resultado.figuras_complementarias.map((figura, i) => (
-                    <li key={i}>{figura}</li>
-                  ))}
-                </ul>
-              </article>
+        {resultado && !cargando && (
+          <div className="pi-result" aria-live="polite">
+            {demo && (
+              <p className="pi-demo">
+                Modo demo: resultado simulado localmente porque OPENROUTER_API_KEY no está
+                configurada.
+              </p>
             )}
 
-            {resultado.advertencias.length > 0 && (
-              <article className="tarjeta bloque advertencias">
-                <h3>Advertencias e información faltante</h3>
-                <ul>
-                  {resultado.advertencias.map((advertencia, i) => (
-                    <li key={i}>{advertencia}</li>
+            <RecommendationCard
+              resultado={resultado}
+              tipo={ETIQUETAS_CATEGORIA[resultado.categoria]}
+            />
+
+            <div className="pi-grid">
+              <Card title="Qué podrías proteger">
+                <ul className="pi-list">
+                  {resultado.elementos_protegibles.map((elemento, i) => (
+                    <li key={i}>{elemento}</li>
                   ))}
                 </ul>
-              </article>
-            )}
+              </Card>
+
+              <Card title="Siguientes pasos">
+                <ol className="pi-list">
+                  {resultado.siguientes_pasos.map((paso, i) => (
+                    <li key={i}>{paso}</li>
+                  ))}
+                </ol>
+              </Card>
+            </div>
+
+            <div className="pi-grid">
+              {resultado.figuras_complementarias.length > 0 && (
+                <Card title="Figuras complementarias">
+                  <ul className="pi-list">
+                    {resultado.figuras_complementarias.map((figura, i) => (
+                      <li key={i}>{figura}</li>
+                    ))}
+                  </ul>
+                </Card>
+              )}
+
+              {resultado.advertencias.length > 0 && (
+                <Card title="Advertencias e información faltante">
+                  <ul className="pi-list pi-list--warn">
+                    {resultado.advertencias.map((advertencia, i) => (
+                      <li key={i}>{advertencia}</li>
+                    ))}
+                  </ul>
+                </Card>
+              )}
+            </div>
+          </div>
+        )}
+
+        <section className="pi-section">
+          <h2>Verifica en fuentes oficiales</h2>
+          <p className="pi-hint" style={{ marginTop: "8px" }}>
+            Consulta directa a las herramientas públicas del IMPI.
+          </p>
+          <div className="pi-resources">
+            {RECURSOS.map((recurso) => (
+              <OfficialResourceLink key={recurso.url} {...recurso} />
+            ))}
           </div>
         </section>
-      )}
 
-      <section className="recursos">
-        <h2>Recursos oficiales</h2>
-        <p className="nota">Consulta directa a las herramientas públicas del IMPI.</p>
-        <div className="enlaces">
-          {RECURSOS.map((recurso) => (
-            <a
-              key={recurso.url}
-              className="enlace"
-              href={recurso.url}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <strong>{recurso.nombre}</strong>
-              <span>{recurso.descripcion}</span>
-              <em>Abrir sitio oficial →</em>
-            </a>
-          ))}
-        </div>
-      </section>
+        <LegalDisclaimer texto={AVISO_LEGAL} />
+      </main>
 
-      <section className="aviso-legal">
-        <strong>Aviso importante</strong>
-        {AVISO_LEGAL}
-      </section>
-
-      <footer>PI en 1 minuto · Orientación preliminar de propiedad industrial</footer>
-    </main>
+      <footer className="pi-footer">
+        <div className="pi-shell">PI en 1 Minuto · Orientación preliminar de propiedad industrial</div>
+      </footer>
+    </>
   );
 }

@@ -37,11 +37,29 @@ export type RespuestaAnalisis = {
   demo: boolean;
 };
 
-export const EJEMPLOS: string[] = [
-  "Creé una bebida de café lista para tomar, con un nombre y un logotipo propios, y quiero venderla en tiendas de conveniencia.",
-  "Desarrollé un mecanismo que permite que una bicicleta plegable se cierre con un solo movimiento y ocupe la mitad del espacio.",
-  "Diseñé la forma y la apariencia exterior de una botella de vidrio distinta a todo lo que veo en el mercado.",
-  "Tengo una fórmula y un proceso de producción que mantengo en reserva dentro de mi empresa y solo conocen tres personas.",
+export type Ejemplo = { etiqueta: string; texto: string };
+
+export const EJEMPLOS: Ejemplo[] = [
+  {
+    etiqueta: "Bebida con marca propia",
+    texto:
+      "Creé una bebida de café lista para tomar, con un nombre y un logotipo propios, y quiero venderla en tiendas de conveniencia.",
+  },
+  {
+    etiqueta: "Mecanismo plegable",
+    texto:
+      "Desarrollé un mecanismo que permite que una bicicleta plegable se cierre con un solo movimiento y ocupe la mitad del espacio.",
+  },
+  {
+    etiqueta: "Forma de una botella",
+    texto:
+      "Diseñé la forma y la apariencia exterior de una botella de vidrio distinta a todo lo que veo en el mercado.",
+  },
+  {
+    etiqueta: "Fórmula reservada",
+    texto:
+      "Tengo una fórmula y un proceso de producción que mantengo en reserva dentro de mi empresa y solo conocen tres personas.",
+  },
 ];
 
 export const AVISO_LEGAL =
