@@ -9,6 +9,7 @@ export const CATEGORIAS = [
   "secreto industrial",
   "derecho de autor o reserva de derechos",
   "denominacion de origen o indicacion geografica",
+  "observancia en frontera",
   "combinacion de varias",
 ] as const;
 
@@ -23,6 +24,7 @@ export const ETIQUETAS_CATEGORIA: Record<Categoria, string> = {
   "secreto industrial": "Secreto industrial",
   "derecho de autor o reserva de derechos": "Derecho de autor o reserva de derechos",
   "denominacion de origen o indicacion geografica": "Denominación de origen o indicación geográfica",
+  "observancia en frontera": "Observancia en frontera (aduanas)",
   "combinacion de varias": "Combinación de varias figuras",
 };
 
@@ -36,6 +38,7 @@ export const AUTORIDAD: Record<Categoria, string> = {
   "secreto industrial": "No se registra ante ninguna autoridad",
   "derecho de autor o reserva de derechos": "Indautor",
   "denominacion de origen o indicacion geografica": "IMPI",
+  "observancia en frontera": "ANAM para la alerta; IMPI o FGR para la medida",
   "combinacion de varias": "IMPI e Indautor, según el elemento",
 };
 
@@ -49,6 +52,7 @@ export const CLASE_CATEGORIA: Record<Categoria, string> = {
   "secreto industrial": "cat-secreto",
   "derecho de autor o reserva de derechos": "cat-autor",
   "denominacion de origen o indicacion geografica": "cat-denominacion",
+  "observancia en frontera": "cat-frontera",
   "combinacion de varias": "cat-combinacion",
 };
 
@@ -335,6 +339,43 @@ export const EJEMPLOS_VISIBLES = 5;
 export const AVISO_LEGAL =
   "Esta orientación es informativa, no constituye asesoría jurídica, no garantiza que la creación sea registrable y no reemplaza una búsqueda profesional.";
 
+/**
+ * Práctica operativa de los avisos aduanales por posible infracción marcaria.
+ * NO es texto legal: es conocimiento de despacho. Se inyecta por separado y
+ * el prompt tiene prohibido citarlo como si fuera norma.
+ */
+export const PRACTICA_ADUANAS = `PRÁCTICA OPERATIVA OBSERVADA (no es texto legal; nunca la cites entre corchetes como si fuera un artículo).
+
+INSCRIPCIÓN EN LA BASE MARCARIA DE LA ANAM
+- La inscripción es voluntaria. Se aportan los registros vigentes ante el IMPI, datos y fotografías de productos, empaques y etiquetado, importadores o distribuidores autorizados, y contacto del titular o su representante.
+- El expediente se envía primero por correo a la ANAM para revisión. Con el visto bueno, la autoridad programa la presentación física y el cotejo de poderes e identificaciones. Después entrega una liga para capturar la información con e.firma y obtener la clave de inscripción.
+- Solo pueden inscribir el titular o su representante legal. No un licenciatario, un distribuidor ni un tercero autorizado.
+- Conviene designar un único correo vigilado de forma constante: ahí llegan las consultas aduanales.
+
+CUANDO LA ADUANA DETECTA ALGO
+- La ANAM envía un correo con la aduana y el folio, el contenedor o guía, la marca detectada, la descripción y cantidad de mercancía, las fotografías disponibles y datos limitados del importador, destinatario o proveedor.
+- En la práctica la ANAM funciona como detector y retenedor temporal. Para un aseguramiento o una medida formal debe intervenir el IMPI o la FGR.
+
+EL PLAZO, QUE ES LO MÁS IMPORTANTE
+- La ventana normal para contestar es de 2 a 3 días, unas 48 a 72 horas desde el aviso.
+- Si la información es insuficiente, hay que acusar recibo de inmediato y pedir fotografías adicionales, códigos de barras, números de serie o datos del importador.
+- La prórroga debe solicitarse expresamente y antes del vencimiento. Pedir información NO suspende el plazo automáticamente.
+- El poder con facultades suficientes ante autoridades aduaneras, administrativas y judiciales debe estar formalizado de antemano. En 48 horas no da tiempo de prepararlo desde cero.
+
+QUÉ CONTESTAR
+- Si no procede: decir por qué. Que la mercancía es original o licenciada, que la información no permite determinar la infracción, o que el titular decidió no actuar. Si el motivo es la cantidad, la ANAM pide señalar a partir de qué cantidad mínima sí se consideraría actuar.
+- Si procede: indicar la vía. Penal ante la FGR, identificando la delegación regional o la UEIDDAPI; o administrativa ante el IMPI, pidiendo medidas en frontera o la suspensión de la libre circulación.
+- Hay que adjuntar evidencia documental de que la actuación YA se inició. No basta manifestar la intención.
+
+RESULTADOS
+- Si los productos son legítimos, se comunica que no se iniciarán acciones y se pide continuar el despacho.
+- Vía IMPI: se solicitan medidas provisionales, se acreditan los derechos, se presenta información del embarque y se exhibe la garantía que fije la autoridad. Después hay que dar continuidad al procedimiento de infracción.
+- Vía FGR: se presenta la denuncia y se pide que la Fiscalía asegure la mercancía dentro de la investigación.
+- Si no se responde a tiempo, la ANAM sigue con sus procedimientos y suele perderse la oportunidad de detener la mercancía, salvo que exista otra causa de inmovilización.
+- Si el contenedor ya está asegurado en una carpeta de investigación de la FGR, la mercancía permanece inmovilizada y cualquier inspección o toma de fotografías depende de que la autoridad ministerial programe el posicionamiento.
+
+IDEA CENTRAL: el aviso de aduanas es una alerta urgente, no el inicio automático de una acción. Lo que convierte la retención temporal en medida formal es la decisión del titular y la presentación rápida de la actuación ante el IMPI o la FGR.`;
+
 /** Qué pasa con lo que la persona escribe. Va junto al campo, no enterrado. */
 export const AVISO_DATOS =
   "Lo que escribas se procesa con un servicio de inteligencia artificial fuera de México y no se guarda en ningún lado. Evita incluir datos que debas mantener en secreto, como fórmulas completas o planos.";
@@ -462,6 +503,9 @@ function detectarCategoria(valor: unknown): Categoria | null {
   }
   if (texto.includes("denominacion de origen") || texto.includes("indicacion geografica")) {
     return "denominacion de origen o indicacion geografica";
+  }
+  if (texto.includes("frontera") || texto.includes("aduana") || texto.includes("anam")) {
+    return "observancia en frontera";
   }
   if (texto.includes("aviso comercial")) return "aviso comercial";
   if (texto.includes("nombre comercial")) return "nombre comercial";
@@ -908,6 +952,51 @@ const PLANTILLAS: Record<Categoria, Analisis> = {
     plazo_critico: "",
     confianza: "medio",
   },
+  "observancia en frontera": {
+    categoria: "observancia en frontera",
+    proteccion_principal:
+      "Inscripción en la Base Marcaria de la ANAM y, ante una detección, actuación ante el IMPI o la FGR",
+    autoridad: "ANAM para la alerta; IMPI o FGR para la medida",
+    explicacion:
+      "Lo que describes involucra mercancía que cruza la frontera. La aduana puede detectar productos que ostentan una marca registrada, pero no asegura por sí sola: necesita una resolución previa de la autoridad de propiedad intelectual o de un juez. Para que tu marca sea visible en ese filtro conviene inscribirla en la Base Marcaria de la ANAM, y tener listo de antemano el poder para poder responder en el plazo que se abre.",
+    elementos_protegibles: [
+      "La marca registrada frente a importaciones que la ostenten",
+      "La información del embarque y del importador",
+      "Los datos de tus importadores y distribuidores autorizados",
+    ],
+    siguientes_pasos: [
+      "Inscribe la marca en la Base Marcaria de la ANAM: solo puede hacerlo el titular o su representante legal.",
+      "Formaliza desde ahora el poder con facultades ante autoridades aduaneras, administrativas y judiciales.",
+      "Designa un único correo vigilado a diario: ahí llegan las consultas aduanales y el plazo es de 48 a 72 horas.",
+    ],
+    figuras_complementarias: [
+      "Marca registrada ante el IMPI, que es el requisito previo",
+      "Denuncia penal ante la FGR",
+      "Procedimiento de infracción ante el IMPI",
+    ],
+    advertencias: [
+      "La aduana detecta y retiene temporalmente; el aseguramiento formal lo ordena el IMPI o la FGR.",
+      "Pedir más información a la aduana no suspende el plazo para contestar.",
+      "Sin inscripción en la Base Marcaria, tu marca no aparece en el filtro aduanero.",
+    ],
+    que_no_protege: [
+      "La inscripción no sustituye al registro de marca ante el IMPI.",
+      "No detiene por sí sola la mercancía ni sustituye la resolución de la autoridad competente.",
+      "No alcanza a mercancía que no ostente tu marca.",
+    ],
+    plazos_clave: [
+      "La respuesta al aviso aduanal suele tener una ventana de 48 a 72 horas.",
+      "La prórroga debe pedirse expresamente y antes del vencimiento.",
+      "La información de la Base Marcaria debe actualizarse de manera permanente.",
+    ],
+    clases_niza: [],
+    fuera_de_materia: false,
+    requiere_profesional: true,
+    motivo_escalamiento:
+      "Los avisos aduanales corren en horas y exigen decidir entre la vía penal y la administrativa con documentación lista.",
+    plazo_critico: "",
+    confianza: "medio",
+  },
   "combinacion de varias": {
     categoria: "combinacion de varias",
     proteccion_principal: "Estrategia combinada de propiedad intelectual",
@@ -970,6 +1059,10 @@ const PISTAS: { categoria: Categoria; palabras: string[] }[] = [
   {
     categoria: "diseno industrial",
     palabras: ["forma", "apariencia", "diseno", "estetica", "ornamental", "aspecto", "silueta", "empaque"],
+  },
+  {
+    categoria: "observancia en frontera",
+    palabras: ["aduana", "aduanal", "anam", "importacion", "importador", "contenedor", "embarque", "falsificad", "pirata", "frontera", "despacho aduanero", "mercancia detenida", "base marcaria"],
   },
   {
     categoria: "denominacion de origen o indicacion geografica",

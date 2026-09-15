@@ -7,6 +7,7 @@ import {
   type RespuestaAnalisis,
 } from "../../lib";
 import { clasesNizaPara, comoContexto, contextoParaAnalisis } from "../../corpus";
+import { PRACTICA_ADUANAS } from "../../lib";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -29,6 +30,7 @@ El usuario describe en lenguaje cotidiano algo que creó o quiere lanzar. Clasif
 - "secreto industrial"
 - "derecho de autor o reserva de derechos"
 - "denominacion de origen o indicacion geografica"
+- "observancia en frontera"
 - "combinacion de varias"
 
 CRITERIOS DE DISTINCIÓN (aplícalos, no los recites):
@@ -40,6 +42,7 @@ CRITERIOS DE DISTINCIÓN (aplícalos, no los recites):
 - Aviso comercial: frases u oraciones que anuncian un establecimiento, producto o servicio y lo distinguen. Se registra ante el IMPI y se rige por las reglas de marcas en lo que no haya disposición especial.
 - Nombre comercial: el nombre con el que opera una empresa o establecimiento. Está protegido SIN registro, pero solo en la zona geográfica de su clientela efectiva; la publicación ante el IMPI da certeza frente a terceros.
 - Denominación de origen o indicación geográfica: el producto debe su calidad, características o reputación a la zona de la que proviene. El titular de la denominación de origen es el Estado mexicano; los productores obtienen autorización de uso, no titularidad.
+- Observancia en frontera: el caso involucra mercancía que cruza la aduana, importaciones, falsificaciones detectadas en un embarque o la Base Marcaria de la ANAM. La aduana detecta y retiene temporalmente, pero el aseguramiento formal exige resolución previa del IMPI o de la FGR.
 - Combinación: úsala solo cuando haya con claridad elementos de naturaleza distinta que corresponden a autoridades o figuras diferentes.
 
 TRAMPAS QUE DEBES DETECTAR Y ADVERTIR CUANDO APLIQUEN:
@@ -280,6 +283,7 @@ export async function POST(request: Request) {
 
     const articulos = contextoParaAnalisis(idea);
     const contexto = comoContexto(articulos);
+    const esAduanas = /aduan|anam|frontera|importaci|contenedor|embarque|falsificad|pirata/i.test(idea);
     const sugerenciasNiza = clasesNizaPara(idea, 6)
       .map((n) => `- Clase ${n.clase} — ${n.termino}`)
       .join("\n");
@@ -310,6 +314,7 @@ export async function POST(request: Request) {
                 (sugerenciasNiza
                   ? `TÉRMINOS DEL NOMENCLÁTOR DE NIZA que podrían aplicar (son una ayuda, verifícalos):\n${sugerenciasNiza}\n\n`
                   : "") +
+                (esAduanas ? `${PRACTICA_ADUANAS}\n\n` : "") +
                 `ARTÍCULOS VIGENTES PARA FUNDAMENTAR TU RESPUESTA:\n\n${contexto}`,
             },
           ],

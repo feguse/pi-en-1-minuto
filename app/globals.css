@@ -1419,3 +1419,9 @@ select {
   color: var(--pi-muted);
   max-width: 64ch;
 }
+
+.cat-frontera {
+  --cat: var(--pi-navy-950);
+  --cat-soft: #e4eef4;
+  --cat-ink: var(--pi-navy-950);
+}
