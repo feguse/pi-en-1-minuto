@@ -15,6 +15,8 @@ const MODELO_POR_DEFECTO = "openai/gpt-4o-mini";
 const LIMITE_CARACTERES = 2000;
 const TIEMPO_LIMITE_MS = 52000;
 const MAX_TOKENS = 4000;
+/** Esfuerzo de razonamiento de la primera fase. Ajustable sin redesplegar. */
+const ESFUERZO = (process.env.OPENROUTER_ESFUERZO || "medium") as "low" | "medium" | "high";
 
 const INSTRUCCIONES = `Eres un abogado mexicano especializado en propiedad intelectual. Das orientación PRELIMINAR a personas sin formación jurídica, con el rigor de una primera consulta de despacho.
 
@@ -295,6 +297,7 @@ export async function POST(request: Request) {
         body: JSON.stringify({
           model: modelo,
           temperature: 0.5,
+          reasoning: { effort: esRapida ? ESFUERZO : "low" },
           max_tokens: MAX_TOKENS,
           response_format: formato,
           messages: [
@@ -323,7 +326,11 @@ export async function POST(request: Request) {
       }
       const datos = (await llamada.json()) as {
         choices?: { message?: { content?: string }; finish_reason?: string }[];
+        usage?: Record<string, unknown>;
       };
+      if (datos.usage) {
+        console.log("uso", fase, JSON.stringify(datos.usage));
+      }
       const eleccion = datos.choices?.[0];
       if (eleccion?.finish_reason === "length") {
         console.error("Respuesta truncada por límite de tokens");
