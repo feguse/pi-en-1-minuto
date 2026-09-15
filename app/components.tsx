@@ -390,24 +390,6 @@ export function AyudaProfesional({ compacto = false }: { compacto?: boolean }) {
   );
 }
 
-/* ---------- ConsultaLibre ---------- */
-
-type Fundamento = {
-  sigla: string;
-  articulo: string;
-  ordenamiento: string;
-  ultima_reforma_dof: string | null;
-  fuente: string;
-  extracto: string;
-};
-
-type RespuestaConsulta = {
-  respuesta: string;
-  fundamentos: Fundamento[];
-  sin_sustento: boolean;
-  demo: boolean;
-};
-
 
 /* ---------- Acordeón ---------- */
 

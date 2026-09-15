@@ -1467,3 +1467,19 @@ a {
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------- Sin encabezado: el hero abre la página ---------- */
+
+.pi-hero-band {
+  border-top: 4px solid var(--pi-navy-900);
+}
+
+.pi-hero-inner {
+  padding-top: var(--pi-5);
+}
+
+@media (min-width: 900px) {
+  .pi-hero-inner {
+    padding-top: var(--pi-8);
+  }
+}

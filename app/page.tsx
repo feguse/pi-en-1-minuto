@@ -133,18 +133,6 @@ export default function Pagina() {
 
   return (
     <>
-      <header className="pi-header">
-        <div className="pi-shell pi-header-inner">
-          <img
-            className="pi-logo"
-            src="/brand/pi-en-1-minuto-logo.png"
-            alt="PI en 1 Minuto"
-            width={2172}
-            height={724}
-          />
-          <p className="pi-header-note">Orientación preliminar · México</p>
-        </div>
-      </header>
 
       <section className="pi-hero-band">
         <div className="pi-shell pi-hero-inner">
@@ -167,7 +155,7 @@ export default function Pagina() {
             <img
               className="pi-logo-hero"
               src="/brand/pi-en-1-minuto-logo.png"
-              alt=""
+              alt="PI en 1 Minuto"
               width={2172}
               height={724}
             />
