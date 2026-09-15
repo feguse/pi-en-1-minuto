@@ -1103,7 +1103,9 @@ const PISTAS: { categoria: Categoria; palabras: string[] }[] = [
   },
   {
     categoria: "patente o modelo de utilidad",
-    palabras: ["mecanismo", "invento", "invencion", "dispositivo", "aparato", "maquina", "proceso tecnico", "funciona", "tecnologia", "algoritmo", "prototipo", "sensor"],
+    // "invento" quedó fuera a propósito: al normalizar acentos es idéntica
+    // al verbo "inventó", y "el nombre lo inventó ella" no es una patente.
+    palabras: ["mecanismo", "invencion", "dispositivo", "aparato", "maquina", "proceso tecnico", "funciona", "tecnologia", "algoritmo", "prototipo", "sensor"],
   },
   {
     categoria: "diseno industrial",
