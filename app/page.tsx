@@ -9,7 +9,6 @@ import {
   Card,
   ExampleChip,
   Fundamentos,
-  LegalDisclaimer,
   LoadingSteps,
   OfficialResourceLink,
   RecommendationCard,
@@ -167,6 +166,7 @@ export default function Pagina() {
             <p className="pi-micro">
               <span>Resultado en un minuto</span>
               <span>Sin términos legales</span>
+              <span>Gratis</span>
             </p>
           </div>
 
@@ -466,12 +466,6 @@ export default function Pagina() {
                 </div>
               </div>
             ))}
-          </div>
-        </section>
-
-        <section className="pi-section">
-          <div className="pi-shell">
-            <LegalDisclaimer texto={AVISO_LEGAL} />
           </div>
         </section>
       </main>
