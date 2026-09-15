@@ -20,6 +20,7 @@ import {
   type RespuestaConsulta,
 } from "./components";
 import {
+  AVISO_DATOS,
   AVISO_LEGAL,
   AVISO_MARCAS,
   CLASE_CATEGORIA,
@@ -314,6 +315,14 @@ export default function Pagina() {
                 }}
               />
             )}
+
+            <p className="pi-aviso-datos">
+              <svg width="15" height="15" viewBox="0 0 20 20" fill="none" aria-hidden="true"
+                stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M10 2.6 16.4 5v5c0 4-2.9 6.4-6.4 7.4C6.5 16.4 3.6 14 3.6 10V5L10 2.6Z" />
+              </svg>
+              {AVISO_DATOS}
+            </p>
 
             <div className="pi-ejemplos">
               <div className="pi-ejemplos-cabeza">

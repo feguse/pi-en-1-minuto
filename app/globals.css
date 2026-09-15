@@ -1384,3 +1384,21 @@ select {
   color: #7ea3ad;
   max-width: 76ch;
 }
+
+/* ---------- Aviso sobre lo que se escribe ---------- */
+
+.pi-aviso-datos {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--pi-2);
+  margin-top: var(--pi-3);
+  font-size: 13px;
+  line-height: 19px;
+  color: var(--pi-muted);
+}
+
+.pi-aviso-datos svg {
+  flex: 0 0 auto;
+  margin-top: 2px;
+  color: var(--pi-teal-700);
+}

@@ -333,6 +333,10 @@ export const EJEMPLOS_VISIBLES = 5;
 export const AVISO_LEGAL =
   "Esta orientación es informativa, no constituye asesoría jurídica, no garantiza que la creación sea registrable y no reemplaza una búsqueda profesional.";
 
+/** Qué pasa con lo que la persona escribe. Va junto al campo, no enterrado. */
+export const AVISO_DATOS =
+  "Lo que escribas se procesa con un servicio de inteligencia artificial fuera de México y no se guarda en ningún lado. Evita incluir datos que debas mantener en secreto, como fórmulas completas o planos.";
+
 /** Aviso de marcas y de independencia respecto del despacho. */
 export const AVISO_MARCAS =
   "El enlace a asesoría dirige al sitio de un despacho externo, independiente de esta herramienta, que no avala ni responde por las orientaciones que aquí se generan. Las marcas y denominaciones mencionadas pertenecen a sus titulares. IMPI e Indautor son ajenos a este sitio.";
