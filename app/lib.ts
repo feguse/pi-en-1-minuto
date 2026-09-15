@@ -1178,9 +1178,13 @@ export function corregirCategoria(idea: string, propuesta: Categoria): Categoria
  */
 export function preclasificar(idea: string): Categoria {
   const texto = normalizar(idea);
-  const coincidencias = PISTAS.filter((pista) =>
-    pista.palabras.some((palabra) => texto.includes(palabra)),
-  );
+  // Por palabra completa, no por subcadena: "lo inventó ella" no debe
+  // engancharse con la pista "invento" y volverse una patente.
+  const contiene = (frase: string) => {
+    const escapada = frase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return new RegExp(`(^|[^a-z0-9ñ])${escapada}([^a-z0-9ñ]|$)`).test(texto);
+  };
+  const coincidencias = PISTAS.filter((pista) => pista.palabras.some(contiene));
   if (coincidencias.length === 0 || coincidencias.length >= 3) return "combinacion de varias";
   return coincidencias[0].categoria;
 }

@@ -228,6 +228,25 @@ function enRango(rangos: Rango[]): Articulo[] {
   return salida;
 }
 
+/**
+ * Ordenamientos en los que tiene sentido buscar para cada figura. Sin esto,
+ * un caso de marca traía artículos de la Ley Aduanera y del reglamento de
+ * variedades vegetales: vocabulario administrativo genérico que engancha con
+ * todo y que se multiplicó al crecer el corpus a ocho ordenamientos.
+ */
+const ORDENAMIENTOS: Partial<Record<Categoria, string[]>> = {
+  "variedad vegetal": ["LFVV", "RLFVV"],
+  "observancia en frontera": ["LA", "RGCE", "LFPPI"],
+  "derecho de autor o reserva de derechos": ["LFDA", "RLFDA"],
+  "marca o signo distintivo": ["LFPPI", "RLFPPI"],
+  "aviso comercial": ["LFPPI", "RLFPPI"],
+  "nombre comercial": ["LFPPI", "RLFPPI"],
+  "patente o modelo de utilidad": ["LFPPI", "RLFPPI"],
+  "diseno industrial": ["LFPPI", "RLFPPI"],
+  "secreto industrial": ["LFPPI", "RLFPPI"],
+  "denominacion de origen o indicacion geografica": ["LFPPI", "RLFPPI"],
+};
+
 const PRESUPUESTO = 14000;
 
 /**
@@ -277,7 +296,7 @@ export function contextoParaConsulta(pregunta: string): Articulo[] {
   let presupuesto = PRESUPUESTO - curados.reduce((n, a) => n + a.texto.length, 0);
 
   const salida = [...curados];
-  for (const a of buscarArticulos(pregunta, 5)) {
+  for (const a of buscarArticulos(pregunta, 3, ORDENAMIENTOS[figura])) {
     if (vistos.has(a.id) || presupuesto - a.texto.length < 0) continue;
     salida.push(a);
     vistos.add(a.id);
@@ -287,12 +306,20 @@ export function contextoParaConsulta(pregunta: string): Articulo[] {
 }
 
 /** Búsqueda abierta en los cuatro ordenamientos, para la consulta libre. */
-export function buscarArticulos(pregunta: string, limite = 10): Articulo[] {
+export function buscarArticulos(
+  pregunta: string,
+  limite = 10,
+  siglas?: string[],
+): Articulo[] {
   const tokens = tokenizar(pregunta);
   if (tokens.length === 0) return [];
+  const permitidas = siglas ? new Set(siglas) : null;
   let presupuesto = PRESUPUESTO;
   const salida: Articulo[] = [];
-  const ordenados = TODOS.map((a, i) => ({ a, punto: puntuarPorIndice(i, tokens) }))
+  const ordenados = TODOS.map((a, i) => ({
+    a,
+    punto: permitidas && !permitidas.has(a.sigla) ? 0 : puntuarPorIndice(i, tokens),
+  }))
     .filter((x) => x.punto > 0)
     .sort((x, y) => y.punto - x.punto);
   for (const { a } of ordenados) {
@@ -385,7 +412,7 @@ export function contextoParaAnalisis(descripcion: string): Articulo[] {
   let presupuesto = PRESUPUESTO - porFigura.reduce((n, a) => n + a.texto.length, 0);
 
   const salida = [...porFigura];
-  for (const a of buscarArticulos(descripcion, 3)) {
+  for (const a of buscarArticulos(descripcion, 2, ORDENAMIENTOS[figura])) {
     if (vistos.has(a.id) || presupuesto - a.texto.length < 0) continue;
     salida.push(a);
     vistos.add(a.id);
