@@ -1214,3 +1214,21 @@ select {
     opacity: 1;
   }
 }
+
+/* ---------- Cursor mientras se escribe el dictamen ---------- */
+
+.pi-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.05em;
+  background: var(--pi-teal-700);
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  animation: pi-parpadeo 1s steps(2, start) infinite;
+}
+
+@keyframes pi-parpadeo {
+  to {
+    visibility: hidden;
+  }
+}

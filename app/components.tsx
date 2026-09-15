@@ -244,10 +244,12 @@ export function RecommendationCard({
   resultado,
   tipo,
   clase,
+  dictando = false,
 }: {
   resultado: Analisis;
   tipo: string;
   clase: string;
+  dictando?: boolean;
 }) {
   return (
     <Card tone="info" className={`pi-reco ${clase}`}>
@@ -262,7 +264,13 @@ export function RecommendationCard({
       </div>
       <div className="pi-reco-why">
         <h3 className="pi-card-title">Nuestra lectura de tu caso</h3>
-        <p>{resultado.explicacion}</p>
+        <p>
+          {resultado.explicacion}
+          {dictando && <span className="pi-cursor" aria-hidden="true" />}
+        </p>
+        {dictando && !resultado.explicacion && (
+          <p className="pi-sr-only">Escribiendo el dictamen…</p>
+        )}
       </div>
     </Card>
   );

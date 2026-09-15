@@ -272,12 +272,11 @@ export function validarAnalisis(datos: unknown): Analisis {
 
   // Solo la categoría y el dictamen son indispensables. Descartar una respuesta
   // buena porque una lista secundaria vino corta es peor que mostrarla sin ella.
-  if (!categoria || !explicacion) {
-    const faltan = [!categoria && "categoria", !explicacion && "explicacion"]
-      .filter(Boolean)
-      .join(", ");
+  // Solo la categoría es indispensable. El dictamen llega por el flujo de
+  // /api/dictamen, así que aquí puede venir vacío.
+  if (!categoria) {
     throw new Error(
-      `La respuesta del modelo está incompleta. Faltan: ${faltan}. ` +
+      `La respuesta del modelo está incompleta. Falta la categoría. ` +
         `Recibido: ${Object.keys(bruto).join(", ")}`,
     );
   }

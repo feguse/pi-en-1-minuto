@@ -108,13 +108,6 @@ CÓMO ESCRIBES. Esto importa tanto como el fondo. Escribes como un abogado mexic
 
 CAMPOS:
 - "autoridad": ante quién se tramita. IMPI, Indautor, ambos, o que no se registra.
-- "explicacion": el corazón de la respuesta. De 220 a 350 palabras, en prosa corrida, SIN listas ni viñetas. Sigue este orden, sin rotularlo:
-  primero qué tiene la persona entre manos, dicho en sus propios términos;
-  luego qué significa jurídicamente y por qué esa figura y no otra;
-  luego qué opciones existen y cuál conviene atender primero;
-  luego el límite o el riesgo, dicho sin dramatizarlo;
-  y cierra con lo que falta saber para tener certeza.
-  Cita los artículos entre corchetes conforme los uses, no al final en bloque.
 - "requiere_profesional": booleano, conforme al criterio de arriba.
 - "motivo_escalamiento": si es true, una frase que le diga a la persona por qué su caso necesita revisión profesional. Si es false, cadena vacía.
 - "plazo_critico": una frase accionable si detectaste un plazo corriendo. Cadena vacía si no hay.
@@ -156,7 +149,6 @@ const CAMPOS_RAPIDA = {
   },
   proteccion_principal: { type: "string" },
   autoridad: { type: "string" },
-  explicacion: { type: "string" },
   plazo_critico: { type: "string" },
   requiere_profesional: { type: "boolean" },
   motivo_escalamiento: { type: "string" },

@@ -76,6 +76,7 @@ export default function Pagina() {
   const [motivoDemo, setMotivoDemo] = useState<string | undefined>(undefined);
   const [consulta, setConsulta] = useState<RespuestaConsulta | null>(null);
   const [cargandoDetalle, setCargandoDetalle] = useState(false);
+  const [dictando, setDictando] = useState(false);
   const analizador = useRef<HTMLDivElement>(null);
 
   const entrada = modo === "proteger" ? idea : pregunta;
@@ -116,6 +117,39 @@ export default function Pagina() {
     }
   }
 
+  /**
+   * Trae el dictamen por fragmentos y lo va pintando. Es lo que convierte
+   * veintidós segundos de pantalla muerta en texto que aparece solo.
+   */
+  async function pedirDictamen(texto: string, base: Analisis) {
+    setDictando(true);
+    try {
+      const r = await fetch("/api/dictamen", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          idea: texto,
+          categoria: base.categoria,
+          proteccion_principal: base.proteccion_principal,
+        }),
+      });
+      if (!r.ok || !r.body) return;
+      const lector = r.body.getReader();
+      const dec = new TextDecoder();
+      let acumulado = "";
+      for (;;) {
+        const { done, value } = await lector.read();
+        if (done) break;
+        acumulado += dec.decode(value, { stream: true });
+        setResultado((previo) => (previo ? { ...previo, explicacion: acumulado } : previo));
+      }
+    } catch {
+      // El resto del resultado ya está en pantalla.
+    } finally {
+      setDictando(false);
+    }
+  }
+
   async function enviar() {
     if (!listo) {
       setError(
@@ -142,6 +176,7 @@ export default function Pagina() {
         setResultado(d.resultado);
         setDemo(Boolean(d.demo));
         setMotivoDemo(d.motivo);
+        pedirDictamen(idea.trim(), d.resultado);
         pedirDetalle(idea.trim(), d.resultado);
       } else {
         const r = await fetch("/api/consulta", {
@@ -312,6 +347,7 @@ export default function Pagina() {
                     resultado={resultado}
                     tipo={ETIQUETAS_CATEGORIA[resultado.categoria]}
                     clase={CLASE_CATEGORIA[resultado.categoria]}
+                    dictando={dictando}
                   />
 
                   {(resultado.elementos_protegibles.length > 0 ||
