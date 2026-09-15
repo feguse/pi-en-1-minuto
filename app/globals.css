@@ -1372,3 +1372,15 @@ select {
   background: var(--pi-teal-700);
   opacity: 1;
 }
+
+/* ---------- Aviso de marcas ---------- */
+
+.pi-footer-marcas {
+  margin-top: var(--pi-5);
+  padding-top: var(--pi-5);
+  border-top: 1px solid rgb(169 198 205 / 22%);
+  font-size: 13px;
+  line-height: 20px;
+  color: #7ea3ad;
+  max-width: 76ch;
+}

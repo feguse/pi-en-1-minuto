@@ -21,6 +21,7 @@ import {
 } from "./components";
 import {
   AVISO_LEGAL,
+  AVISO_MARCAS,
   CLASE_CATEGORIA,
   EJEMPLOS,
   EJEMPLOS_PROBLEMA,
@@ -611,6 +612,7 @@ export default function Pagina() {
             ideas en México. Es una herramienta informativa: no sustituye la revisión de un
             profesional ni determina si una creación es registrable.
           </p>
+          <p className="pi-footer-marcas">{AVISO_MARCAS}</p>
           <span className="pi-footer-firma">FGS</span>
         </div>
       </footer>

@@ -208,6 +208,10 @@ export const EJEMPLOS_VISIBLES = 5;
 export const AVISO_LEGAL =
   "Esta orientación es informativa, no constituye asesoría jurídica, no garantiza que la creación sea registrable y no reemplaza una búsqueda profesional.";
 
+/** Aviso de marcas y de independencia respecto del despacho. */
+export const AVISO_MARCAS =
+  "PPM y Panamericana de Patentes y Marcas son marcas registradas de su titular. Este sitio es independiente: no lo opera el despacho, y el enlace a su sitio no implica que revise, avale o responda por las orientaciones generadas aquí. Las demás marcas, denominaciones y logotipos mencionados pertenecen a sus respectivos titulares. IMPI e Indautor son instituciones públicas ajenas a este sitio.";
+
 /** Letra chiquita al pie de cada resultado. El tono del dictamen lo exige. */
 export const LETRA_CHIQUITA =
   "Lo anterior no es una opinión legal ni crea una relación abogado-cliente. Es una orientación preliminar generada de forma automática a partir del texto vigente de la ley, sin revisión de un abogado y sin conocer los antecedentes de tu caso. Antes de presentar una solicitud, firmar un contrato o responder a un tercero, consulta a un profesional.";
