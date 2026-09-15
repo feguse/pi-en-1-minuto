@@ -413,8 +413,8 @@ export function AyudaProfesional({ motivo }: { motivo?: string }) {
         </p>
       )}
       <p className="pi-ayuda-destino">
-        El enlace abre el sitio de Panamericana de Patentes y Marcas, un despacho externo
-        especializado en propiedad intelectual.
+        El enlace abre el sitio de PPM, un despacho mexicano externo especializado en
+        propiedad intelectual.
       </p>
       <div className="pi-actions">
         <a className="pi-btn pi-btn--primary" href={PPM} target="_blank" rel="noopener noreferrer">
