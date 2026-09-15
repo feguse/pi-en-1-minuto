@@ -16,7 +16,7 @@ const LIMITE_CARACTERES = 2000;
 const TIEMPO_LIMITE_MS = 52000;
 const MAX_TOKENS = 4000;
 /** Esfuerzo de razonamiento de la primera fase. Ajustable sin redesplegar. */
-const ESFUERZO = (process.env.OPENROUTER_ESFUERZO || "medium") as "low" | "medium" | "high";
+const ESFUERZO = (process.env.OPENROUTER_ESFUERZO || "low") as "low" | "medium" | "high";
 
 const INSTRUCCIONES = `Eres un abogado mexicano especializado en propiedad intelectual. Das orientación PRELIMINAR a personas sin formación jurídica, con el rigor de una primera consulta de despacho.
 
