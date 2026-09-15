@@ -1141,14 +1141,22 @@ const PISTAS: { categoria: Categoria; palabras: string[] }[] = [
  * contenido. Aquí se corrige la etiqueta sin tocar el resto de la respuesta.
  * Deliberadamente restrictivo: solo términos que no aparecen por casualidad.
  */
-const SENALES_DIRECTAS: { categoria: Categoria; patron: RegExp }[] = [
+const SENALES_DIRECTAS: { categoria: Categoria; patron: RegExp; y?: RegExp }[] = [
   {
     categoria: "observancia en frontera",
     patron: /\b(aduana|aduanal|aduanera|anam|contenedor|despacho aduanero|base marcaria|recinto fiscal|pedimento)\b/i,
   },
+  // Términos inequívocos por sí solos.
   {
     categoria: "variedad vegetal",
-    patron: /\b(obtentor|variedad vegetal|variedades vegetales|snics|germoplasma|porta ?injerto)\b/i,
+    patron: /\b(obtentor|variedad(?:es)? vegetal(?:es)?|snics|germoplasma|porta ?injerto)\b/i,
+  },
+  // Nadie dice "variedad vegetal" al contar su caso: dice "una variedad de
+  // aguacate". Por eso se exige además un contexto agrícola.
+  {
+    categoria: "variedad vegetal",
+    patron: /\b(variedad(?:es)?|hibrido|cultivar|semilla(?:s)?)\b/i,
+    y: /\b(planta|cultivo|agricol|mejoramiento genetico|cosecha|injerto|vegetal|sequia|grano|fruto|arbol|maiz|trigo|frijol|agave|aguacate|cafeto|sorgo|chile|jitomate|flor)\b/i,
   },
 ];
 
@@ -1159,7 +1167,7 @@ const SENALES_DIRECTAS: { categoria: Categoria; patron: RegExp }[] = [
 export function corregirCategoria(idea: string, propuesta: Categoria): Categoria {
   const texto = normalizar(idea);
   for (const s of SENALES_DIRECTAS) {
-    if (s.patron.test(texto)) return s.categoria;
+    if (s.patron.test(texto) && (!s.y || s.y.test(texto))) return s.categoria;
   }
   return propuesta;
 }
