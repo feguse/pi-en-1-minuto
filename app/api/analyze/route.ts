@@ -2,11 +2,12 @@ import { NextResponse } from "next/server";
 import { analisisDemo, validarAnalisis, type RespuestaAnalisis } from "../../lib";
 
 export const runtime = "nodejs";
-export const maxDuration = 30;
+export const maxDuration = 60;
 
 const MODELO_POR_DEFECTO = "openai/gpt-4o-mini";
 const LIMITE_CARACTERES = 2000;
-const TIEMPO_LIMITE_MS = 25000;
+const TIEMPO_LIMITE_MS = 45000;
+const MAX_TOKENS = 4000;
 
 const INSTRUCCIONES = `Eres un abogado mexicano especializado en propiedad intelectual. Das orientación PRELIMINAR a personas sin formación jurídica, con el rigor de una primera consulta de despacho.
 
@@ -182,7 +183,7 @@ export async function POST(request: Request) {
         body: JSON.stringify({
           model: modelo,
           temperature: 0.2,
-          max_tokens: 1800,
+          max_tokens: MAX_TOKENS,
           response_format: formato,
           messages: [
             { role: "system", content: INSTRUCCIONES },
@@ -191,37 +192,54 @@ export async function POST(request: Request) {
         }),
       });
 
-    // Primero con esquema estricto; si el modelo elegido no lo soporta, se reintenta
-    // pidiendo solo un objeto JSON.
-    let llamada = await pedir({
+    /** Devuelve el texto de la respuesta, o null si la llamada falló. */
+    const contenidoDe = async (llamada: Response): Promise<string | null> => {
+      if (!llamada.ok) {
+        console.error("OpenRouter respondió", llamada.status, (await llamada.text()).slice(0, 400));
+        return null;
+      }
+      const datos = (await llamada.json()) as {
+        choices?: { message?: { content?: string }; finish_reason?: string }[];
+      };
+      const eleccion = datos.choices?.[0];
+      if (eleccion?.finish_reason === "length") {
+        console.error("Respuesta truncada por límite de tokens");
+      }
+      return eleccion?.message?.content ?? null;
+    };
+
+    const FORMATO_ESQUEMA = {
       type: "json_schema",
       json_schema: { name: "analisis_pi", strict: true, schema: ESQUEMA },
-    });
-
-    if (!llamada.ok) {
-      console.error("OpenRouter rechazó json_schema", llamada.status);
-      llamada = await pedir({ type: "json_object" });
-    }
-
-    if (!llamada.ok) {
-      const detalle = await llamada.text();
-      console.error("OpenRouter error", llamada.status, detalle.slice(0, 500));
-      return NextResponse.json(
-        { error: "El servicio de análisis no está disponible en este momento. Intenta de nuevo." },
-        { status: 502 },
-      );
-    }
-
-    const datos = (await llamada.json()) as {
-      choices?: { message?: { content?: string } }[];
     };
-    const contenido = datos.choices?.[0]?.message?.content;
+    const FORMATO_OBJETO = { type: "json_object" };
 
-    if (!contenido) {
-      throw new Error("Respuesta vacía del modelo.");
+    // Primer intento con esquema estricto. Si la llamada falla, o si el texto
+    // devuelto no es JSON utilizable (por ejemplo, truncado), se reintenta
+    // pidiendo solo un objeto JSON.
+    let bruto: unknown = null;
+    let contenido = await contenidoDe(await pedir(FORMATO_ESQUEMA));
+
+    if (contenido) {
+      try {
+        bruto = extraerJSON(contenido);
+      } catch {
+        console.error("JSON ilegible en el primer intento:", contenido.slice(0, 300));
+      }
     }
 
-    const resultado = validarAnalisis(extraerJSON(contenido));
+    if (bruto === null) {
+      contenido = await contenidoDe(await pedir(FORMATO_OBJETO));
+      if (!contenido) {
+        return NextResponse.json(
+          { error: "El servicio de análisis no está disponible en este momento. Intenta de nuevo." },
+          { status: 502 },
+        );
+      }
+      bruto = extraerJSON(contenido);
+    }
+
+    const resultado = validarAnalisis(bruto);
     const respuesta: RespuestaAnalisis = { resultado, demo: false };
     return NextResponse.json(respuesta);
   } catch (error) {
