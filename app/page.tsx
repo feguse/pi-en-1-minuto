@@ -7,6 +7,8 @@ import {
   ExampleChip,
   LegalDisclaimer,
   LoadingSteps,
+  AyudaProfesional,
+  ConsultaLibre,
   OfficialResourceLink,
   RecommendationCard,
   Textarea,
@@ -16,7 +18,6 @@ import {
   EJEMPLOS,
   ETIQUETAS_CATEGORIA,
   CLASE_CATEGORIA,
-  FIGURAS,
   RECURSOS,
   type Analisis,
   type RespuestaAnalisis,
@@ -101,13 +102,6 @@ export default function Pagina() {
               preliminar sobre qué figura de propiedad intelectual podrías usar para protegerlo,
               ante el IMPI o el Indautor.
             </p>
-            <div className="pi-figuras">
-              {FIGURAS.map((figura) => (
-                <span key={figura.nombre} className={`pi-figura ${figura.clase}`}>
-                  {figura.nombre}
-                </span>
-              ))}
-            </div>
           </div>
 
           <div className="pi-logomark">
@@ -279,8 +273,12 @@ export default function Pagina() {
                 </Card>
               )}
             </div>
+
+            <AyudaProfesional />
           </div>
         )}
+
+        <ConsultaLibre />
 
         <section className="pi-section">
           <h2>Verifica en fuentes oficiales</h2>

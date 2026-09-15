@@ -1204,3 +1204,132 @@ a {
     gap: var(--pi-3);
   }
 }
+
+/* ---------- Tres figuras más: aviso, nombre comercial, denominación ---------- */
+
+:root {
+  --pi-ambar-600: #b45309;
+  --pi-ambar-100: #fdf0dc;
+  --pi-indigo-600: #4338ca;
+  --pi-indigo-100: #e8e7fb;
+  --pi-tierra-600: #7c2d12;
+  --pi-tierra-100: #f6e7df;
+}
+
+.cat-aviso {
+  --cat: var(--pi-ambar-600);
+  --cat-soft: var(--pi-ambar-100);
+  --cat-ink: var(--pi-ambar-600);
+}
+.cat-nombre {
+  --cat: var(--pi-indigo-600);
+  --cat-soft: var(--pi-indigo-100);
+  --cat-ink: var(--pi-indigo-600);
+}
+.cat-denominacion {
+  --cat: var(--pi-tierra-600);
+  --cat-soft: var(--pi-tierra-100);
+  --cat-ink: var(--pi-tierra-600);
+}
+
+/* ---------- Ayuda profesional ---------- */
+
+.pi-ayuda {
+  border-color: var(--pi-teal-500);
+}
+
+.pi-ayuda-pregunta,
+.pi-ayuda-respuesta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pi-3);
+  flex-wrap: wrap;
+}
+
+.pi-ayuda strong {
+  display: block;
+  font-family: var(--pi-font-display);
+  font-size: 17px;
+  line-height: 24px;
+  color: var(--pi-navy-900);
+}
+
+.pi-ayuda span {
+  display: block;
+  color: var(--pi-text-muted);
+  font-size: 14px;
+  line-height: 21px;
+  margin-top: 2px;
+  max-width: 52ch;
+}
+
+.pi-ayuda-botones {
+  display: flex;
+  align-items: center;
+  gap: var(--pi-2);
+  flex-wrap: wrap;
+}
+
+.pi-ayuda-respuesta .pi-btn--primary {
+  text-decoration: none;
+}
+
+/* ---------- Consulta libre ---------- */
+
+.pi-consulta {
+  margin-top: var(--pi-2);
+}
+
+.pi-fundamentos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--pi-2);
+}
+
+.pi-fundamentos li {
+  border-left: 3px solid var(--pi-border);
+  padding-left: var(--pi-2);
+}
+
+.pi-fundamentos a {
+  font-weight: 700;
+  color: var(--pi-navy-900);
+  text-decoration: none;
+  border-bottom: 1px solid var(--pi-teal-500);
+}
+
+.pi-fundamentos a:hover {
+  color: var(--pi-teal-700);
+}
+
+.pi-fundamento-meta {
+  display: block;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--pi-text-muted);
+  margin-top: 2px;
+}
+
+.pi-fundamento-texto {
+  display: block;
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--pi-text-muted);
+  margin-top: 6px;
+}
+
+@media (max-width: 767px) {
+  .pi-ayuda-pregunta,
+  .pi-ayuda-respuesta {
+    align-items: flex-start;
+  }
+  .pi-ayuda-botones {
+    width: 100%;
+  }
+  .pi-ayuda-botones .pi-btn--primary {
+    width: 100%;
+  }
+}

@@ -2,10 +2,13 @@
 
 export const CATEGORIAS = [
   "marca o signo distintivo",
+  "aviso comercial",
+  "nombre comercial",
   "patente o modelo de utilidad",
   "diseno industrial",
   "secreto industrial",
   "derecho de autor o reserva de derechos",
+  "denominacion de origen o indicacion geografica",
   "combinacion de varias",
 ] as const;
 
@@ -13,42 +16,41 @@ export type Categoria = (typeof CATEGORIAS)[number];
 
 export const ETIQUETAS_CATEGORIA: Record<Categoria, string> = {
   "marca o signo distintivo": "Marca o signo distintivo",
+  "aviso comercial": "Aviso comercial",
+  "nombre comercial": "Nombre comercial",
   "patente o modelo de utilidad": "Patente o modelo de utilidad",
   "diseno industrial": "Diseño industrial",
   "secreto industrial": "Secreto industrial",
   "derecho de autor o reserva de derechos": "Derecho de autor o reserva de derechos",
+  "denominacion de origen o indicacion geografica": "Denominación de origen o indicación geográfica",
   "combinacion de varias": "Combinación de varias figuras",
 };
 
 /** Autoridad competente por figura. */
 export const AUTORIDAD: Record<Categoria, string> = {
   "marca o signo distintivo": "IMPI",
+  "aviso comercial": "IMPI",
+  "nombre comercial": "IMPI",
   "patente o modelo de utilidad": "IMPI",
   "diseno industrial": "IMPI",
   "secreto industrial": "No se registra ante ninguna autoridad",
   "derecho de autor o reserva de derechos": "Indautor",
+  "denominacion de origen o indicacion geografica": "IMPI",
   "combinacion de varias": "IMPI e Indautor, según el elemento",
 };
 
 /** Clase de color por figura. Alimenta las variables --cat de globals.css. */
 export const CLASE_CATEGORIA: Record<Categoria, string> = {
   "marca o signo distintivo": "cat-marca",
+  "aviso comercial": "cat-aviso",
+  "nombre comercial": "cat-nombre",
   "patente o modelo de utilidad": "cat-patente",
   "diseno industrial": "cat-diseno",
   "secreto industrial": "cat-secreto",
   "derecho de autor o reserva de derechos": "cat-autor",
+  "denominacion de origen o indicacion geografica": "cat-denominacion",
   "combinacion de varias": "cat-combinacion",
 };
-
-/** Las figuras, en el orden en que se muestran bajo el hero. */
-export const FIGURAS: { nombre: string; clase: string }[] = [
-  { nombre: "Marca", clase: "cat-marca" },
-  { nombre: "Patente o modelo de utilidad", clase: "cat-patente" },
-  { nombre: "Diseño industrial", clase: "cat-diseno" },
-  { nombre: "Secreto industrial", clase: "cat-secreto" },
-  { nombre: "Derecho de autor", clase: "cat-autor" },
-  { nombre: "Combinación", clase: "cat-combinacion" },
-];
 
 export const NIVELES = ["alto", "medio", "bajo"] as const;
 export type Confianza = (typeof NIVELES)[number];
@@ -184,6 +186,11 @@ function detectarCategoria(valor: unknown): Categoria | null {
   if (texto.includes("autor") || texto.includes("reserva") || texto.includes("indautor")) {
     return "derecho de autor o reserva de derechos";
   }
+  if (texto.includes("denominacion de origen") || texto.includes("indicacion geografica")) {
+    return "denominacion de origen o indicacion geografica";
+  }
+  if (texto.includes("aviso comercial")) return "aviso comercial";
+  if (texto.includes("nombre comercial")) return "nombre comercial";
   if (texto.includes("secreto")) return "secreto industrial";
   if (texto.includes("diseno") || texto.includes("dibujo industrial")) return "diseno industrial";
   if (texto.includes("patente") || texto.includes("modelo de utilidad")) {
@@ -445,6 +452,120 @@ const PLANTILLAS: Record<Categoria, Analisis> = {
     clases_niza: [],
     confianza: "medio",
   },
+  "aviso comercial": {
+    categoria: "aviso comercial",
+    proteccion_principal: "Registro de aviso comercial ante el IMPI",
+    autoridad: "IMPI",
+    explicacion:
+      "Lo que quieres proteger es una frase publicitaria que anuncia tu negocio, tus productos o tus servicios y los distingue de otros. Esa función se protege como aviso comercial mediante registro ante el IMPI. En lo que no haya disposición especial, se rige por las mismas reglas que las marcas, incluidos los impedimentos de registro.",
+    elementos_protegibles: [
+      "La frase o el eslogan publicitario",
+      "La combinación de palabras que anuncia el establecimiento",
+    ],
+    siguientes_pasos: [
+      "Revisa en MARCia si alguien ya usa una frase igual o semejante en grado de confusión.",
+      "Define a qué productos, servicios o establecimiento se refiere la frase.",
+      "Valora registrar por separado la marca denominativa, porque el aviso no la sustituye.",
+    ],
+    figuras_complementarias: [
+      "Marca para el nombre del producto o servicio",
+      "Nombre comercial para el establecimiento",
+      "Derecho de autor sobre la pieza publicitaria",
+    ],
+    advertencias: [
+      "Las frases descriptivas o de uso común suelen enfrentar objeciones.",
+      "Falta saber si la frase ya se usa en el mercado por un tercero.",
+      "Un aviso comercial no protege el nombre del producto: eso es materia de marca.",
+    ],
+    que_no_protege: [
+      "No protege el nombre del producto ni el logotipo.",
+      "No impide que otro anuncie el mismo producto con otra frase.",
+      "No cubre el diseño gráfico de la campaña.",
+    ],
+    plazos_clave: [
+      "Diez años, renovables por periodos iguales.",
+      "Le aplican las reglas de marcas en lo que no haya disposición especial.",
+    ],
+    clases_niza: [],
+    confianza: "medio",
+  },
+  "nombre comercial": {
+    categoria: "nombre comercial",
+    proteccion_principal: "Publicación del nombre comercial ante el IMPI",
+    autoridad: "IMPI",
+    explicacion:
+      "Hablas del nombre con el que opera tu empresa o establecimiento. El nombre comercial está protegido sin necesidad de registro, pero solo en la zona geográfica de tu clientela efectiva. La publicación ante el IMPI hace constar ese uso y amplía la certeza jurídica frente a terceros.",
+    elementos_protegibles: [
+      "El nombre del establecimiento o de la empresa",
+      "El rótulo con el que opera frente al público",
+    ],
+    siguientes_pasos: [
+      "Documenta desde cuándo y en qué zona geográfica usas el nombre.",
+      "Verifica que no exista un nombre comercial o una marca semejante en el mismo giro.",
+      "Valora registrar el nombre además como marca, para una protección nacional.",
+    ],
+    figuras_complementarias: [
+      "Marca, si quieres exclusividad en todo el país",
+      "Aviso comercial para el eslogan",
+      "Derecho de autor sobre el diseño del rótulo",
+    ],
+    advertencias: [
+      "La protección sin registro alcanza solo la zona de la clientela efectiva.",
+      "Un nombre sin elementos distintivos de su género no se publica.",
+      "Le aplican los impedimentos del artículo 173 en lo conducente.",
+    ],
+    que_no_protege: [
+      "No otorga exclusividad en toda la República, solo en tu zona de clientela.",
+      "No protege los productos que vendes: eso corresponde a la marca.",
+      "No impide que otro registre una marca semejante si tú no la solicitaste.",
+    ],
+    plazos_clave: [
+      "La protección nace del uso, sin plazo para solicitarla.",
+      "Los efectos de la publicación duran diez años, renovables.",
+    ],
+    clases_niza: [],
+    confianza: "medio",
+  },
+  "denominacion de origen o indicacion geografica": {
+    categoria: "denominacion de origen o indicacion geografica",
+    proteccion_principal:
+      "Declaración de protección de denominación de origen o indicación geográfica ante el IMPI",
+    autoridad: "IMPI",
+    explicacion:
+      "Describes un producto cuya calidad, características o reputación se deben al lugar del que proviene. Eso no se protege como marca sino mediante una declaración de protección ante el IMPI. El Estado mexicano es el titular de la denominación de origen; los productores obtienen después una autorización de uso.",
+    elementos_protegibles: [
+      "El vínculo entre el producto y su zona geográfica",
+      "El nombre del lugar aplicado al producto",
+      "Las características derivadas de los factores naturales y culturales de la región",
+    ],
+    siguientes_pasos: [
+      "Documenta el vínculo del producto con la zona: materias primas, proceso y factores locales.",
+      "Verifica si ya existe una declaración de protección que ampare ese producto y esa región.",
+      "Si ya existe, lo que necesitas no es una declaración nueva sino la autorización de uso.",
+    ],
+    figuras_complementarias: [
+      "Marca colectiva o de certificación para el grupo de productores",
+      "Marca propia para distinguir tu producto dentro de la denominación",
+      "Aviso comercial para la campaña",
+    ],
+    advertencias: [
+      "El titular de la denominación de origen es el Estado mexicano, no el productor.",
+      "Falta acreditar el vínculo entre las características del producto y la zona geográfica.",
+      "Usar el nombre de un lugar sin autorización de uso puede constituir infracción.",
+    ],
+    que_no_protege: [
+      "No te da la titularidad del nombre: solo autorización para usarlo.",
+      "No protege tu marca propia ni tu receta.",
+      "No impide que otros productores de la misma zona obtengan autorización.",
+    ],
+    plazos_clave: [
+      "La declaración de protección dura mientras subsistan las condiciones que la motivaron.",
+      "La autorización de uso dura diez años, renovables por periodos iguales.",
+      "La autorización caduca si deja de usarse durante los tres años anteriores.",
+    ],
+    clases_niza: [],
+    confianza: "medio",
+  },
   "combinacion de varias": {
     categoria: "combinacion de varias",
     proteccion_principal: "Estrategia combinada de propiedad intelectual",
@@ -505,19 +626,37 @@ const PISTAS: { categoria: Categoria; palabras: string[] }[] = [
     palabras: ["forma", "apariencia", "diseno", "estetica", "ornamental", "aspecto", "silueta", "empaque"],
   },
   {
+    categoria: "denominacion de origen o indicacion geografica",
+    palabras: ["denominacion de origen", "indicacion geografica", "region", "mi pueblo", "originario de", "zona geografica", "mezcal", "talavera", "artesania de"],
+  },
+  {
+    categoria: "aviso comercial",
+    palabras: ["eslogan", "slogan", "frase publicitaria", "lema", "frase que"],
+  },
+  {
+    categoria: "nombre comercial",
+    palabras: ["nombre de mi negocio", "nombre del establecimiento", "rotulo", "letrero del local"],
+  },
+  {
     categoria: "marca o signo distintivo",
     palabras: ["marca", "nombre", "logo", "logotipo", "eslogan", "etiqueta", "vender", "negocio", "tienda", "identidad"],
   },
 ];
 
-/** Resultado simulado para el modo demo, elegido por palabras clave. */
-export function analisisDemo(idea: string): Analisis {
+/**
+ * Clasificación barata por palabras clave. Sirve para dos cosas: el modo demo
+ * y decidir qué artículos recuperar ANTES de llamar al modelo.
+ */
+export function preclasificar(idea: string): Categoria {
   const texto = normalizar(idea);
   const coincidencias = PISTAS.filter((pista) =>
     pista.palabras.some((palabra) => texto.includes(palabra)),
   );
+  if (coincidencias.length === 0 || coincidencias.length >= 3) return "combinacion de varias";
+  return coincidencias[0].categoria;
+}
 
-  if (coincidencias.length === 0) return PLANTILLAS["combinacion de varias"];
-  if (coincidencias.length >= 3) return PLANTILLAS["combinacion de varias"];
-  return PLANTILLAS[coincidencias[0].categoria];
+/** Resultado simulado para el modo demo. */
+export function analisisDemo(idea: string): Analisis {
+  return PLANTILLAS[preclasificar(idea)];
 }

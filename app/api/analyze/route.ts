@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { analisisDemo, validarAnalisis, type RespuestaAnalisis } from "../../lib";
+import { clasesNizaPara, comoContexto, contextoParaAnalisis } from "../../corpus";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -13,10 +14,13 @@ const INSTRUCCIONES = `Eres un abogado mexicano especializado en propiedad intel
 
 El usuario describe en lenguaje cotidiano algo que creó o quiere lanzar. Clasifícalo en EXACTAMENTE una de estas categorías, escrita tal cual:
 - "marca o signo distintivo"
+- "aviso comercial"
+- "nombre comercial"
 - "patente o modelo de utilidad"
 - "diseno industrial"
 - "secreto industrial"
 - "derecho de autor o reserva de derechos"
+- "denominacion de origen o indicacion geografica"
 - "combinacion de varias"
 
 CRITERIOS DE DISTINCIÓN (aplícalos, no los recites):
@@ -25,6 +29,9 @@ CRITERIOS DE DISTINCIÓN (aplícalos, no los recites):
 - Diseño industrial: apariencia (forma, contorno, ornamentación) que NO está dictada exclusivamente por la función. Si la forma solo obedece a la función, la vía es patente o modelo de utilidad, no diseño.
 - Secreto industrial: información con valor competitivo que se mantiene reservada mediante medidas razonables de confidencialidad. No se registra ante ninguna autoridad.
 - Derecho de autor: expresión original fijada en un soporte (textos, dibujos, música, fotografía, software). Nace sin registro; el registro ante el Indautor da prueba de autoría y fecha. La RESERVA DE DERECHOS, también ante el Indautor, cubre títulos de publicaciones periódicas, personajes ficticios o simbólicos, personas o grupos artísticos y promociones publicitarias.
+- Aviso comercial: frases u oraciones que anuncian un establecimiento, producto o servicio y lo distinguen. Se registra ante el IMPI y se rige por las reglas de marcas en lo que no haya disposición especial.
+- Nombre comercial: el nombre con el que opera una empresa o establecimiento. Está protegido SIN registro, pero solo en la zona geográfica de su clientela efectiva; la publicación ante el IMPI da certeza frente a terceros.
+- Denominación de origen o indicación geográfica: el producto debe su calidad, características o reputación a la zona de la que proviene. El titular de la denominación de origen es el Estado mexicano; los productores obtienen autorización de uso, no titularidad.
 - Combinación: úsala solo cuando haya con claridad elementos de naturaleza distinta que corresponden a autoridades o figuras diferentes.
 
 TRAMPAS QUE DEBES DETECTAR Y ADVERTIR CUANDO APLIQUEN:
@@ -52,6 +59,12 @@ ERRORES QUE NO DEBES COMETER:
 - La ORIGINALIDAD es el requisito del derecho de autor, no la novedad.
 - No confundas la vigencia del modelo de utilidad con la del diseño industrial.
 - "proteccion_principal" debe ser una frase que nombre la VÍA de protección, por ejemplo "Registro de marca ante el IMPI" o "Registro de obra y reserva de derechos ante el Indautor". Nunca copies un fragmento de la descripción del usuario.
+
+USO DE LOS ARTÍCULOS PROPORCIONADOS:
+- Al final del mensaje recibirás artículos vigentes de la LFPPI, su Reglamento, la LFDA y su Reglamento, con su fecha de última reforma.
+- Apóyate en ellos. Cuando un dato provenga de un artículo, cítalo entre corchetes dentro del campo correspondiente: [LFPPI Artículo 173].
+- Si un artículo proporcionado contradice la tabla de plazos de abajo, MANDA EL ARTÍCULO.
+- No cites artículos que no aparezcan en el material proporcionado.
 
 VOZ:
 - Español de México, claro y profesional, para alguien sin formación jurídica.
@@ -95,10 +108,13 @@ const ESQUEMA = {
       type: "string",
       enum: [
         "marca o signo distintivo",
+        "aviso comercial",
+        "nombre comercial",
         "patente o modelo de utilidad",
         "diseno industrial",
         "secreto industrial",
         "derecho de autor o reserva de derechos",
+        "denominacion de origen o indicacion geografica",
         "combinacion de varias",
       ],
     },
@@ -177,6 +193,12 @@ export async function POST(request: Request) {
       encabezados["X-Title"] = process.env.OPENROUTER_SITE_NAME;
     }
 
+    const articulos = contextoParaAnalisis(idea);
+    const contexto = comoContexto(articulos);
+    const sugerenciasNiza = clasesNizaPara(idea, 6)
+      .map((n) => `- Clase ${n.clase} — ${n.termino}`)
+      .join("\n");
+
     const modelo = process.env.OPENROUTER_MODEL || MODELO_POR_DEFECTO;
 
     const pedir = (formato: unknown) =>
@@ -191,7 +213,15 @@ export async function POST(request: Request) {
           response_format: formato,
           messages: [
             { role: "system", content: INSTRUCCIONES },
-            { role: "user", content: `Descripción del usuario:\n"""${idea}"""` },
+            {
+              role: "user",
+              content:
+                `Descripción del usuario:\n"""${idea}"""\n\n` +
+                (sugerenciasNiza
+                  ? `TÉRMINOS DEL NOMENCLÁTOR DE NIZA que podrían aplicar (son una ayuda, verifícalos):\n${sugerenciasNiza}\n\n`
+                  : "") +
+                `ARTÍCULOS VIGENTES PARA FUNDAMENTAR TU RESPUESTA:\n\n${contexto}`,
+            },
           ],
         }),
       });
