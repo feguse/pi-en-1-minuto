@@ -408,103 +408,138 @@ type RespuestaConsulta = {
   demo: boolean;
 };
 
-const MINIMO_CONSULTA = 15;
+
+/* ---------- Acordeón ---------- */
 
 /**
- * Segunda vía de entrada: en lugar de describir una creación, la persona
- * plantea un problema. Se responde con los artículos vigentes del corpus.
+ * Detalle plegable. Usa <details> nativo: accesible por teclado y sin JS.
  */
-export function ConsultaLibre() {
-  const [pregunta, setPregunta] = useState("");
-  const [cargando, setCargando] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [datos, setDatos] = useState<RespuestaConsulta | null>(null);
+export function Acordeon({
+  titulo,
+  icono,
+  color = "teal",
+  abierto = false,
+  children,
+}: {
+  titulo: string;
+  icono: Glifo;
+  color?: ColorIcono;
+  abierto?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <details className="pi-acordeon" open={abierto}>
+      <summary>
+        <span className={`pi-ico pi-ico--${color}`} aria-hidden="true">
+          <Icono nombre={icono} />
+        </span>
+        <span className="pi-acordeon-titulo">{titulo}</span>
+        <span className="pi-acordeon-flecha" aria-hidden="true">
+          ⌄
+        </span>
+      </summary>
+      <div className="pi-acordeon-cuerpo">{children}</div>
+    </details>
+  );
+}
 
-  async function preguntar() {
-    const texto = pregunta.trim();
-    if (texto.length < MINIMO_CONSULTA) {
-      setError(`Cuéntanos con un poco más de detalle (mínimo ${MINIMO_CONSULTA} caracteres).`);
-      return;
-    }
-    setCargando(true);
-    setError(null);
-    setDatos(null);
+/* ---------- BotonCopiar ---------- */
+
+export function BotonCopiar({ texto }: { texto: string }) {
+  const [copiado, setCopiado] = useState(false);
+
+  async function copiar() {
     try {
-      const r = await fetch("/api/consulta", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pregunta: texto }),
-      });
-      const d = (await r.json()) as Partial<RespuestaConsulta> & { error?: string };
-      if (!r.ok || !d.respuesta) {
-        setError(d.error ?? "No pudimos responder en este momento. Intenta de nuevo.");
-        return;
-      }
-      setDatos(d as RespuestaConsulta);
+      await navigator.clipboard.writeText(texto);
+      setCopiado(true);
+      setTimeout(() => setCopiado(false), 2500);
     } catch {
-      setError("No hay conexión con el servidor. Revisa tu red e intenta de nuevo.");
-    } finally {
-      setCargando(false);
+      setCopiado(false);
     }
   }
 
   return (
-    <section className="pi-section">
-      <h2>¿Tienes un problema en materia de PI? Cuéntanos</h2>
-      <p className="pi-hint" style={{ marginTop: "8px" }}>
-        Respondemos con los artículos vigentes de la LFPPI, la Ley Federal del Derecho de Autor y
-        sus reglamentos. Si la respuesta no está ahí, te lo decimos.
+    <Button variant="secondary" onClick={copiar}>
+      {copiado ? "Copiado ✓" : "Copiar orientación"}
+    </Button>
+  );
+}
+
+/* ---------- Selector de modo ---------- */
+
+export type Modo = "proteger" | "problema";
+
+export function SelectorModo({
+  modo,
+  onCambio,
+}: {
+  modo: Modo;
+  onCambio: (m: Modo) => void;
+}) {
+  const opciones: { valor: Modo; etiqueta: string; pie: string }[] = [
+    { valor: "proteger", etiqueta: "Quiero proteger algo", pie: "Creé algo y no sé qué figura me toca" },
+    { valor: "problema", etiqueta: "Tengo un problema", pie: "Alguien usa lo mío, o me reclaman a mí" },
+  ];
+  return (
+    <div className="pi-modos" role="tablist" aria-label="Qué necesitas">
+      {opciones.map((o) => (
+        <button
+          key={o.valor}
+          type="button"
+          role="tab"
+          aria-selected={modo === o.valor}
+          className="pi-modo"
+          onClick={() => onCambio(o.valor)}
+        >
+          <span className="pi-modo-etiqueta">{o.etiqueta}</span>
+          <span className="pi-modo-pie">{o.pie}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/* ---------- Tipos de la consulta libre ---------- */
+
+export type Fundamento = {
+  sigla: string;
+  articulo: string;
+  ordenamiento: string;
+  ultima_reforma_dof: string | null;
+  fuente: string;
+  extracto: string;
+};
+
+export type RespuestaConsulta = {
+  respuesta: string;
+  fundamentos: Fundamento[];
+  sin_sustento: boolean;
+  demo: boolean;
+};
+
+/* ---------- Fundamentos ---------- */
+
+export function Fundamentos({ lista }: { lista: Fundamento[] }) {
+  return (
+    <>
+      <ul className="pi-fundamentos">
+        {lista.map((f, i) => (
+          <li key={i}>
+            <a href={f.fuente} target="_blank" rel="noopener noreferrer">
+              {f.sigla} {f.articulo}
+            </a>
+            <span className="pi-fundamento-meta">
+              {f.ordenamiento}
+              {f.ultima_reforma_dof ? ` · última reforma DOF ${f.ultima_reforma_dof}` : ""}
+            </span>
+            <span className="pi-fundamento-texto">{f.extracto}</span>
+          </li>
+        ))}
+      </ul>
+      <p className="pi-vigencia">
+        Texto vigente conforme a la última reforma señalada. Verifícalo en la fuente antes de
+        tomar una decisión.
       </p>
-
-      <Card className="pi-consulta">
-        <Textarea
-          id="consulta"
-          label="Describe tu problema"
-          value={pregunta}
-          maxLength={2000}
-          placeholder="Por ejemplo: alguien está vendiendo playeras con mi logotipo y no le di permiso. ¿Qué puedo hacer?"
-          onChange={(e) => setPregunta(e.target.value)}
-        />
-        <div className="pi-actions">
-          <Button onClick={preguntar} disabled={cargando || pregunta.trim().length < MINIMO_CONSULTA}>
-            {cargando ? "Consultando…" : "Consultar"}
-          </Button>
-        </div>
-        {error && (
-          <p className="pi-alert" role="alert">
-            {error}
-          </p>
-        )}
-      </Card>
-
-      {datos && (
-        <div className="pi-result" aria-live="polite">
-          <Card tone="info" icono="escudo" color="teal" title="Respuesta preliminar">
-            <p>{datos.respuesta}</p>
-          </Card>
-
-          {datos.fundamentos.length > 0 && (
-            <Card title="Fundamento consultado" icono="capas" color="navy">
-              <ul className="pi-fundamentos">
-                {datos.fundamentos.map((f, i) => (
-                  <li key={i}>
-                    <a href={f.fuente} target="_blank" rel="noopener noreferrer">
-                      {f.sigla} {f.articulo}
-                    </a>
-                    <span className="pi-fundamento-meta">
-                      {f.ordenamiento}
-                      {f.ultima_reforma_dof ? ` · última reforma DOF ${f.ultima_reforma_dof}` : ""}
-                    </span>
-                    <span className="pi-fundamento-texto">{f.extracto}</span>
-                  </li>
-                ))}
-              </ul>
-            </Card>
-          )}
-
-          <AyudaProfesional />
-        </div>
-      )}
-    </section>
+    </>
   );
 }
