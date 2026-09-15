@@ -67,6 +67,11 @@ export type Analisis = {
   que_no_protege: string[];
   plazos_clave: string[];
   clases_niza: string[];
+  /** El caso excede lo que una orientación preliminar puede resolver. */
+  requiere_profesional: boolean;
+  motivo_escalamiento: string;
+  /** Plazo corriendo que la persona debe atender hoy. Vacío si no hay. */
+  plazo_critico: string;
   confianza: Confianza;
 };
 
@@ -291,6 +296,9 @@ export function validarAnalisis(datos: unknown): Analisis {
     que_no_protege: aLista(bruto.que_no_protege, 4),
     plazos_clave: aLista(bruto.plazos_clave, 4),
     clases_niza: aLista(bruto.clases_niza, 5),
+    requiere_profesional: bruto.requiere_profesional === true,
+    motivo_escalamiento: aTexto(bruto.motivo_escalamiento),
+    plazo_critico: aTexto(bruto.plazo_critico),
     confianza: detectarConfianza(bruto.confianza),
   };
 }
@@ -342,6 +350,9 @@ const PLANTILLAS: Record<Categoria, Analisis> = {
       "Clase 32 si es una bebida no alcohólica lista para tomar",
       "Clase 35 si además se comercializa en tienda propia",
     ],
+    requiere_profesional: false,
+    motivo_escalamiento: \"\",
+    plazo_critico: \"\",
     confianza: "medio",
   },
   "patente o modelo de utilidad": {
@@ -381,6 +392,9 @@ const PLANTILLAS: Record<Categoria, Analisis> = {
       "Prioridad convencional de doce meses para solicitar en el extranjero.",
     ],
     clases_niza: [],
+    requiere_profesional: false,
+    motivo_escalamiento: \"\",
+    plazo_critico: \"\",
     confianza: "medio",
   },
   "diseno industrial": {
@@ -420,6 +434,9 @@ const PLANTILLAS: Record<Categoria, Analisis> = {
       "La divulgación previa compromete la novedad exigida.",
     ],
     clases_niza: [],
+    requiere_profesional: false,
+    motivo_escalamiento: \"\",
+    plazo_critico: \"\",
     confianza: "medio",
   },
   "secreto industrial": {
@@ -459,6 +476,9 @@ const PLANTILLAS: Record<Categoria, Analisis> = {
       "Conviene fechar y documentar la información desde ahora.",
     ],
     clases_niza: [],
+    requiere_profesional: false,
+    motivo_escalamiento: \"\",
+    plazo_critico: \"\",
     confianza: "medio",
   },
   "derecho de autor o reserva de derechos": {
@@ -499,6 +519,9 @@ const PLANTILLAS: Record<Categoria, Analisis> = {
       "El registro de obra no tiene plazo para solicitarse.",
     ],
     clases_niza: [],
+    requiere_profesional: false,
+    motivo_escalamiento: \"\",
+    plazo_critico: \"\",
     confianza: "medio",
   },
   "aviso comercial": {
@@ -536,6 +559,9 @@ const PLANTILLAS: Record<Categoria, Analisis> = {
       "Le aplican las reglas de marcas en lo que no haya disposición especial.",
     ],
     clases_niza: [],
+    requiere_profesional: false,
+    motivo_escalamiento: \"\",
+    plazo_critico: \"\",
     confianza: "medio",
   },
   "nombre comercial": {
@@ -573,6 +599,9 @@ const PLANTILLAS: Record<Categoria, Analisis> = {
       "Los efectos de la publicación duran diez años, renovables.",
     ],
     clases_niza: [],
+    requiere_profesional: false,
+    motivo_escalamiento: \"\",
+    plazo_critico: \"\",
     confianza: "medio",
   },
   "denominacion de origen o indicacion geografica": {
@@ -613,6 +642,9 @@ const PLANTILLAS: Record<Categoria, Analisis> = {
       "La autorización caduca si deja de usarse durante los tres años anteriores.",
     ],
     clases_niza: [],
+    requiere_profesional: false,
+    motivo_escalamiento: \"\",
+    plazo_critico: \"\",
     confianza: "medio",
   },
   "combinacion de varias": {
@@ -653,6 +685,9 @@ const PLANTILLAS: Record<Categoria, Analisis> = {
       "La marca puede solicitarse en cualquier momento, pero conviene antes del lanzamiento.",
     ],
     clases_niza: [],
+    requiere_profesional: false,
+    motivo_escalamiento: \"\",
+    plazo_critico: \"\",
     confianza: "bajo",
   },
 };

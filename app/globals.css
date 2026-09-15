@@ -1132,3 +1132,52 @@ select {
     scroll-behavior: auto !important;
   }
 }
+
+/* ---------- Plazo que corre ---------- */
+
+.pi-plazo {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--pi-4);
+  background: var(--pi-orange-100);
+  border: 1px solid var(--pi-orange-500);
+  border-radius: var(--pi-radius-md);
+  padding: var(--pi-5);
+  color: var(--pi-orange-600);
+}
+
+.pi-plazo svg {
+  flex: 0 0 auto;
+  margin-top: 2px;
+}
+
+.pi-plazo strong {
+  display: block;
+  font-family: var(--pi-font-display);
+  font-weight: 500;
+  font-size: 17px;
+  color: #7a2e00;
+  margin-bottom: var(--pi-1);
+}
+
+.pi-plazo p {
+  color: #8a3a06;
+  max-width: 70ch;
+}
+
+/* ---------- Ayuda profesional cuando el caso lo exige ---------- */
+
+.pi-ayuda--urgente {
+  border-left: 5px solid var(--pi-orange-500);
+}
+
+.pi-ayuda--urgente h3::before {
+  content: "";
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: var(--pi-radius-pill);
+  background: var(--pi-orange-500);
+  margin-right: var(--pi-2);
+  vertical-align: middle;
+}

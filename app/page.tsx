@@ -10,6 +10,7 @@ import {
   ExampleChip,
   Fundamentos,
   LoadingSteps,
+  PlazoCritico,
   OfficialResourceLink,
   RecommendationCard,
   SelectorModo,
@@ -42,6 +43,7 @@ function comoTexto(r: Analisis, tipo: string): string {
     `Ruta sugerida: ${r.proteccion_principal}`,
     `Clasificación preliminar: ${tipo}`,
     `Se tramita ante: ${r.autoridad}`,
+    r.plazo_critico ? `\nPLAZO QUE ATENDER: ${r.plazo_critico}` : "",
     "",
     r.explicacion,
     lista("Qué parte podrías proteger:", r.elementos_protegibles),
@@ -272,6 +274,8 @@ export default function Pagina() {
                     </p>
                   )}
 
+                  {resultado.plazo_critico && <PlazoCritico texto={resultado.plazo_critico} />}
+
                   <RecommendationCard
                     resultado={resultado}
                     tipo={ETIQUETAS_CATEGORIA[resultado.categoria]}
@@ -360,7 +364,11 @@ export default function Pagina() {
                   </div>
 
                   <p className="pi-letra-chiquita">{LETRA_CHIQUITA}</p>
-                  <AyudaProfesional />
+                  <AyudaProfesional
+                    motivo={
+                      resultado.requiere_profesional ? resultado.motivo_escalamiento : undefined
+                    }
+                  />
                 </>
               )}
 

@@ -372,14 +372,23 @@ const PPM = "https://www.ppm.com.mx/";
  * Cierre de todo resultado. La divulgación del destino va ANTES del clic:
  * quien lo pulse ya sabe que sale a un despacho externo.
  */
-export function AyudaProfesional() {
+export function AyudaProfesional({ motivo }: { motivo?: string }) {
+  const urgente = Boolean(motivo);
   return (
-    <section className="pi-card pi-ayuda">
-      <h3>¿Tu caso necesita una revisión profesional?</h3>
-      <p>
-        Esta herramienta ofrece orientación informativa. Si necesitas evaluar registrabilidad,
-        estrategia o un conflicto concreto, puedes consultar a un especialista.
-      </p>
+    <section className={`pi-card pi-ayuda${urgente ? " pi-ayuda--urgente" : ""}`}>
+      <h3>
+        {urgente
+          ? "Tu caso necesita una revisión profesional"
+          : "¿Tu caso necesita una revisión profesional?"}
+      </h3>
+      {urgente ? (
+        <p>{motivo}</p>
+      ) : (
+        <p>
+          Esta herramienta ofrece orientación informativa. Si necesitas evaluar registrabilidad,
+          estrategia o un conflicto concreto, puedes consultar a un especialista.
+        </p>
+      )}
       <p className="pi-ayuda-destino">
         El enlace abre el sitio de Panamericana de Patentes y Marcas, un despacho externo
         especializado en propiedad intelectual.
@@ -527,5 +536,27 @@ export function Fundamentos({ lista }: { lista: Fundamento[] }) {
         tomar una decisión.
       </p>
     </>
+  );
+}
+
+/* ---------- PlazoCritico ---------- */
+
+/**
+ * Un plazo que corre es lo primero que la persona debe ver. Callarlo sería
+ * el peor fallo posible de una herramienta de orientación.
+ */
+export function PlazoCritico({ texto }: { texto: string }) {
+  return (
+    <aside className="pi-plazo" role="alert">
+      <svg width="22" height="22" viewBox="0 0 20 20" fill="none" aria-hidden="true"
+        stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="10" cy="11" r="6.6" />
+        <path d="M10 7.6V11l2.3 1.5M8 2.8h4" />
+      </svg>
+      <p>
+        <strong>Hay un plazo que atender</strong>
+        {texto}
+      </p>
+    </aside>
   );
 }

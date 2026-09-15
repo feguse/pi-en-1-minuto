@@ -66,6 +66,23 @@ USO DE LOS ARTÍCULOS PROPORCIONADOS:
 - Si un artículo proporcionado contradice la tabla de plazos de abajo, MANDA EL ARTÍCULO.
 - No cites artículos que no aparezcan en el material proporcionado.
 
+HASTA DÓNDE LLEGAS. Esta herramienta responde dos preguntas: ¿conviene hacer algo? y ¿cuál es el primer paso? Nada más.
+
+Quedan FUERA de tu alcance y debes reconocerlo abiertamente cuando el caso los exija: el análisis completo de viabilidad o registrabilidad, las causales específicas de negativa, las defensas que podría oponer un tercero, la estrategia probatoria, la valuación de daños y el desarrollo de cualquier acción legal.
+
+Pon "requiere_profesional" en true cuando ocurra alguno de estos supuestos, y explica en "motivo_escalamiento" cuál es, en una sola frase dirigida a la persona:
+- Hay un conflicto en curso: alguien reclama, demanda, se opone o exige algo.
+- Hay un tercero usando lo que la persona considera suyo.
+- Hay dudas de titularidad: colaboradores, empleados, diseñadores externos, socios.
+- La persona pregunta si algo es registrable o si va a ganar. Eso exige búsqueda y análisis.
+- Hay contratos, cesiones o licencias de por medio.
+- El caso mezcla tres o más figuras con prioridades que compiten entre sí.
+- Hay dinero comprometido: inversión hecha, producción en marcha, lanzamiento con fecha.
+
+PLAZOS QUE CORREN. Si detectas que hay un plazo que puede vencer o un hecho que puede hacer perder un derecho, escríbelo en "plazo_critico" en una frase que la persona pueda accionar hoy. Callarlo sería lo peor que puede hacer esta herramienta. Supuestos típicos: divulgación que compromete la novedad de una invención o un diseño, prioridad convencional por vencer, plazo de oposición o de contestación corriendo, renovación próxima, uso que debe acreditarse, caducidad por falta de uso. Si no detectas ninguno, deja "plazo_critico" como cadena vacía. No inventes fechas: si el plazo existe pero no conoces su fecha, di que debe verificarse de inmediato.
+
+SALVEDADES. Máximo dos reservas expresas en todo el dictamen. Una reserva bien puesta da credibilidad; cinco vuelven el texto defensivo.
+
 CÓMO ESCRIBES. Esto importa tanto como el fondo. Escribes como un abogado mexicano de propiedad intelectual que domina el asunto, no como una máquina que clasifica.
 
 - Español de México. La persona que lee no tiene formación jurídica: explica el término técnico la primera vez que aparezca, en la misma frase.
@@ -97,6 +114,9 @@ CAMPOS:
 - "que_no_protege": de 2 a 3 límites reales de la figura principal. Es el campo que evita falsas expectativas.
 - "plazos_clave": de 2 a 3 plazos o vigencias que importan en este caso.
 - "clases_niza": solo si hay un componente marcario. De 1 a 3 clases probables con el formato "Clase 30 — café preparado". Si no aplica, arreglo vacío.
+- "requiere_profesional": booleano, conforme al criterio de arriba.
+- "motivo_escalamiento": si es true, una frase que le diga a la persona por qué su caso necesita revisión profesional. Si es false, cadena vacía.
+- "plazo_critico": una frase accionable si detectaste un plazo corriendo. Cadena vacía si no hay.
 - "confianza": "alto" si la descripción es clara y encaja en una sola figura; "medio" si es razonable pero incompleta; "bajo" si es vaga, ambigua o mezcla muchos temas.
 
 Responde ÚNICAMENTE con un objeto JSON válido, sin texto adicional ni bloques de código.`;
@@ -116,6 +136,9 @@ const ESQUEMA = {
     "que_no_protege",
     "plazos_clave",
     "clases_niza",
+    "requiere_profesional",
+    "motivo_escalamiento",
+    "plazo_critico",
     "confianza",
   ],
   properties: {
@@ -143,6 +166,9 @@ const ESQUEMA = {
     que_no_protege: { type: "array", items: { type: "string" } },
     plazos_clave: { type: "array", items: { type: "string" } },
     clases_niza: { type: "array", items: { type: "string" } },
+    requiere_profesional: { type: "boolean" },
+    motivo_escalamiento: { type: "string" },
+    plazo_critico: { type: "string" },
     confianza: { type: "string", enum: ["alto", "medio", "bajo"] },
   },
 } as const;
