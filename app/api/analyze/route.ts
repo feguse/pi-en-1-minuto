@@ -7,7 +7,7 @@ export const maxDuration = 60;
 const MODELO_POR_DEFECTO = "openai/gpt-4o-mini";
 const LIMITE_CARACTERES = 2000;
 const TIEMPO_LIMITE_MS = 45000;
-const MAX_TOKENS = 2500;
+const MAX_TOKENS = 4000;
 
 const INSTRUCCIONES = `Eres un abogado mexicano especializado en propiedad intelectual. Das orientación PRELIMINAR a personas sin formación jurídica, con el rigor de una primera consulta de despacho.
 
