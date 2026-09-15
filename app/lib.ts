@@ -210,7 +210,7 @@ export const AVISO_LEGAL =
 
 /** Aviso de marcas y de independencia respecto del despacho. */
 export const AVISO_MARCAS =
-  "PPM es marca registrada de su titular. Este sitio es independiente: el despacho no avala ni responde por las orientaciones que aquí se generan. Las demás marcas mencionadas pertenecen a sus titulares. IMPI e Indautor son ajenos a este sitio.";
+  "El enlace a asesoría dirige al sitio de un despacho externo, independiente de esta herramienta, que no avala ni responde por las orientaciones que aquí se generan. Las marcas y denominaciones mencionadas pertenecen a sus titulares. IMPI e Indautor son ajenos a este sitio.";
 
 /** Letra chiquita al pie de cada resultado. El tono del dictamen lo exige. */
 export const LETRA_CHIQUITA =
