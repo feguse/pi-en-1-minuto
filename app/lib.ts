@@ -147,6 +147,42 @@ export const RECURSOS: { nombre: string; descripcion: string; url: string }[] = 
   },
 ];
 
+/** Fuentes oficiales agrupadas por objetivo, no en una lista plana. */
+export const GRUPOS_RECURSOS: { titulo: string; urls: string[] }[] = [
+  {
+    titulo: "Marcas y signos distintivos",
+    urls: [
+      "https://marcia.impi.gob.mx/marcas/search/quick",
+      "https://clasniza.impi.gob.mx/",
+      "https://eservicios.impi.gob.mx/seimpi/",
+    ],
+  },
+  {
+    titulo: "Invenciones y diseños",
+    urls: [
+      "https://eservicios.impi.gob.mx/seimpi/",
+      "https://www.gob.mx/impi/acciones-y-programas/servicios-que-ofrece-el-impi",
+    ],
+  },
+  {
+    titulo: "Obras, personajes y publicaciones",
+    urls: [
+      "https://www.indautor.gob.mx/servicios/registro/registro.php",
+      "https://www.indautor.gob.mx/servicios/reservas/dir_reservas.php",
+    ],
+  },
+];
+
+/** Las seis familias de protección, para la sección explicativa. */
+export const FAMILIAS: { nombre: string; ejemplo: string }[] = [
+  { nombre: "Marcas y nombres", ejemplo: "El nombre de tu producto, tu logotipo, el eslogan." },
+  { nombre: "Patentes y mecanismos", ejemplo: "Una solución técnica que funciona de una manera nueva." },
+  { nombre: "Diseños industriales", ejemplo: "La forma o la apariencia de un producto o su empaque." },
+  { nombre: "Derechos de autor", ejemplo: "Textos, dibujos, música, software, personajes." },
+  { nombre: "Secretos industriales", ejemplo: "Una fórmula o un proceso que mantienes en reserva." },
+  { nombre: "Combinaciones", ejemplo: "Un mismo proyecto puede necesitar más de una figura." },
+];
+
 // ---------------------------------------------------------------------------
 // Validacion de la respuesta del modelo
 // ---------------------------------------------------------------------------

@@ -1,33 +1,44 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Manrope } from "next/font/google";
+import { DM_Sans, Sora } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
+const dmSans = DM_Sans({
   subsets: ["latin"],
   display: "swap",
-  variable: "--pi-font-inter",
+  variable: "--pi-font-dm",
 });
 
-const manrope = Manrope({
+const sora = Sora({
   subsets: ["latin"],
   display: "swap",
-  variable: "--pi-font-manrope",
+  variable: "--pi-font-sora",
 });
 
 export const metadata: Metadata = {
-  title: "PI en 1 Minuto",
-  description: "Descubre una ruta inicial para proteger tu idea en México.",
+  metadataBase: new URL("https://pien1minuto.com"),
+  title: "PI en 1 Minuto | Descubre cómo proteger tu idea en México",
+  description:
+    "Describe tu creación y recibe una orientación preliminar sobre marcas, patentes, diseños, derechos de autor y otras figuras de propiedad intelectual en México.",
+  openGraph: {
+    title: "PI en 1 Minuto | Descubre cómo proteger tu idea en México",
+    description:
+      "Describe tu creación y recibe una orientación preliminar sobre marcas, patentes, diseños, derechos de autor y otras figuras de propiedad intelectual en México.",
+    url: "https://pien1minuto.com",
+    siteName: "PI en 1 Minuto",
+    locale: "es_MX",
+    type: "website",
+  },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#002850",
+  themeColor: "#042c52",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es-MX" className={`${inter.variable} ${manrope.variable}`}>
+    <html lang="es-MX" className={`${dmSans.variable} ${sora.variable}`}>
       <body>{children}</body>
     </html>
   );

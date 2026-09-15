@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Acordeon,
   AyudaProfesional,
@@ -21,9 +21,11 @@ import {
 import {
   AVISO_LEGAL,
   CLASE_CATEGORIA,
-  LETRA_CHIQUITA,
   EJEMPLOS,
   ETIQUETAS_CATEGORIA,
+  FAMILIAS,
+  GRUPOS_RECURSOS,
+  LETRA_CHIQUITA,
   RECURSOS,
   type Analisis,
   type RespuestaAnalisis,
@@ -32,7 +34,6 @@ import {
 const MAXIMO = 2000;
 const MINIMO = 15;
 
-/** Versión en texto plano, para llevarse la orientación a una consulta. */
 function comoTexto(r: Analisis, tipo: string): string {
   const lista = (t: string, xs: string[]) =>
     xs.length ? `\n${t}\n${xs.map((x) => `  · ${x}`).join("\n")}` : "";
@@ -42,16 +43,14 @@ function comoTexto(r: Analisis, tipo: string): string {
     `Ruta sugerida: ${r.proteccion_principal}`,
     `Clasificación preliminar: ${tipo}`,
     `Se tramita ante: ${r.autoridad}`,
-    `Nivel de confianza: ${r.confianza}`,
     "",
-    `Por qué: ${r.explicacion}`,
-    lista("Qué podrías proteger:", r.elementos_protegibles),
-    lista("Siguientes pasos:", r.siguientes_pasos),
-    lista("Qué NO protege:", r.que_no_protege),
+    r.explicacion,
+    lista("Qué parte podrías proteger:", r.elementos_protegibles),
+    lista("Tus próximos tres pasos:", r.siguientes_pasos),
+    lista("Qué no cubre esta figura:", r.que_no_protege),
+    lista("Información que falta:", r.advertencias),
     lista("Plazos y vigencias:", r.plazos_clave),
     lista("Clases de Niza probables:", r.clases_niza),
-    lista("Figuras complementarias:", r.figuras_complementarias),
-    lista("Advertencias e información faltante:", r.advertencias),
     "",
     AVISO_LEGAL,
     "",
@@ -74,9 +73,11 @@ export default function Pagina() {
   const [demo, setDemo] = useState(false);
   const [motivoDemo, setMotivoDemo] = useState<string | undefined>(undefined);
   const [consulta, setConsulta] = useState<RespuestaConsulta | null>(null);
+  const analizador = useRef<HTMLDivElement>(null);
 
   const entrada = modo === "proteger" ? idea : pregunta;
   const listo = entrada.trim().length >= MINIMO;
+  const hayResultado = Boolean(resultado || consulta);
 
   function limpiarResultados() {
     setResultado(null);
@@ -86,7 +87,9 @@ export default function Pagina() {
 
   async function enviar() {
     if (!listo) {
-      setError(`Cuéntanos con un poco más de detalle (mínimo ${MINIMO} caracteres).`);
+      setError(
+        "Cuéntanos un poco más para poder orientarte. Agrega qué creaste, cómo funciona o qué parte te interesa proteger.",
+      );
       return;
     }
     setCargando(true);
@@ -127,6 +130,13 @@ export default function Pagina() {
     }
   }
 
+  /** Vuelve al campo con el texto intacto, para corregirlo. */
+  function editar() {
+    analizador.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    const campo = document.getElementById(modo === "proteger" ? "idea" : "problema");
+    (campo as HTMLTextAreaElement | null)?.focus();
+  }
+
   function limpiar() {
     setIdea("");
     setPregunta("");
@@ -136,274 +146,344 @@ export default function Pagina() {
 
   return (
     <>
+      <p className="pi-trust">Orientación preliminar con fuentes oficiales de México</p>
 
-      <section className="pi-hero-band">
-        <div className="pi-shell pi-hero-inner">
+      <header className="pi-hero">
+        <div className="pi-shell pi-hero-grid">
           <div className="pi-hero-copy">
-            <p className="pi-eyebrow">Propiedad intelectual en México</p>
-            <h1>Descubre una ruta inicial para proteger tu idea</h1>
-            <p>
-              Describe con tus palabras lo que creaste. En un minuto obtienes una orientación
-              preliminar sobre qué figura de propiedad intelectual podrías usar para protegerlo,
-              ante el IMPI o el Indautor.
-            </p>
-          </div>
-
-          <div className="pi-logomark">
-            <svg className="pi-anillo" viewBox="0 0 400 400" aria-hidden="true">
-              <circle className="a1" cx="200" cy="200" r="184" />
-              <circle className="a2" cx="200" cy="200" r="158" />
-              <circle className="a3" cx="200" cy="200" r="134" />
-            </svg>
             <img
-              className="pi-logo-hero"
+              className="pi-logo"
               src="/brand/pi-en-1-minuto-logo.png"
               alt="PI en 1 Minuto"
               width={2172}
               height={724}
             />
+            <p className="pi-eyebrow">Propiedad intelectual, explicada en humano</p>
+            <h1>Tu idea tomó tiempo. Entender cómo protegerla, sólo un minuto.</h1>
+            <p>
+              Cuéntanos qué creaste y recibe una ruta inicial, clara y accionable, para identificar
+              la figura de protección que podría corresponderte ante el IMPI o el Indautor.
+            </p>
+            <p className="pi-micro">
+              <span>Resultado en un minuto</span>
+              <span>Sin términos legales</span>
+            </p>
           </div>
-        </div>
-      </section>
 
-      <main className="pi-shell pi-main">
-        <SelectorModo
-          modo={modo}
-          onCambio={(m) => {
-            setModo(m);
-            limpiarResultados();
-          }}
-        />
+          <div className="pi-analyzer" ref={analizador}>
+            <p className="pi-analyzer-title">Comienza aquí</p>
 
-        <Card className="pi-entrada">
-          {modo === "proteger" ? (
-            <>
+            <SelectorModo modo={modo} onCambio={setModo} />
+
+            {modo === "proteger" ? (
+              <>
+                <Textarea
+                  id="idea"
+                  label="¿Qué creaste y qué te interesa proteger?"
+                  hint="Descríbelo como se lo contarías a una persona de confianza. No necesitas saber de leyes."
+                  value={idea}
+                  maxLength={MAXIMO}
+                  placeholder="Ejemplo: creé una bebida de café con nombre, logotipo y un empaque original…"
+                  contador={`${idea.length} / ${MAXIMO}`}
+                  onChange={(e) => {
+                    setIdea(e.target.value);
+                    setEjemploActivo(null);
+                  }}
+                  onKeyDown={(e) => {
+                    if ((e.metaKey || e.ctrlKey) && e.key === "Enter") enviar();
+                  }}
+                />
+                <div className="pi-chips" role="group" aria-label="Ejemplos para empezar">
+                  {EJEMPLOS.map((ejemplo, i) => (
+                    <ExampleChip
+                      key={ejemplo.etiqueta}
+                      label={ejemplo.etiqueta}
+                      selected={ejemploActivo === i}
+                      onSelect={() => {
+                        setIdea(ejemplo.texto);
+                        setEjemploActivo(i);
+                        setError(null);
+                      }}
+                    />
+                  ))}
+                </div>
+              </>
+            ) : (
               <Textarea
-                id="idea"
-                label="¿Qué creaste y qué parte te interesa proteger?"
-                hint="Cuéntalo como se lo explicarías a un amigo. No necesitas términos legales."
-                value={idea}
+                id="problema"
+                label="Describe brevemente qué está pasando"
+                hint="Incluye qué creaste, quién lo está usando o reclamando y desde cuándo, si lo sabes."
+                value={pregunta}
                 maxLength={MAXIMO}
-                placeholder="Por ejemplo: armé un taller de pan de masa madre, le puse nombre y diseñé un empaque distinto…"
-                contador={`${idea.length} / ${MAXIMO}`}
-                onChange={(e) => {
-                  setIdea(e.target.value);
-                  setEjemploActivo(null);
-                }}
+                placeholder="Ejemplo: alguien está vendiendo productos con mi logotipo sin permiso. ¿Qué opciones debería revisar?"
+                contador={`${pregunta.length} / ${MAXIMO}`}
+                onChange={(e) => setPregunta(e.target.value)}
                 onKeyDown={(e) => {
                   if ((e.metaKey || e.ctrlKey) && e.key === "Enter") enviar();
                 }}
               />
+            )}
 
-              <p className="pi-hint" style={{ marginTop: "24px", marginBottom: 0 }} id="etiqueta-ejemplos">
-                O empieza con un ejemplo
-              </p>
-              <div className="pi-chips" role="group" aria-labelledby="etiqueta-ejemplos">
-                {EJEMPLOS.map((ejemplo, i) => (
-                  <ExampleChip
-                    key={ejemplo.etiqueta}
-                    label={ejemplo.etiqueta}
-                    selected={ejemploActivo === i}
-                    onSelect={() => {
-                      setIdea(ejemplo.texto);
-                      setEjemploActivo(i);
-                      setError(null);
-                    }}
-                  />
-                ))}
-              </div>
-            </>
-          ) : (
-            <Textarea
-              id="problema"
-              label="Describe tu problema"
-              hint="Respondemos con los artículos vigentes de la LFPPI, la Ley Federal del Derecho de Autor y sus reglamentos. Si la respuesta no está ahí, te lo decimos."
-              value={pregunta}
-              maxLength={MAXIMO}
-              placeholder="Por ejemplo: alguien está vendiendo playeras con mi logotipo y no le di permiso. ¿Qué puedo hacer?"
-              contador={`${pregunta.length} / ${MAXIMO}`}
-              onChange={(e) => setPregunta(e.target.value)}
-              onKeyDown={(e) => {
-                if ((e.metaKey || e.ctrlKey) && e.key === "Enter") enviar();
-              }}
-            />
-          )}
-
-          <div className="pi-actions">
-            <Button onClick={enviar} disabled={cargando || !listo}>
-              {cargando
-                ? modo === "proteger"
+            <div className="pi-actions">
+              <Button onClick={enviar} disabled={cargando || !listo}>
+                {cargando
                   ? "Analizando…"
-                  : "Consultando…"
-                : modo === "proteger"
-                  ? "Analizar mi idea"
-                  : "Consultar"}
-            </Button>
-            {(entrada || resultado || consulta) && !cargando && (
-              <Button variant="tertiary" onClick={limpiar}>
-                Empezar de nuevo
+                  : modo === "proteger"
+                    ? "Ver mi ruta sugerida"
+                    : "Orientarme sobre este problema"}
               </Button>
-            )}
-          </div>
+              {(entrada || hayResultado) && !cargando && (
+                <Button variant="tertiary" onClick={limpiar}>
+                  Empezar de nuevo
+                </Button>
+              )}
+            </div>
 
-          {error && (
-            <p className="pi-alert" role="alert">
-              {error}
+            <p className="pi-hint" style={{ marginTop: "12px", marginBottom: 0 }}>
+              Necesitamos al menos {MINIMO} caracteres para orientarte.
             </p>
-          )}
-        </Card>
 
-        {cargando && (
-          <div className="pi-result">
-            <LoadingSteps />
-          </div>
-        )}
-
-        {resultado && !cargando && (
-          <div className="pi-result" aria-live="polite">
-            {demo && (
-              <p className="pi-demo">
-                {motivoDemo === "servicio"
-                  ? "Modo demo: el servicio de análisis no respondió, así que se muestra un resultado simulado localmente."
-                  : "Modo demo: resultado simulado localmente porque OPENROUTER_API_KEY no está configurada."}
+            {error && (
+              <p className="pi-alert" role="alert">
+                {error}
               </p>
             )}
-
-            <RecommendationCard
-              resultado={resultado}
-              tipo={ETIQUETAS_CATEGORIA[resultado.categoria]}
-              clase={CLASE_CATEGORIA[resultado.categoria]}
-            />
-
-            {(resultado.elementos_protegibles.length > 0 ||
-              resultado.siguientes_pasos.length > 0) && (
-              <div className="pi-grid">
-                {resultado.elementos_protegibles.length > 0 && (
-                  <Card title="Qué podrías proteger" icono="escudo" color="teal">
-                    <ul className="pi-list">
-                      {resultado.elementos_protegibles.map((x, i) => (
-                        <li key={i}>{x}</li>
-                      ))}
-                    </ul>
-                  </Card>
-                )}
-
-                {resultado.siguientes_pasos.length > 0 && (
-                  <Card title="Siguientes pasos" icono="pasos" color="navy">
-                    <ol className="pi-list">
-                      {resultado.siguientes_pasos.map((x, i) => (
-                        <li key={i}>{x}</li>
-                      ))}
-                    </ol>
-                  </Card>
-                )}
-              </div>
-            )}
-
-            <div className="pi-acordeones">
-              {resultado.que_no_protege.length > 0 && (
-                <Acordeon titulo="Qué NO protege" icono="escudo" color="rose">
-                  <ul className="pi-list">
-                    {resultado.que_no_protege.map((x, i) => (
-                      <li key={i}>{x}</li>
-                    ))}
-                  </ul>
-                </Acordeon>
-              )}
-              {resultado.plazos_clave.length > 0 && (
-                <Acordeon titulo="Plazos y vigencias" icono="reloj" color="green">
-                  <ul className="pi-list">
-                    {resultado.plazos_clave.map((x, i) => (
-                      <li key={i}>{x}</li>
-                    ))}
-                  </ul>
-                </Acordeon>
-              )}
-              {resultado.clases_niza.length > 0 && (
-                <Acordeon titulo="Clases de Niza probables" icono="capas" color="teal">
-                  <ul className="pi-list">
-                    {resultado.clases_niza.map((x, i) => (
-                      <li key={i}>{x}</li>
-                    ))}
-                  </ul>
-                </Acordeon>
-              )}
-              {resultado.figuras_complementarias.length > 0 && (
-                <Acordeon titulo="Figuras complementarias" icono="capas" color="violet">
-                  <ul className="pi-list">
-                    {resultado.figuras_complementarias.map((x, i) => (
-                      <li key={i}>{x}</li>
-                    ))}
-                  </ul>
-                </Acordeon>
-              )}
-              {resultado.advertencias.length > 0 && (
-                <Acordeon titulo="Advertencias e información faltante" icono="alerta" color="orange" abierto>
-                  <ul className="pi-list pi-list--warn">
-                    {resultado.advertencias.map((x, i) => (
-                      <li key={i}>{x}</li>
-                    ))}
-                  </ul>
-                </Acordeon>
-              )}
-            </div>
-
-            <div className="pi-actions">
-              <BotonCopiar texto={comoTexto(resultado, ETIQUETAS_CATEGORIA[resultado.categoria])} />
-            </div>
-
-            <p className="pi-letra-chiquita">{LETRA_CHIQUITA}</p>
-
-            <AyudaProfesional />
           </div>
-        )}
+        </div>
+      </header>
 
-        {consulta && !cargando && (
-          <div className="pi-result" aria-live="polite">
-            {consulta.demo && (
-              <p className="pi-demo">
-                Modo demo: mostramos las disposiciones localizadas, sin redacción del modelo.
-              </p>
-            )}
+      <main>
+        {(cargando || hayResultado) && (
+          <section className="pi-section pi-section--surface">
+            <div className="pi-shell pi-result" aria-live="polite">
+              {cargando && (
+                <Card>
+                  <LoadingSteps />
+                </Card>
+              )}
 
-            <Card tone="info" title="Respuesta preliminar" icono="escudo" color="teal">
-              <p>{consulta.respuesta}</p>
-            </Card>
+              {resultado && !cargando && (
+                <>
+                  {demo && (
+                    <p className="pi-demo">
+                      {motivoDemo === "servicio"
+                        ? "Modo demo: el servicio de análisis no respondió, así que se muestra un resultado simulado localmente."
+                        : "Modo demo: resultado simulado localmente porque OPENROUTER_API_KEY no está configurada."}
+                    </p>
+                  )}
 
-            {consulta.fundamentos.length > 0 && (
-              <Acordeon titulo="Fundamento consultado" icono="capas" color="navy" abierto>
-                <Fundamentos lista={consulta.fundamentos} />
-              </Acordeon>
-            )}
+                  <RecommendationCard
+                    resultado={resultado}
+                    tipo={ETIQUETAS_CATEGORIA[resultado.categoria]}
+                    clase={CLASE_CATEGORIA[resultado.categoria]}
+                  />
 
-            <div className="pi-actions">
-              <BotonCopiar texto={`PI en 1 Minuto — respuesta preliminar\n\n${consulta.respuesta}\n\n${AVISO_LEGAL}\n\n${LETRA_CHIQUITA}`} />
+                  {(resultado.elementos_protegibles.length > 0 ||
+                    resultado.siguientes_pasos.length > 0) && (
+                    <div className="pi-grid-2">
+                      {resultado.elementos_protegibles.length > 0 && (
+                        <Card title="Qué parte podrías proteger" icono="escudo" color="teal">
+                          <ul className="pi-list">
+                            {resultado.elementos_protegibles.map((x, i) => (
+                              <li key={i}>{x}</li>
+                            ))}
+                          </ul>
+                        </Card>
+                      )}
+                      {resultado.siguientes_pasos.length > 0 && (
+                        <Card title="Tus próximos tres pasos" icono="pasos" color="navy">
+                          <ol className="pi-list">
+                            {resultado.siguientes_pasos.map((x, i) => (
+                              <li key={i}>{x}</li>
+                            ))}
+                          </ol>
+                        </Card>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="pi-acordeones">
+                    {resultado.que_no_protege.length > 0 && (
+                      <Acordeon titulo="Qué no cubre esta figura" icono="escudo" color="orange">
+                        <ul className="pi-list">
+                          {resultado.que_no_protege.map((x, i) => (
+                            <li key={i}>{x}</li>
+                          ))}
+                        </ul>
+                      </Acordeon>
+                    )}
+                    {resultado.advertencias.length > 0 && (
+                      <Acordeon titulo="Información que falta" icono="alerta" color="orange" abierto>
+                        <ul className="pi-list">
+                          {resultado.advertencias.map((x, i) => (
+                            <li key={i}>{x}</li>
+                          ))}
+                        </ul>
+                      </Acordeon>
+                    )}
+                    {resultado.plazos_clave.length > 0 && (
+                      <Acordeon titulo="Plazos y vigencias" icono="reloj" color="teal">
+                        <ul className="pi-list">
+                          {resultado.plazos_clave.map((x, i) => (
+                            <li key={i}>{x}</li>
+                          ))}
+                        </ul>
+                      </Acordeon>
+                    )}
+                    {resultado.clases_niza.length > 0 && (
+                      <Acordeon titulo="Clases de Niza probables" icono="capas" color="teal">
+                        <ul className="pi-list">
+                          {resultado.clases_niza.map((x, i) => (
+                            <li key={i}>{x}</li>
+                          ))}
+                        </ul>
+                      </Acordeon>
+                    )}
+                    {resultado.figuras_complementarias.length > 0 && (
+                      <Acordeon titulo="Figuras complementarias" icono="capas" color="navy">
+                        <ul className="pi-list">
+                          {resultado.figuras_complementarias.map((x, i) => (
+                            <li key={i}>{x}</li>
+                          ))}
+                        </ul>
+                      </Acordeon>
+                    )}
+                  </div>
+
+                  <div className="pi-actions">
+                    <Button variant="secondary" onClick={editar}>
+                      Editar mi descripción
+                    </Button>
+                    <BotonCopiar
+                      texto={comoTexto(resultado, ETIQUETAS_CATEGORIA[resultado.categoria])}
+                    />
+                  </div>
+
+                  <p className="pi-letra-chiquita">{LETRA_CHIQUITA}</p>
+                  <AyudaProfesional />
+                </>
+              )}
+
+              {consulta && !cargando && (
+                <>
+                  {consulta.demo && (
+                    <p className="pi-demo">
+                      Modo demo: mostramos las disposiciones localizadas, sin redacción del modelo.
+                    </p>
+                  )}
+
+                  <Card tone="info" title="Respuesta preliminar" icono="escudo" color="teal">
+                    <p>{consulta.respuesta}</p>
+                  </Card>
+
+                  {consulta.fundamentos.length > 0 && (
+                    <Acordeon titulo="Fuentes oficiales relacionadas" icono="capas" color="navy" abierto>
+                      <Fundamentos lista={consulta.fundamentos} />
+                    </Acordeon>
+                  )}
+
+                  <div className="pi-actions">
+                    <Button variant="secondary" onClick={editar}>
+                      Editar mi descripción
+                    </Button>
+                    <BotonCopiar
+                      texto={`PI en 1 Minuto — respuesta preliminar\n\n${consulta.respuesta}\n\n${AVISO_LEGAL}\n\n${LETRA_CHIQUITA}`}
+                    />
+                  </div>
+
+                  <p className="pi-letra-chiquita">{LETRA_CHIQUITA}</p>
+                  <AyudaProfesional />
+                </>
+              )}
             </div>
-
-            <p className="pi-letra-chiquita">{LETRA_CHIQUITA}</p>
-
-            <AyudaProfesional />
-          </div>
+          </section>
         )}
 
         <section className="pi-section">
-          <h2>Verifica en fuentes oficiales</h2>
-          <p className="pi-hint" style={{ marginTop: "8px" }}>
-            Consulta directa a las herramientas públicas del IMPI y del Indautor.
-          </p>
-          <div className="pi-resources">
-            {RECURSOS.map((recurso) => (
-              <OfficialResourceLink key={recurso.url} {...recurso} />
+          <div className="pi-shell">
+            <div className="pi-section-intro">
+              <h2>De una idea suelta a una ruta clara</h2>
+              <p>
+                No necesitas decidir si lo tuyo es una marca, una patente o un derecho de autor.
+                Empieza por contar qué hiciste; la herramienta te ayuda a ordenar las posibilidades.
+              </p>
+            </div>
+            <div className="pi-grid-3">
+              {[
+                ["Cuéntanos", "Describe tu creación o problema con tus propias palabras."],
+                ["Identificamos", "Relacionamos tu caso con posibles figuras de propiedad intelectual."],
+                ["Actúa", "Recibe una ruta preliminar, próximos pasos y accesos a fuentes oficiales."],
+              ].map(([titulo, texto], i) => (
+                <article className="pi-card" key={titulo}>
+                  <span className="pi-paso" aria-hidden="true">
+                    {i + 1}
+                  </span>
+                  <h3>{titulo}</h3>
+                  <p>{texto}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="pi-section pi-section--surface">
+          <div className="pi-shell">
+            <div className="pi-section-intro">
+              <h2>Distintas ideas se protegen de distintas maneras</h2>
+              <p>
+                Una misma creación puede necesitar más de una figura. Por eso analizamos sus
+                componentes, no sólo el nombre que le das.
+              </p>
+            </div>
+            <div className="pi-grid-3">
+              {FAMILIAS.map((f) => (
+                <article className="pi-categoria" key={f.nombre}>
+                  <strong>{f.nombre}</strong>
+                  <span>{f.ejemplo}</span>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="pi-section">
+          <div className="pi-shell">
+            <div className="pi-section-intro">
+              <h2>Verifica y continúa en fuentes oficiales</h2>
+              <p>
+                Consulta los buscadores, clasificadores y servicios públicos relacionados con tu
+                ruta.
+              </p>
+            </div>
+            {GRUPOS_RECURSOS.map((grupo) => (
+              <div className="pi-fuentes-grupo" key={grupo.titulo}>
+                <h3>{grupo.titulo}</h3>
+                <div className="pi-grid-3">
+                  {grupo.urls.map((url) => {
+                    const r = RECURSOS.find((x) => x.url === url);
+                    return r ? <OfficialResourceLink key={url} {...r} /> : null;
+                  })}
+                </div>
+              </div>
             ))}
           </div>
         </section>
 
-        <LegalDisclaimer texto={AVISO_LEGAL} />
+        <section className="pi-section">
+          <div className="pi-shell">
+            <LegalDisclaimer texto={AVISO_LEGAL} />
+          </div>
+        </section>
       </main>
 
       <footer className="pi-footer">
-        <div className="pi-shell pi-footer-inner">
-          <span className="pi-firma">FGS</span>
+        <div className="pi-shell">
+          <p>
+            PI en 1 Minuto ayuda a convertir una duda inicial en una ruta más clara para proteger
+            ideas en México. Es una herramienta informativa: no sustituye la revisión de un
+            profesional ni determina si una creación es registrable.
+          </p>
+          <span className="pi-footer-firma">FGS</span>
         </div>
       </footer>
     </>

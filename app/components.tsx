@@ -197,25 +197,44 @@ export function ExampleChip({
 
 /* ---------- ConfidenceBadge ---------- */
 
-const TEXTO_CONFIANZA: Record<Confianza, { etiqueta: string; barras: number }> = {
-  alto: { etiqueta: "Confianza alta", barras: 3 },
-  medio: { etiqueta: "Confianza media", barras: 2 },
-  bajo: { etiqueta: "Confianza baja", barras: 1 },
+const TEXTO_CONFIANZA: Record<
+  Confianza,
+  { etiqueta: string; detalle: string; barras: number }
+> = {
+  alto: {
+    etiqueta: "Coincidencia clara",
+    detalle:
+      "Tu descripción contiene elementos suficientes para sugerir esta ruta como punto de partida.",
+    barras: 3,
+  },
+  medio: {
+    etiqueta: "Requiere más información",
+    detalle:
+      "Hay indicios de esta figura, pero faltan datos para distinguirla de otras opciones.",
+    barras: 2,
+  },
+  bajo: {
+    etiqueta: "Caso mixto",
+    detalle:
+      "Tu descripción reúne componentes que podrían protegerse por vías diferentes.",
+    barras: 1,
+  },
 };
 
 export function ConfidenceBadge({ nivel }: { nivel: Confianza }) {
-  const { etiqueta, barras } = TEXTO_CONFIANZA[nivel];
+  const { etiqueta, detalle, barras } = TEXTO_CONFIANZA[nivel];
   return (
-    <span className="pi-badge">
-      <span className="pi-conf">
-        <span className="pi-conf-bars" aria-hidden="true">
-          {[1, 2, 3].map((n) => (
-            <span key={n} className={`pi-conf-bar${n <= barras ? " pi-conf-bar--on" : ""}`} />
-          ))}
-        </span>
-        {etiqueta}
+    <div className="pi-conf">
+      <span className="pi-conf-barras" aria-hidden="true">
+        {[1, 2, 3].map((n) => (
+          <span key={n} className={`pi-conf-barra${n <= barras ? " pi-conf-barra--on" : ""}`} />
+        ))}
       </span>
-    </span>
+      <span className="pi-conf-texto">
+        <strong>{etiqueta}</strong>
+        <span>{detalle}</span>
+      </span>
+    </div>
   );
 }
 
@@ -299,7 +318,7 @@ export function LegalDisclaimer({ texto }: { texto: string }) {
 
 /* ---------- LoadingSteps ---------- */
 
-const PASOS = ["Entendiendo tu idea", "Identificando opciones", "Preparando la ruta"];
+const PASOS = ["Identificando figuras", "Revisando autoridad", "Preparando próximos pasos"];
 
 export function LoadingSteps() {
   const [activo, setActivo] = useState(0);
@@ -349,47 +368,32 @@ export function LoadingSteps() {
 
 const PPM = "https://www.ppm.com.mx/";
 
-/** Cierre de todo resultado: ofrece acompañamiento humano sin imponerlo. */
-export function AyudaProfesional({ compacto = false }: { compacto?: boolean }) {
-  const [abierto, setAbierto] = useState(false);
-
+/**
+ * Cierre de todo resultado. La divulgación del destino va ANTES del clic:
+ * quien lo pulse ya sabe que sale a un despacho externo.
+ */
+export function AyudaProfesional() {
   return (
-    <Card tone={compacto ? "flat" : "surface"} className="pi-ayuda">
-      {!abierto ? (
-        <div className="pi-ayuda-pregunta">
-          <p>
-            <strong>¿Tienes más dudas? ¿Necesitas ayuda profesional?</strong>
-            <span>
-              Esta orientación es un punto de partida. Un abogado puede revisar tu caso concreto.
-            </span>
-          </p>
-          <div className="pi-ayuda-botones">
-            <Button onClick={() => setAbierto(true)}>Sí, quiero ayuda</Button>
-            <Button variant="tertiary" onClick={() => setAbierto(false)}>
-              Ahora no
-            </Button>
-          </div>
-        </div>
-      ) : (
-        <div className="pi-ayuda-respuesta">
-          <p>
-            <strong>Panamericana de Patentes y Marcas</strong>
-            <span>
-              Despacho mexicano especializado en propiedad intelectual: marcas, patentes, litigio y
-              aduanas.
-            </span>
-          </p>
-          <a className="pi-btn pi-btn--primary" href={PPM} target="_blank" rel="noopener noreferrer">
-            Ir a ppm.com.mx
-            <span aria-hidden="true">↗</span>
-            <span className="pi-sr-only">(se abre en una pestaña nueva)</span>
-          </a>
-        </div>
-      )}
-    </Card>
+    <section className="pi-card pi-ayuda">
+      <h3>¿Tu caso necesita una revisión profesional?</h3>
+      <p>
+        Esta herramienta ofrece orientación informativa. Si necesitas evaluar registrabilidad,
+        estrategia o un conflicto concreto, puedes consultar a un especialista.
+      </p>
+      <p className="pi-ayuda-destino">
+        El enlace abre el sitio de Panamericana de Patentes y Marcas, un despacho externo
+        especializado en propiedad intelectual.
+      </p>
+      <div className="pi-actions">
+        <a className="pi-btn pi-btn--primary" href={PPM} target="_blank" rel="noopener noreferrer">
+          Conocer opciones de asesoría
+          <span aria-hidden="true">↗</span>
+          <span className="pi-sr-only">(se abre en una pestaña nueva)</span>
+        </a>
+      </div>
+    </section>
   );
 }
-
 
 /* ---------- Acordeón ---------- */
 
