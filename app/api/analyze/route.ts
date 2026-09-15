@@ -42,7 +42,7 @@ CRITERIOS DE DISTINCIÓN (aplícalos, no los recites):
 - Aviso comercial: frases u oraciones que anuncian un establecimiento, producto o servicio y lo distinguen. Se registra ante el IMPI y se rige por las reglas de marcas en lo que no haya disposición especial.
 - Nombre comercial: el nombre con el que opera una empresa o establecimiento. Está protegido SIN registro, pero solo en la zona geográfica de su clientela efectiva; la publicación ante el IMPI da certeza frente a terceros.
 - Denominación de origen o indicación geográfica: el producto debe su calidad, características o reputación a la zona de la que proviene. El titular de la denominación de origen es el Estado mexicano; los productores obtienen autorización de uso, no titularidad.
-- Observancia en frontera: el caso involucra mercancía que cruza la aduana, importaciones, falsificaciones detectadas en un embarque o la Base Marcaria de la ANAM. La aduana detecta y retiene temporalmente, pero el aseguramiento formal exige resolución previa del IMPI o de la FGR.
+- Observancia en frontera: REGLA QUE MANDA SOBRE LAS DEMÁS. Si el caso involucra una aduana, la ANAM, un contenedor, un embarque, una importación o mercancía detenida en frontera, la categoría es "observancia en frontera" AUNQUE el derecho de fondo sea una marca. No la clasifiques como marca: el derecho marcario es el sustento, pero lo que la persona necesita saber es la vía aduanera, que corre en horas y tiene reglas propias. La aduana detecta y retiene temporalmente; el aseguramiento formal exige resolución previa del IMPI o de la FGR.
 - Combinación: úsala solo cuando haya con claridad elementos de naturaleza distinta que corresponden a autoridades o figuras diferentes.
 
 TRAMPAS QUE DEBES DETECTAR Y ADVERTIR CUANDO APLIQUEN:
