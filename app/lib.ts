@@ -84,6 +84,7 @@ export type RespuestaAnalisis = {
 
 export type Ejemplo = { etiqueta: string; texto: string };
 
+/** Banco de ejemplos del modo "quiero proteger algo". Cubre las nueve figuras. */
 export const EJEMPLOS: Ejemplo[] = [
   {
     etiqueta: "Bebida con marca propia",
@@ -110,7 +111,99 @@ export const EJEMPLOS: Ejemplo[] = [
     texto:
       "Dibujé un personaje para una revista digital mensual y quiero usar el nombre de la revista y el personaje en mercancía.",
   },
+  {
+    etiqueta: "Eslogan de campaña",
+    texto:
+      "Escribí una frase publicitaria para anunciar mi negocio y la voy a usar en radio, espectaculares y redes sociales.",
+  },
+  {
+    etiqueta: "Nombre de mi taller",
+    texto:
+      "Abrí un taller mecánico con un nombre propio y un rótulo en la fachada. Solo atiendo clientes de mi colonia, pero quiero crecer.",
+  },
+  {
+    etiqueta: "Mezcal de mi región",
+    texto:
+      "Produzco mezcal artesanal con agave de mi región y quiero venderlo usando el nombre del pueblo donde se hace.",
+  },
+  {
+    etiqueta: "App para veterinarias",
+    texto:
+      "Programé una aplicación para que las veterinarias agenden citas. Escribí el código yo y le puse nombre y un ícono propio.",
+  },
+  {
+    etiqueta: "Empaque distinto",
+    texto:
+      "Diseñé un empaque con una forma poco común para que mi producto se distinga en el anaquel, y le puse una etiqueta con mi marca.",
+  },
+  {
+    etiqueta: "Bordado tradicional",
+    texto:
+      "Hago bordados con motivos de mi comunidad y los aplico en prendas que vendo en ferias y por internet.",
+  },
+  {
+    etiqueta: "Método de calibración",
+    texto:
+      "Encontré una manera propia de calibrar un sensor que mejora su precisión. No la he contado fuera de mi equipo.",
+  },
 ];
+
+/** Banco de ejemplos del modo "tengo un problema". */
+export const EJEMPLOS_PROBLEMA: Ejemplo[] = [
+  {
+    etiqueta: "Copian mi logotipo",
+    texto:
+      "Alguien está vendiendo playeras con mi logotipo y nunca le di permiso. ¿Qué opciones tengo?",
+  },
+  {
+    etiqueta: "Me llegó una oposición",
+    texto:
+      "Solicité mi marca y me llegó un escrito de oposición de otra empresa que dice que se parece a la suya.",
+  },
+  {
+    etiqueta: "Mi exsocio la registró",
+    texto:
+      "Un exsocio registró a su nombre la marca del negocio que construimos juntos. Yo tengo facturas y publicaciones desde antes.",
+  },
+  {
+    etiqueta: "Mi proveedor la fabrica",
+    texto:
+      "El taller al que le encargaba la producción está fabricando y vendiendo el mismo producto por su cuenta.",
+  },
+  {
+    etiqueta: "Copiaron mi empaque",
+    texto:
+      "Otra marca sacó un empaque casi idéntico al mío y los clientes me están confundiendo con ellos.",
+  },
+  {
+    etiqueta: "El diseñador reclama",
+    texto:
+      "El diseñador que contraté para mi logotipo dice ahora que los derechos son suyos y que no puedo usarlo.",
+  },
+  {
+    etiqueta: "Nombre parecido",
+    texto:
+      "Abrió un negocio del mismo giro con un nombre muy parecido al mío, a unas calles de distancia.",
+  },
+  {
+    etiqueta: "Me bajaron la publicación",
+    texto:
+      "Una plataforma retiró mis publicaciones por una queja de propiedad intelectual que considero infundada.",
+  },
+  {
+    etiqueta: "Se me venció el registro",
+    texto:
+      "Me di cuenta de que mi registro de marca venció y no lo renové a tiempo. Sigo usando la marca todos los días.",
+  },
+  {
+    etiqueta: "Me mandaron una carta",
+    texto:
+      "Recibí una carta de un despacho exigiéndome dejar de usar mi nombre comercial y darles una respuesta en diez días.",
+  },
+];
+
+/** Cuántos ejemplos se muestran a la vez. */
+export const EJEMPLOS_VISIBLES = 5;
 
 export const AVISO_LEGAL =
   "Esta orientación es informativa, no constituye asesoría jurídica, no garantiza que la creación sea registrable y no reemplaza una búsqueda profesional.";

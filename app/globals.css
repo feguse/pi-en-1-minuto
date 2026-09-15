@@ -1275,3 +1275,100 @@ select {
 .pi-prosa + .pi-cursor {
   margin-top: calc(var(--pi-5) * -1);
 }
+
+/* ---------- Ejemplos ---------- */
+
+.pi-ejemplos {
+  margin-top: var(--pi-6);
+}
+
+.pi-ejemplos-cabeza {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--pi-4);
+  flex-wrap: wrap;
+}
+
+.pi-ejemplos-titulo {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--pi-muted);
+}
+
+.pi-otros {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: var(--pi-2) var(--pi-2);
+  margin: 0 calc(var(--pi-2) * -1);
+  min-height: 44px;
+  color: var(--pi-teal-700);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: var(--pi-radius-sm);
+}
+
+.pi-otros:hover {
+  background: var(--pi-teal-100);
+}
+
+.pi-otros span {
+  display: inline-block;
+  transition: transform 0.4s ease;
+}
+
+.pi-otros:hover span {
+  transform: rotate(180deg);
+}
+
+/* Los chips entran escalonados al barajar, para que se note el cambio */
+.pi-chips .pi-chip {
+  animation: pi-entra-chip 0.34s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+.pi-chips .pi-chip:nth-child(2) {
+  animation-delay: 0.04s;
+}
+.pi-chips .pi-chip:nth-child(3) {
+  animation-delay: 0.08s;
+}
+.pi-chips .pi-chip:nth-child(4) {
+  animation-delay: 0.12s;
+}
+.pi-chips .pi-chip:nth-child(5) {
+  animation-delay: 0.16s;
+}
+
+@keyframes pi-entra-chip {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.pi-chip {
+  position: relative;
+  padding-left: var(--pi-4);
+}
+
+.pi-chip::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: var(--pi-radius-pill);
+  background: var(--pi-teal-500);
+  margin-right: var(--pi-2);
+  flex: 0 0 auto;
+  opacity: 0.7;
+}
+
+.pi-chip[aria-pressed="true"]::before {
+  background: var(--pi-teal-700);
+  opacity: 1;
+}

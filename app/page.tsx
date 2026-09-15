@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Acordeon,
   AyudaProfesional,
@@ -23,6 +23,8 @@ import {
   AVISO_LEGAL,
   CLASE_CATEGORIA,
   EJEMPLOS,
+  EJEMPLOS_PROBLEMA,
+  EJEMPLOS_VISIBLES,
   ETIQUETAS_CATEGORIA,
   FAMILIAS,
   GRUPOS_RECURSOS,
@@ -34,6 +36,16 @@ import {
 } from "./lib";
 
 const MAXIMO = 2000;
+
+/** Toma n elementos al azar, sin repetir. */
+function alAzar<T>(lista: T[], n: number): T[] {
+  const copia = [...lista];
+  for (let i = copia.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copia[i], copia[j]] = [copia[j], copia[i]];
+  }
+  return copia.slice(0, n);
+}
 const MINIMO = 15;
 
 function comoTexto(r: Analisis, tipo: string): string {
@@ -69,7 +81,15 @@ export default function Pagina() {
   const [modo, setModo] = useState<Modo>("proteger");
   const [idea, setIdea] = useState("");
   const [pregunta, setPregunta] = useState("");
-  const [ejemploActivo, setEjemploActivo] = useState<number | null>(null);
+  const [ejemploActivo, setEjemploActivo] = useState<string | null>(null);
+  // Se arranca con un corte fijo para que el servidor y el cliente pinten lo
+  // mismo; el barajado ocurre ya montado.
+  const [visiblesProteger, setVisiblesProteger] = useState(() =>
+    EJEMPLOS.slice(0, EJEMPLOS_VISIBLES),
+  );
+  const [visiblesProblema, setVisiblesProblema] = useState(() =>
+    EJEMPLOS_PROBLEMA.slice(0, EJEMPLOS_VISIBLES),
+  );
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resultado, setResultado] = useState<Analisis | null>(null);
@@ -80,6 +100,17 @@ export default function Pagina() {
   const [dictando, setDictando] = useState(false);
   const analizador = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    setVisiblesProteger(alAzar(EJEMPLOS, EJEMPLOS_VISIBLES));
+    setVisiblesProblema(alAzar(EJEMPLOS_PROBLEMA, EJEMPLOS_VISIBLES));
+  }, []);
+
+  function otrosEjemplos() {
+    if (modo === "proteger") setVisiblesProteger(alAzar(EJEMPLOS, EJEMPLOS_VISIBLES));
+    else setVisiblesProblema(alAzar(EJEMPLOS_PROBLEMA, EJEMPLOS_VISIBLES));
+  }
+
+  const ejemplosVisibles = modo === "proteger" ? visiblesProteger : visiblesProblema;
   const entrada = modo === "proteger" ? idea : pregunta;
   const listo = entrada.trim().length >= MINIMO;
   const hayResultado = Boolean(resultado || consulta);
@@ -263,20 +294,6 @@ export default function Pagina() {
                     if ((e.metaKey || e.ctrlKey) && e.key === "Enter") enviar();
                   }}
                 />
-                <div className="pi-chips" role="group" aria-label="Ejemplos para empezar">
-                  {EJEMPLOS.map((ejemplo, i) => (
-                    <ExampleChip
-                      key={ejemplo.etiqueta}
-                      label={ejemplo.etiqueta}
-                      selected={ejemploActivo === i}
-                      onSelect={() => {
-                        setIdea(ejemplo.texto);
-                        setEjemploActivo(i);
-                        setError(null);
-                      }}
-                    />
-                  ))}
-                </div>
               </>
             ) : (
               <Textarea
@@ -287,12 +304,41 @@ export default function Pagina() {
                 maxLength={MAXIMO}
                 placeholder="Ejemplo: alguien está vendiendo productos con mi logotipo sin permiso. ¿Qué opciones debería revisar?"
                 contador={`${pregunta.length} / ${MAXIMO}`}
-                onChange={(e) => setPregunta(e.target.value)}
+                onChange={(e) => {
+                  setPregunta(e.target.value);
+                  setEjemploActivo(null);
+                }}
                 onKeyDown={(e) => {
                   if ((e.metaKey || e.ctrlKey) && e.key === "Enter") enviar();
                 }}
               />
             )}
+
+            <div className="pi-ejemplos">
+              <div className="pi-ejemplos-cabeza">
+                <p className="pi-ejemplos-titulo" id="etiqueta-ejemplos">
+                  {modo === "proteger" ? "O empieza con un ejemplo" : "Casos que solemos ver"}
+                </p>
+                <button type="button" className="pi-otros" onClick={otrosEjemplos}>
+                  <span aria-hidden="true">⟳</span> Otros ejemplos
+                </button>
+              </div>
+              <div className="pi-chips" role="group" aria-labelledby="etiqueta-ejemplos">
+                {ejemplosVisibles.map((ejemplo) => (
+                  <ExampleChip
+                    key={ejemplo.etiqueta}
+                    label={ejemplo.etiqueta}
+                    selected={ejemploActivo === ejemplo.etiqueta}
+                    onSelect={() => {
+                      if (modo === "proteger") setIdea(ejemplo.texto);
+                      else setPregunta(ejemplo.texto);
+                      setEjemploActivo(ejemplo.etiqueta);
+                      setError(null);
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
 
             <div className="pi-actions">
               <Button onClick={enviar} disabled={cargando || !listo}>
