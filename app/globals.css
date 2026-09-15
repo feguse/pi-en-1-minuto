@@ -1483,3 +1483,15 @@ a {
     padding-top: var(--pi-8);
   }
 }
+
+/* ---------- Pie: solo la firma ---------- */
+
+.pi-footer-inner {
+  justify-content: flex-end;
+}
+
+@media (max-width: 767px) {
+  .pi-footer-inner {
+    align-items: flex-end;
+  }
+}

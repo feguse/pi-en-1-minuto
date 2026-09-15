@@ -389,7 +389,6 @@ export default function Pagina() {
 
       <footer className="pi-footer">
         <div className="pi-shell pi-footer-inner">
-          <span>PI en 1 Minuto · Orientación preliminar de propiedad intelectual</span>
           <span className="pi-firma">FGS</span>
         </div>
       </footer>
