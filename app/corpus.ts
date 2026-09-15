@@ -150,7 +150,7 @@ function enRango(rangos: Rango[]): Articulo[] {
   return salida;
 }
 
-const PRESUPUESTO = 22000;
+const PRESUPUESTO = 14000;
 
 /**
  * Artículos pertinentes para la figura clasificada: primero los nucleares,
@@ -180,7 +180,7 @@ export function articulosPara(categoria: Categoria, descripcion: string): Articu
     elegidos.push(a);
     vistos.add(a.id);
     presupuesto -= a.texto.length;
-    if (elegidos.length >= 14) break;
+    if (elegidos.length >= 8) break;
   }
 
   return elegidos;
@@ -285,7 +285,7 @@ export function contextoParaAnalisis(descripcion: string): Articulo[] {
   let presupuesto = PRESUPUESTO - porFigura.reduce((n, a) => n + a.texto.length, 0);
 
   const salida = [...porFigura];
-  for (const a of buscarArticulos(descripcion, 6)) {
+  for (const a of buscarArticulos(descripcion, 3)) {
     if (vistos.has(a.id) || presupuesto - a.texto.length < 0) continue;
     salida.push(a);
     vistos.add(a.id);
