@@ -1495,3 +1495,20 @@ a {
     align-items: flex-end;
   }
 }
+
+/* ---------- Letra chiquita ---------- */
+
+.pi-letra-chiquita {
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--pi-text-muted);
+  opacity: 0.85;
+  border-top: 1px solid var(--pi-border);
+  padding-top: var(--pi-2);
+  max-width: 78ch;
+}
+
+/* El dictamen es prosa larga: necesita medida de lectura */
+.pi-reco-why p {
+  max-width: 72ch;
+}

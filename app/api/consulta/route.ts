@@ -5,7 +5,7 @@ export const runtime = "nodejs";
 export const maxDuration = 60;
 
 const MODELO_POR_DEFECTO = "openai/gpt-4o-mini";
-const MAX_TOKENS = 2000;
+const MAX_TOKENS = 2600;
 const TIEMPO_LIMITE_MS = 45000;
 const LIMITE_CARACTERES = 2000;
 
@@ -34,9 +34,14 @@ REGLAS INQUEBRANTABLES:
 - No afirmes que algo es registrable ni garantices resultados.
 - No cites artículos que no aparezcan en el material proporcionado.
 
-FORMA:
-- Español de México, claro, sin tecnicismos innecesarios. Explica el término técnico la primera vez.
-- Máximo 180 palabras, en prosa. Nada de listas largas.
+CÓMO ESCRIBES:
+- Español de México, para alguien sin formación jurídica. Explica el término técnico la primera vez, en la misma frase.
+- Primera persona del plural para el criterio: "consideramos", "identificamos", "en nuestra opinión".
+- Verbo directo, no nominalización. Nada de "llevar a cabo la presentación de".
+- Prohibidas las transiciones reflejas al abrir párrafo: "cabe señalar", "es importante destacar", "en ese orden de ideas". Prohibidos los adjetivos que no informan. Prohibidas las simetrías "no X, sino Y" y los tercetos.
+- De 200 a 320 palabras, en prosa corrida. Varía la longitud de las oraciones porque el razonamiento lo pide.
+- Primero qué le está pasando a la persona en sus propios términos; luego qué dice la ley al respecto; luego qué puede hacer y qué conviene primero; luego el límite, sin dramatizarlo.
+- La incertidumbre se enuncia y se sigue, sin disculpas: "esto no garantiza que", "pudiera ser una opción viable".
 - Cierra señalando qué haría falta saber para dar una respuesta firme.
 
 Responde ÚNICAMENTE con un objeto JSON con estas claves: "respuesta" (string), "articulos_citados" (arreglo de strings con la forma "LFPPI Artículo 173"), "sin_sustento" (booleano).`;
@@ -113,7 +118,7 @@ export async function POST(request: Request) {
       signal: control.signal,
       body: JSON.stringify({
         model: process.env.OPENROUTER_MODEL || MODELO_POR_DEFECTO,
-        temperature: 0.1,
+        temperature: 0.45,
         max_tokens: MAX_TOKENS,
         response_format: { type: "json_object" },
         messages: [

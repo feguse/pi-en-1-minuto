@@ -110,6 +110,10 @@ export const EJEMPLOS: Ejemplo[] = [
 export const AVISO_LEGAL =
   "Esta orientación es informativa, no constituye asesoría jurídica, no garantiza que la creación sea registrable y no reemplaza una búsqueda profesional.";
 
+/** Letra chiquita al pie de cada resultado. El tono del dictamen lo exige. */
+export const LETRA_CHIQUITA =
+  "Lo anterior no es una opinión legal ni crea una relación abogado-cliente. Es una orientación preliminar generada de forma automática a partir del texto vigente de la ley, sin revisión de un abogado y sin conocer los antecedentes de tu caso. Antes de presentar una solicitud, firmar un contrato o responder a un tercero, consulta a un profesional.";
+
 export const RECURSOS: { nombre: string; descripcion: string; url: string }[] = [
   {
     nombre: "MARCia",
@@ -147,7 +151,8 @@ export const RECURSOS: { nombre: string; descripcion: string; url: string }[] = 
 // Validacion de la respuesta del modelo
 // ---------------------------------------------------------------------------
 
-const LIMITE_PALABRAS = 80;
+// Red de seguridad, no un formato: la explicación ahora es un dictamen.
+const LIMITE_PALABRAS = 600;
 
 function normalizar(texto: string): string {
   return texto

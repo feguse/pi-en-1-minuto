@@ -242,7 +242,7 @@ export function RecommendationCard({
         <ConfidenceBadge nivel={resultado.confianza} />
       </div>
       <div className="pi-reco-why">
-        <h3 className="pi-card-title">Por qué</h3>
+        <h3 className="pi-card-title">Nuestra lectura de tu caso</h3>
         <p>{resultado.explicacion}</p>
       </div>
     </Card>

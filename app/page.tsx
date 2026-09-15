@@ -21,6 +21,7 @@ import {
 import {
   AVISO_LEGAL,
   CLASE_CATEGORIA,
+  LETRA_CHIQUITA,
   EJEMPLOS,
   ETIQUETAS_CATEGORIA,
   RECURSOS,
@@ -54,7 +55,9 @@ function comoTexto(r: Analisis, tipo: string): string {
     "",
     AVISO_LEGAL,
     "",
-    "Generado en pi-en-1-minuto.vercel.app",
+    LETRA_CHIQUITA,
+    "",
+    "Generado en pien1minuto.com",
   ]
     .filter(Boolean)
     .join("\n");
@@ -342,6 +345,8 @@ export default function Pagina() {
               <BotonCopiar texto={comoTexto(resultado, ETIQUETAS_CATEGORIA[resultado.categoria])} />
             </div>
 
+            <p className="pi-letra-chiquita">{LETRA_CHIQUITA}</p>
+
             <AyudaProfesional />
           </div>
         )}
@@ -365,8 +370,10 @@ export default function Pagina() {
             )}
 
             <div className="pi-actions">
-              <BotonCopiar texto={`PI en 1 Minuto — respuesta preliminar\n\n${consulta.respuesta}\n\n${AVISO_LEGAL}`} />
+              <BotonCopiar texto={`PI en 1 Minuto — respuesta preliminar\n\n${consulta.respuesta}\n\n${AVISO_LEGAL}\n\n${LETRA_CHIQUITA}`} />
             </div>
+
+            <p className="pi-letra-chiquita">{LETRA_CHIQUITA}</p>
 
             <AyudaProfesional />
           </div>
