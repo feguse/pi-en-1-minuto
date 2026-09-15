@@ -5,6 +5,7 @@ export const CATEGORIAS = [
   "patente o modelo de utilidad",
   "diseno industrial",
   "secreto industrial",
+  "derecho de autor o reserva de derechos",
   "combinacion de varias",
 ] as const;
 
@@ -15,7 +16,18 @@ export const ETIQUETAS_CATEGORIA: Record<Categoria, string> = {
   "patente o modelo de utilidad": "Patente o modelo de utilidad",
   "diseno industrial": "Diseño industrial",
   "secreto industrial": "Secreto industrial",
+  "derecho de autor o reserva de derechos": "Derecho de autor o reserva de derechos",
   "combinacion de varias": "Combinación de varias figuras",
+};
+
+/** Autoridad competente por figura. */
+export const AUTORIDAD: Record<Categoria, string> = {
+  "marca o signo distintivo": "IMPI",
+  "patente o modelo de utilidad": "IMPI",
+  "diseno industrial": "IMPI",
+  "secreto industrial": "No se registra ante ninguna autoridad",
+  "derecho de autor o reserva de derechos": "Indautor",
+  "combinacion de varias": "IMPI e Indautor, según el elemento",
 };
 
 /** Clase de color por figura. Alimenta las variables --cat de globals.css. */
@@ -24,15 +36,17 @@ export const CLASE_CATEGORIA: Record<Categoria, string> = {
   "patente o modelo de utilidad": "cat-patente",
   "diseno industrial": "cat-diseno",
   "secreto industrial": "cat-secreto",
+  "derecho de autor o reserva de derechos": "cat-autor",
   "combinacion de varias": "cat-combinacion",
 };
 
-/** Las cinco figuras, en el orden en que se muestran bajo el hero. */
+/** Las figuras, en el orden en que se muestran bajo el hero. */
 export const FIGURAS: { nombre: string; clase: string }[] = [
   { nombre: "Marca", clase: "cat-marca" },
   { nombre: "Patente o modelo de utilidad", clase: "cat-patente" },
   { nombre: "Diseño industrial", clase: "cat-diseno" },
   { nombre: "Secreto industrial", clase: "cat-secreto" },
+  { nombre: "Derecho de autor", clase: "cat-autor" },
   { nombre: "Combinación", clase: "cat-combinacion" },
 ];
 
@@ -42,11 +56,15 @@ export type Confianza = (typeof NIVELES)[number];
 export type Analisis = {
   categoria: Categoria;
   proteccion_principal: string;
+  autoridad: string;
   explicacion: string;
   elementos_protegibles: string[];
   siguientes_pasos: string[];
   figuras_complementarias: string[];
   advertencias: string[];
+  que_no_protege: string[];
+  plazos_clave: string[];
+  clases_niza: string[];
   confianza: Confianza;
 };
 
@@ -78,6 +96,11 @@ export const EJEMPLOS: Ejemplo[] = [
     texto:
       "Tengo una fórmula y un proceso de producción que mantengo en reserva dentro de mi empresa y solo conocen tres personas.",
   },
+  {
+    etiqueta: "Personaje y revista",
+    texto:
+      "Dibujé un personaje para una revista digital mensual y quiero usar el nombre de la revista y el personaje en mercancía.",
+  },
 ];
 
 export const AVISO_LEGAL =
@@ -104,6 +127,16 @@ export const RECURSOS: { nombre: string; descripcion: string; url: string }[] = 
     descripcion: "Servicios que ofrece el Instituto",
     url: "https://www.gob.mx/impi/acciones-y-programas/servicios-que-ofrece-el-impi",
   },
+  {
+    nombre: "Registro Público del Derecho de Autor",
+    descripcion: "Registro de obra ante el Indautor",
+    url: "https://www.indautor.gob.mx/servicios/registro/registro.php",
+  },
+  {
+    nombre: "Reservas de Derechos",
+    descripcion: "Títulos, personajes y promociones ante el Indautor",
+    url: "https://www.indautor.gob.mx/servicios/reservas/dir_reservas.php",
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -115,7 +148,7 @@ const LIMITE_PALABRAS = 80;
 function normalizar(texto: string): string {
   return texto
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[̀-ͯ]/g, "")
     .toLowerCase()
     .trim();
 }
@@ -145,6 +178,9 @@ function detectarCategoria(valor: unknown): Categoria | null {
   if (exacta) return exacta;
   if (texto.includes("combinac") || texto.includes("varias") || texto.includes("mixta")) {
     return "combinacion de varias";
+  }
+  if (texto.includes("autor") || texto.includes("reserva") || texto.includes("indautor")) {
+    return "derecho de autor o reserva de derechos";
   }
   if (texto.includes("secreto")) return "secreto industrial";
   if (texto.includes("diseno") || texto.includes("dibujo industrial")) return "diseno industrial";
@@ -188,11 +224,15 @@ export function validarAnalisis(datos: unknown): Analisis {
   return {
     categoria,
     proteccion_principal: principal,
+    autoridad: aTexto(bruto.autoridad) || AUTORIDAD[categoria],
     explicacion: recortarPalabras(explicacion, LIMITE_PALABRAS),
     elementos_protegibles: elementos,
     siguientes_pasos: pasos,
     figuras_complementarias: aLista(bruto.figuras_complementarias, 4),
     advertencias: aLista(bruto.advertencias, 4),
+    que_no_protege: aLista(bruto.que_no_protege, 4),
+    plazos_clave: aLista(bruto.plazos_clave, 4),
+    clases_niza: aLista(bruto.clases_niza, 5),
     confianza: detectarConfianza(bruto.confianza),
   };
 }
@@ -205,6 +245,7 @@ const PLANTILLAS: Record<Categoria, Analisis> = {
   "marca o signo distintivo": {
     categoria: "marca o signo distintivo",
     proteccion_principal: "Registro de marca ante el IMPI",
+    autoridad: "IMPI",
     explicacion:
       "Lo que distingue a tu producto frente al consumidor es el nombre y la imagen con que lo presentas. Esa función identificadora se protege como marca. El registro se pide por clase de productos o servicios y otorga un derecho exclusivo en México por diez años renovables, siempre que el signo sea distintivo y no se confunda con marcas anteriores.",
     elementos_protegibles: [
@@ -228,11 +269,27 @@ const PLANTILLAS: Record<Categoria, Analisis> = {
       "Falta definir los productos y servicios exactos y el territorio de interés.",
       "Los términos meramente descriptivos del producto suelen enfrentar objeciones.",
     ],
+    que_no_protege: [
+      "No protege la receta ni el proceso de elaboración.",
+      "No impide que otros vendan el mismo producto con otro nombre.",
+      "No cubre clases distintas a las que se soliciten.",
+    ],
+    plazos_clave: [
+      "Vigencia de diez años, renovable indefinidamente.",
+      "Prioridad convencional de seis meses para solicitar en el extranjero.",
+      "Declaración de uso real y efectivo a los tres años de otorgada.",
+    ],
+    clases_niza: [
+      "Clase 30 si el producto es café preparado",
+      "Clase 32 si es una bebida no alcohólica lista para tomar",
+      "Clase 35 si además se comercializa en tienda propia",
+    ],
     confianza: "medio",
   },
   "patente o modelo de utilidad": {
     categoria: "patente o modelo de utilidad",
     proteccion_principal: "Patente o, en su caso, modelo de utilidad",
+    autoridad: "IMPI",
     explicacion:
       "Describes una solución técnica: un mecanismo que funciona de una manera nueva. Eso se protege por patente cuando hay novedad, actividad inventiva y aplicación industrial; si la mejora es funcional pero de menor alcance inventivo, el modelo de utilidad puede encajar mejor. Ambas figuras exigen no divulgar la invención antes de presentar la solicitud.",
     elementos_protegibles: [
@@ -255,11 +312,23 @@ const PLANTILLAS: Record<Categoria, Analisis> = {
       "No conocemos el estado de la técnica; la viabilidad depende de esa búsqueda.",
       "Falta saber si se busca protección fuera de México y en qué plazo.",
     ],
+    que_no_protege: [
+      "No protege la idea en abstracto, sino la solución técnica concreta.",
+      "No cubre el nombre comercial del producto.",
+      "No impide que un tercero llegue a una solución técnica distinta.",
+    ],
+    plazos_clave: [
+      "Patente: vigencia de veinte años improrrogables desde la solicitud.",
+      "Modelo de utilidad: quince años improrrogables.",
+      "Prioridad convencional de doce meses para solicitar en el extranjero.",
+    ],
+    clases_niza: [],
     confianza: "medio",
   },
   "diseno industrial": {
     categoria: "diseno industrial",
     proteccion_principal: "Registro de diseño industrial",
+    autoridad: "IMPI",
     explicacion:
       "Lo relevante aquí es la apariencia: forma, contorno, textura u ornamentación que da un aspecto propio al producto sin responder únicamente a una función técnica. Eso se protege como diseño industrial, en su modalidad de modelo o de dibujo. Se exige novedad, por lo que conviene solicitarlo antes de lanzarlo al mercado.",
     elementos_protegibles: [
@@ -282,11 +351,23 @@ const PLANTILLAS: Record<Categoria, Analisis> = {
       "Falta saber desde cuándo y dónde se ha mostrado públicamente el diseño.",
       "No se ha verificado la existencia de diseños anteriores parecidos.",
     ],
+    que_no_protege: [
+      "No protege la función técnica del producto.",
+      "No cubre variantes de forma sustancialmente distintas.",
+      "No impide el uso del mismo material o proceso.",
+    ],
+    plazos_clave: [
+      "Vigencia de cinco años renovables hasta veinticinco.",
+      "Prioridad convencional de seis meses para el extranjero.",
+      "La divulgación previa compromete la novedad exigida.",
+    ],
+    clases_niza: [],
     confianza: "medio",
   },
   "secreto industrial": {
     categoria: "secreto industrial",
     proteccion_principal: "Protección como secreto industrial",
+    autoridad: "No se registra ante ninguna autoridad",
     explicacion:
       "La información que da ventaja competitiva y se mantiene reservada se protege como secreto industrial, sin registro ante el IMPI. La protección depende de que adoptes medidas razonables de confidencialidad y de que la información no sea de dominio público. Dura mientras el secreto se conserve, pero se pierde con la divulgación.",
     elementos_protegibles: [
@@ -309,27 +390,79 @@ const PLANTILLAS: Record<Categoria, Analisis> = {
       "Un tercero que llegue al mismo resultado de forma independiente no infringe el secreto.",
       "Falta saber si la información ya se compartió sin convenio previo.",
     ],
+    que_no_protege: [
+      "No otorga exclusividad frente a quien lo descubra por cuenta propia.",
+      "No sobrevive a la divulgación, ni siquiera accidental.",
+      "No cubre la ingeniería inversa lícita de un producto en el mercado.",
+    ],
+    plazos_clave: [
+      "Dura mientras la información se mantenga reservada.",
+      "No hay plazo de solicitud: la protección nace de las medidas adoptadas.",
+      "Conviene fechar y documentar la información desde ahora.",
+    ],
+    clases_niza: [],
+    confianza: "medio",
+  },
+  "derecho de autor o reserva de derechos": {
+    categoria: "derecho de autor o reserva de derechos",
+    proteccion_principal: "Registro de obra y, en su caso, reserva de derechos ante el Indautor",
+    autoridad: "Indautor",
+    explicacion:
+      "Lo que describes es una creación con expresión original: un dibujo, un texto, una publicación. El derecho de autor nace con la obra, sin registro, pero el registro ante el Indautor da prueba de autoría y fecha. Los títulos de publicaciones periódicas, los personajes y las promociones se protegen además por reserva de derechos.",
+    elementos_protegibles: [
+      "El dibujo del personaje como obra artística",
+      "Los textos y las ilustraciones de la publicación",
+      "El título de la publicación periódica, vía reserva",
+      "El personaje, vía reserva de derechos",
+    ],
+    siguientes_pasos: [
+      "Reúne los ejemplares de la obra y los datos de autoría para el registro ante el Indautor.",
+      "Verifica si el título y el personaje están disponibles antes de solicitar la reserva.",
+      "Si vas a usarlo en mercancía, valora además una marca ante el IMPI para esos productos.",
+    ],
+    figuras_complementarias: [
+      "Marca ante el IMPI para el uso comercial en productos",
+      "Aviso comercial para el eslogan de la publicación",
+      "Contratos de cesión con ilustradores y colaboradores",
+    ],
+    advertencias: [
+      "El derecho de autor protege la expresión, no la idea ni el concepto.",
+      "Si hubo colaboradores, falta definir por escrito la titularidad.",
+      "La reserva exige uso efectivo y renovación periódica.",
+    ],
+    que_no_protege: [
+      "No protege la idea, el tema ni el género de la obra.",
+      "El registro de obra no impide que otro use un nombre parecido como marca.",
+      "La reserva no equivale a un registro marcario para productos.",
+    ],
+    plazos_clave: [
+      "Derecho patrimonial: vida del autor y cien años después.",
+      "Reserva de derechos: vigencia de un año, renovable acreditando uso.",
+      "El registro de obra no tiene plazo para solicitarse.",
+    ],
+    clases_niza: [],
     confianza: "medio",
   },
   "combinacion de varias": {
     categoria: "combinacion de varias",
-    proteccion_principal: "Estrategia combinada de propiedad industrial",
+    proteccion_principal: "Estrategia combinada de propiedad intelectual",
+    autoridad: "IMPI e Indautor, según el elemento",
     explicacion:
-      "Tu proyecto reúne elementos de distinta naturaleza: identidad comercial, solución técnica y apariencia. Cada uno corresponde a una figura distinta y conviene ordenarlos por prioridad y por riesgo de divulgación. Primero lo que pierde protección al hacerse público, después lo que puede registrarse con calma.",
+      "Tu proyecto reúne elementos de distinta naturaleza: identidad comercial, solución técnica, apariencia o contenido creativo. Cada uno corresponde a una figura y a una autoridad distinta, y conviene ordenarlos por prioridad y por riesgo de divulgación. Primero lo que pierde protección al hacerse público, después lo que puede registrarse con calma.",
     elementos_protegibles: [
       "El nombre y el logotipo del producto",
       "La solución técnica que lo hace funcionar",
       "La apariencia externa del producto o su empaque",
-      "La información reservada del proceso",
+      "El contenido creativo y la información reservada",
     ],
     siguientes_pasos: [
-      "Separa por escrito qué parte es identidad, qué parte es técnica y qué parte es apariencia.",
+      "Separa por escrito qué parte es identidad, qué parte es técnica y qué parte es creativa.",
       "Atiende primero lo que se pierde con la divulgación: invención y diseño.",
-      "Programa la búsqueda de marcas y la clasificación de productos en paralelo.",
+      "Programa en paralelo la búsqueda de marcas ante el IMPI y el registro de obra ante el Indautor.",
     ],
     figuras_complementarias: [
       "Aviso comercial para el eslogan",
-      "Derecho de autor sobre materiales creativos",
+      "Reserva de derechos si hay un personaje o un título",
       "Convenios de confidencialidad con terceros",
     ],
     advertencias: [
@@ -337,6 +470,17 @@ const PLANTILLAS: Record<Categoria, Analisis> = {
       "Faltan datos sobre divulgaciones previas y mercados de interés.",
       "El orden de las solicitudes afecta costos y plazos.",
     ],
+    que_no_protege: [
+      "Ninguna figura por sí sola cubre todo el proyecto.",
+      "Registrar una marca no protege la invención ni el contenido creativo.",
+      "El derecho de autor no sustituye al registro marcario para productos.",
+    ],
+    plazos_clave: [
+      "Lo primero es lo que pierde novedad al divulgarse: invención y diseño.",
+      "Prioridad convencional: doce meses para patente, seis para marca y diseño.",
+      "La marca puede solicitarse en cualquier momento, pero conviene antes del lanzamiento.",
+    ],
+    clases_niza: [],
     confianza: "bajo",
   },
 };
@@ -344,11 +488,15 @@ const PLANTILLAS: Record<Categoria, Analisis> = {
 const PISTAS: { categoria: Categoria; palabras: string[] }[] = [
   {
     categoria: "secreto industrial",
-    palabras: ["secreto", "reserva", "confidencial", "formula", "receta", "no divulgar"],
+    palabras: ["secreto", "reserva dentro", "confidencial", "formula", "receta", "no divulgar"],
+  },
+  {
+    categoria: "derecho de autor o reserva de derechos",
+    palabras: ["personaje", "revista", "libro", "cancion", "musica", "pintura", "dibujo", "ilustracion", "fotografia", "guion", "obra", "editorial", "comic", "novela", "escribi"],
   },
   {
     categoria: "patente o modelo de utilidad",
-    palabras: ["mecanismo", "invento", "invencion", "dispositivo", "aparato", "maquina", "proceso tecnico", "funciona", "tecnologia", "algoritmo", "prototipo"],
+    palabras: ["mecanismo", "invento", "invencion", "dispositivo", "aparato", "maquina", "proceso tecnico", "funciona", "tecnologia", "algoritmo", "prototipo", "sensor"],
   },
   {
     categoria: "diseno industrial",

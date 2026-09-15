@@ -92,11 +92,12 @@ export default function Pagina() {
       <section className="pi-hero-band">
         <div className="pi-shell pi-hero-inner">
           <div className="pi-hero-copy">
-            <p className="pi-eyebrow">Propiedad industrial en México</p>
+            <p className="pi-eyebrow">Propiedad intelectual en México</p>
             <h1>Descubre una ruta inicial para proteger tu idea</h1>
             <p>
               Describe con tus palabras lo que creaste. En un minuto obtienes una orientación
-              preliminar sobre qué figura de propiedad industrial podrías investigar ante el IMPI.
+              preliminar sobre qué figura de propiedad intelectual podrías usar para protegerlo,
+              ante el IMPI o el Indautor.
             </p>
             <div className="pi-figuras">
               {FIGURAS.map((figura) => (
@@ -218,6 +219,42 @@ export default function Pagina() {
               </Card>
             </div>
 
+            {(resultado.que_no_protege.length > 0 ||
+              resultado.plazos_clave.length > 0 ||
+              resultado.clases_niza.length > 0) && (
+              <div className="pi-grid--tres">
+                {resultado.que_no_protege.length > 0 && (
+                  <Card title="Qué NO protege" icono="escudo" color="rose">
+                    <ul className="pi-list">
+                      {resultado.que_no_protege.map((limite, i) => (
+                        <li key={i}>{limite}</li>
+                      ))}
+                    </ul>
+                  </Card>
+                )}
+
+                {resultado.plazos_clave.length > 0 && (
+                  <Card title="Plazos y vigencias" icono="reloj" color="green">
+                    <ul className="pi-list">
+                      {resultado.plazos_clave.map((plazo, i) => (
+                        <li key={i}>{plazo}</li>
+                      ))}
+                    </ul>
+                  </Card>
+                )}
+
+                {resultado.clases_niza.length > 0 && (
+                  <Card title="Clases de Niza probables" icono="capas" color="teal">
+                    <ul className="pi-list">
+                      {resultado.clases_niza.map((clase, i) => (
+                        <li key={i}>{clase}</li>
+                      ))}
+                    </ul>
+                  </Card>
+                )}
+              </div>
+            )}
+
             <div className="pi-grid">
               {resultado.figuras_complementarias.length > 0 && (
                 <Card title="Figuras complementarias" icono="capas" color="violet">
@@ -245,7 +282,7 @@ export default function Pagina() {
         <section className="pi-section">
           <h2>Verifica en fuentes oficiales</h2>
           <p className="pi-hint" style={{ marginTop: "8px" }}>
-            Consulta directa a las herramientas públicas del IMPI.
+            Consulta directa a las herramientas públicas del IMPI y del Indautor.
           </p>
           <div className="pi-resources">
             {RECURSOS.map((recurso) => (
@@ -259,7 +296,7 @@ export default function Pagina() {
 
       <footer className="pi-footer">
         <div className="pi-shell pi-footer-inner">
-          <span>PI en 1 Minuto · Orientación preliminar de propiedad industrial</span>
+          <span>PI en 1 Minuto · Orientación preliminar de propiedad intelectual</span>
           <span className="pi-firma">FGS</span>
         </div>
       </footer>

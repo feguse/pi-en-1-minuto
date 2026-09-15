@@ -1142,3 +1142,68 @@ a {
     gap: var(--pi-1);
   }
 }
+
+/* ---------- Derecho de autor: sexta figura ---------- */
+
+:root {
+  --pi-rose-600: #b4326b;
+  --pi-rose-100: #fbe6ef;
+}
+
+.cat-autor {
+  --cat: var(--pi-rose-600);
+  --cat-soft: var(--pi-rose-100);
+  --cat-ink: var(--pi-rose-600);
+}
+
+.pi-ico--rose {
+  background: var(--pi-rose-600);
+}
+
+.pi-chips > :nth-child(5) {
+  --cat: var(--pi-rose-600);
+}
+
+.pi-resources > :nth-child(5) {
+  --cat: var(--pi-green-600);
+}
+.pi-resources > :nth-child(6) {
+  --cat: var(--pi-rose-600);
+}
+
+/* Autoridad competente dentro de la tarjeta de recomendación */
+
+.pi-autoridad {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--pi-1);
+  padding: 4px 12px;
+  border-radius: var(--pi-radius-pill);
+  background: var(--pi-surface);
+  border: 1px solid var(--cat);
+  color: var(--cat-ink);
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 600;
+}
+
+/* Tarjetas secundarias más compactas */
+
+.pi-grid--tres {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--pi-2);
+}
+
+@media (max-width: 900px) {
+  .pi-grid--tres {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 768px) {
+  .pi-grid--tres {
+    gap: var(--pi-3);
+  }
+}

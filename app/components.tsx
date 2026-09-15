@@ -67,7 +67,7 @@ export function Card({
 /* ---------- Iconos ---------- */
 
 export type Glifo = "escudo" | "pasos" | "capas" | "alerta" | "reloj";
-export type ColorIcono = "teal" | "navy" | "orange" | "violet" | "green";
+export type ColorIcono = "teal" | "navy" | "orange" | "violet" | "green" | "rose";
 
 const TRAZOS: Record<Glifo, ReactNode> = {
   escudo: <path d="M10 2.5 16.5 5v5c0 4-3 6.5-6.5 7.5C6.5 16.5 3.5 14 3.5 10V5L10 2.5Z" />,
@@ -237,6 +237,7 @@ export function RecommendationCard({
           <p className="pi-reco-label">Ruta preliminar sugerida</p>
           <h2>{resultado.proteccion_principal}</h2>
           <p className="pi-reco-kind">Clasificación preliminar: {tipo}</p>
+          <p className="pi-autoridad">Se tramita ante: {resultado.autoridad}</p>
         </div>
         <ConfidenceBadge nivel={resultado.confianza} />
       </div>
