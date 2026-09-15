@@ -1121,15 +1121,12 @@ a {
 }
 
 .pi-firma {
-  font-family: var(--pi-font-display);
-  font-weight: 800;
-  font-size: 15px;
-  letter-spacing: 0.12em;
-  color: var(--pi-navy-900);
-  border: 1px solid var(--pi-border);
-  background: var(--pi-surface);
-  border-radius: var(--pi-radius-pill);
-  padding: 5px 14px;
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--pi-text-muted);
+  opacity: 0.75;
 }
 
 @media (max-width: 767px) {
