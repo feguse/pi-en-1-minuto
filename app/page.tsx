@@ -12,6 +12,7 @@ import {
   LoadingSteps,
   PlazoCritico,
   OfficialResourceLink,
+  Prosa,
   RecommendationCard,
   SelectorModo,
   Textarea,
@@ -456,7 +457,7 @@ export default function Pagina() {
                   )}
 
                   <Card tone="info" title="Respuesta preliminar" icono="escudo" color="teal">
-                    <p>{consulta.respuesta}</p>
+                    <Prosa texto={consulta.respuesta} />
                   </Card>
 
                   {consulta.fundamentos.length > 0 && (

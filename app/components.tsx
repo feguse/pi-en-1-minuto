@@ -238,6 +238,23 @@ export function ConfidenceBadge({ nivel }: { nivel: Confianza }) {
   );
 }
 
+/* ---------- Prosa ---------- */
+
+/**
+ * Pinta un texto separándolo en párrafos. Funciona a medio flujo: mientras
+ * llegan fragmentos, el último párrafo crece y los anteriores ya están fijos.
+ */
+export function Prosa({ texto, className = "" }: { texto: string; className?: string }) {
+  const parrafos = texto.split(/\n\s*\n/).filter((p) => p.trim().length > 0);
+  return (
+    <div className={`pi-prosa ${className}`.trim()}>
+      {parrafos.map((p, i) => (
+        <p key={i}>{p.trim()}</p>
+      ))}
+    </div>
+  );
+}
+
 /* ---------- RecommendationCard ---------- */
 
 export function RecommendationCard({
@@ -264,10 +281,8 @@ export function RecommendationCard({
       </div>
       <div className="pi-reco-why">
         <h3 className="pi-card-title">Nuestra lectura de tu caso</h3>
-        <p>
-          {resultado.explicacion}
-          {dictando && <span className="pi-cursor" aria-hidden="true" />}
-        </p>
+        <Prosa texto={resultado.explicacion} />
+        {dictando && <span className="pi-cursor" aria-hidden="true" />}
         {dictando && !resultado.explicacion && (
           <p className="pi-sr-only">Escribiendo el dictamen…</p>
         )}

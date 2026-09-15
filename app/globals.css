@@ -1232,3 +1232,46 @@ select {
     visibility: hidden;
   }
 }
+
+/* ---------- Prosa larga: medida y respiro ---------- */
+
+.pi-prosa {
+  display: grid;
+  gap: var(--pi-5);
+  max-width: 68ch;
+}
+
+.pi-prosa p {
+  color: var(--pi-ink);
+  font-size: 17px;
+  line-height: 1.75;
+}
+
+/* El primer párrafo abre el dictamen: entra un punto más grande. */
+.pi-prosa p:first-child {
+  font-size: 18px;
+}
+
+.pi-reco-why {
+  margin-top: var(--pi-6);
+  padding-top: var(--pi-6);
+}
+
+/* Las listas de los acordeones también estaban apretadas. */
+.pi-list {
+  gap: var(--pi-3);
+  line-height: 1.6;
+}
+
+.pi-list li {
+  padding-left: var(--pi-1);
+}
+
+.pi-acordeon-cuerpo {
+  padding: var(--pi-5) var(--pi-6) var(--pi-6);
+}
+
+/* El cursor queda al final del último párrafo, no colgando aparte. */
+.pi-prosa + .pi-cursor {
+  margin-top: calc(var(--pi-5) * -1);
+}
