@@ -7,7 +7,7 @@ import {
   type RespuestaAnalisis,
 } from "../../lib";
 import { clasesNizaPara, comoContexto, contextoParaAnalisis } from "../../corpus";
-import { PRACTICA_ADUANAS } from "../../lib";
+import { corregirCategoria, PRACTICA_ADUANAS } from "../../lib";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -395,7 +395,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ detalle: validarDetalle(bruto), demo: false });
     }
 
-    const resultado = validarAnalisis(bruto);
+    const validado = validarAnalisis(bruto);
+    // La etiqueta se corrige aquí, no en el prompt: dos intentos de pedírselo
+    // al modelo fallaron, y la sustancia de su respuesta ya era correcta.
+    const resultado = {
+      ...validado,
+      categoria: corregirCategoria(idea, validado.categoria),
+    };
+    if (resultado.categoria !== validado.categoria) {
+      console.log("categoria corregida", validado.categoria, "->", resultado.categoria);
+    }
     const respuesta: RespuestaAnalisis = { resultado, demo: false };
     return NextResponse.json(respuesta);
   } catch (error) {
