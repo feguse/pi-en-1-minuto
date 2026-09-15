@@ -8,3 +8,6 @@ out
 next-env.d.ts
 .vercel
 corpus/crudo/
+
+# Entregables del hackaton: deck y audios, no son codigo
+entrega/
