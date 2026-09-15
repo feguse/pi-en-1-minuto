@@ -229,8 +229,16 @@ export function validarAnalisis(datos: unknown): Analisis {
   const elementos = aLista(bruto.elementos_protegibles, 6);
   const pasos = aLista(bruto.siguientes_pasos, 3);
 
-  if (!categoria || !explicacion || elementos.length === 0 || pasos.length === 0) {
-    throw new Error("La respuesta del modelo está incompleta.");
+  // Solo la categoría y el dictamen son indispensables. Descartar una respuesta
+  // buena porque una lista secundaria vino corta es peor que mostrarla sin ella.
+  if (!categoria || !explicacion) {
+    const faltan = [!categoria && "categoria", !explicacion && "explicacion"]
+      .filter(Boolean)
+      .join(", ");
+    throw new Error(
+      `La respuesta del modelo está incompleta. Faltan: ${faltan}. ` +
+        `Recibido: ${Object.keys(bruto).join(", ")}`,
+    );
   }
 
   const principal = aTexto(bruto.proteccion_principal) || ETIQUETAS_CATEGORIA[categoria];

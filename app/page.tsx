@@ -275,23 +275,30 @@ export default function Pagina() {
               clase={CLASE_CATEGORIA[resultado.categoria]}
             />
 
-            <div className="pi-grid">
-              <Card title="Qué podrías proteger" icono="escudo" color="teal">
-                <ul className="pi-list">
-                  {resultado.elementos_protegibles.map((x, i) => (
-                    <li key={i}>{x}</li>
-                  ))}
-                </ul>
-              </Card>
+            {(resultado.elementos_protegibles.length > 0 ||
+              resultado.siguientes_pasos.length > 0) && (
+              <div className="pi-grid">
+                {resultado.elementos_protegibles.length > 0 && (
+                  <Card title="Qué podrías proteger" icono="escudo" color="teal">
+                    <ul className="pi-list">
+                      {resultado.elementos_protegibles.map((x, i) => (
+                        <li key={i}>{x}</li>
+                      ))}
+                    </ul>
+                  </Card>
+                )}
 
-              <Card title="Siguientes pasos" icono="pasos" color="navy">
-                <ol className="pi-list">
-                  {resultado.siguientes_pasos.map((x, i) => (
-                    <li key={i}>{x}</li>
-                  ))}
-                </ol>
-              </Card>
-            </div>
+                {resultado.siguientes_pasos.length > 0 && (
+                  <Card title="Siguientes pasos" icono="pasos" color="navy">
+                    <ol className="pi-list">
+                      {resultado.siguientes_pasos.map((x, i) => (
+                        <li key={i}>{x}</li>
+                      ))}
+                    </ol>
+                  </Card>
+                )}
+              </div>
+            )}
 
             <div className="pi-acordeones">
               {resultado.que_no_protege.length > 0 && (
