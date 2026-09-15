@@ -71,6 +71,8 @@ export type Analisis = {
 export type RespuestaAnalisis = {
   resultado: Analisis;
   demo: boolean;
+  /** Por qué se devolvió un resultado simulado. */
+  motivo?: "sin_llave" | "servicio";
 };
 
 export type Ejemplo = { etiqueta: string; texto: string };

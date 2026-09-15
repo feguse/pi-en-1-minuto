@@ -32,6 +32,7 @@ export default function Pagina() {
   const [error, setError] = useState<string | null>(null);
   const [resultado, setResultado] = useState<Analisis | null>(null);
   const [demo, setDemo] = useState(false);
+  const [motivoDemo, setMotivoDemo] = useState<string | undefined>(undefined);
 
   async function analizar() {
     const texto = idea.trim();
@@ -60,6 +61,7 @@ export default function Pagina() {
 
       setResultado(datos.resultado);
       setDemo(Boolean(datos.demo));
+      setMotivoDemo(datos.motivo);
     } catch {
       setError("No hay conexión con el servidor. Revisa tu red e intenta de nuevo.");
     } finally {
@@ -190,8 +192,9 @@ export default function Pagina() {
           <div className="pi-result" aria-live="polite">
             {demo && (
               <p className="pi-demo">
-                Modo demo: resultado simulado localmente porque OPENROUTER_API_KEY no está
-                configurada.
+                {motivoDemo === "servicio"
+                  ? "Modo demo: el servicio de análisis no respondió, así que se muestra un resultado simulado localmente."
+                  : "Modo demo: resultado simulado localmente porque OPENROUTER_API_KEY no está configurada."}
               </p>
             )}
 

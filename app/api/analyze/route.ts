@@ -7,7 +7,7 @@ export const maxDuration = 60;
 const MODELO_POR_DEFECTO = "openai/gpt-4o-mini";
 const LIMITE_CARACTERES = 2000;
 const TIEMPO_LIMITE_MS = 45000;
-const MAX_TOKENS = 4000;
+const MAX_TOKENS = 2500;
 
 const INSTRUCCIONES = `Eres un abogado mexicano especializado en propiedad intelectual. Das orientación PRELIMINAR a personas sin formación jurídica, con el rigor de una primera consulta de despacho.
 
@@ -154,7 +154,11 @@ export async function POST(request: Request) {
 
   // Modo demo: sin clave configurada, se devuelve un resultado simulado local.
   if (!apiKey) {
-    const respuesta: RespuestaAnalisis = { resultado: analisisDemo(idea), demo: true };
+    const respuesta: RespuestaAnalisis = {
+      resultado: analisisDemo(idea),
+      demo: true,
+      motivo: "sin_llave",
+    };
     return NextResponse.json(respuesta);
   }
 
@@ -231,10 +235,14 @@ export async function POST(request: Request) {
     if (bruto === null) {
       contenido = await contenidoDe(await pedir(FORMATO_OBJETO));
       if (!contenido) {
-        return NextResponse.json(
-          { error: "El servicio de análisis no está disponible en este momento. Intenta de nuevo." },
-          { status: 502 },
-        );
+        // Degradación controlada: mejor una orientación local etiquetada como
+        // simulada que un error en pantalla a media demostración.
+        const respaldo: RespuestaAnalisis = {
+          resultado: analisisDemo(idea),
+          demo: true,
+          motivo: "servicio",
+        };
+        return NextResponse.json(respaldo);
       }
       bruto = extraerJSON(contenido);
     }
