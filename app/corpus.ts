@@ -149,7 +149,8 @@ const VACIAS = new Set([
   "quiero", "hice", "cree", "mi", "me", "le", "lo", "la", "el", "en", "de", "y",
   "a", "o", "un", "es", "se", "al", "su", "no", "si", "ya", "hay", "ser", "son",
   "ademas", "tambien", "todo", "toda", "algo", "parte", "forma", "persona",
-  "otros", "demas", "excepto",
+  "otros", "demas", "excepto", "otra", "otro", "nada", "dice", "pasa", "somos",
+  "cosa", "caso", "hace", "hacer", "puede", "debe", "sera", "esta", "estan",
 ]);
 
 function normalizar(t: string): string {
@@ -165,16 +166,57 @@ function tokenizar(t: string): string[] {
     .filter((x) => x.length > 3 && !VACIAS.has(x));
 }
 
-function puntuar(articulo: Articulo, tokens: string[]): number {
-  const texto = normalizar(articulo.texto);
-  let punto = 0;
-  for (const t of tokens) {
-    const veces = texto.split(t).length - 1;
-    if (veces > 0) punto += 1 + Math.min(veces, 4) * 0.25;
+/**
+ * Índice de palabras completas por artículo y su frecuencia documental.
+ * Se calcula una vez al cargar. Sin esto, "nombre" pesaba igual que
+ * "obtentor", y la comparación por subcadena hacía que "nada" enganchara
+ * dentro de "denominada".
+ */
+const PALABRAS_DOC: Set<string>[] = TODOS.map(
+  (a) => new Set(normalizar(a.texto).split(/[^a-z0-9ñ]+/)),
+);
+
+const FRECUENCIA: Map<string, number> = (() => {
+  const m = new Map<string, number>();
+  for (const set of PALABRAS_DOC) {
+    for (const w of set) m.set(w, (m.get(w) ?? 0) + 1);
   }
-  // penaliza artículos larguísimos para que no ganen por volumen
-  return punto / Math.log(200 + articulo.texto.length);
+  return m;
+})();
+
+const TOTAL_DOCS = TODOS.length;
+
+const POSICION: Map<string, number> = new Map(TODOS.map((a, i) => [a.id, i]));
+
+/** Peso de un término: alto si es raro, casi nulo si está en todas partes. */
+function peso(t: string): number {
+  return Math.log((TOTAL_DOCS + 1) / ((FRECUENCIA.get(t) ?? 0) + 1));
 }
+
+const PESO_MINIMO = 1.2;
+const ACIERTOS_MINIMOS = 2;
+
+function puntuar(articulo: Articulo, tokens: string[]): number {
+  return puntuarPorIndice(POSICION.get(articulo.id) ?? -1, tokens);
+}
+
+function puntuarPorIndice(i: number, tokens: string[]): number {
+  if (i < 0) return 0;
+  const pal = PALABRAS_DOC[i];
+  let punto = 0;
+  let aciertos = 0;
+  for (const t of tokens) {
+    if (!pal.has(t)) continue;
+    const w = peso(t);
+    if (w < PESO_MINIMO) continue; // aparece en demasiados artículos
+    punto += w;
+    aciertos++;
+  }
+  // Una sola coincidencia no sostiene una cita.
+  if (aciertos < ACIERTOS_MINIMOS) return 0;
+  return punto / Math.log(120 + TODOS[i].texto.length);
+}
+
 
 function enRango(rangos: Rango[]): Articulo[] {
   const salida: Articulo[] = [];
@@ -222,13 +264,35 @@ export function articulosPara(categoria: Categoria, descripcion: string): Articu
   return elegidos;
 }
 
+/**
+ * Recuperación para la consulta libre. La búsqueda léxica sola falla cuando
+ * la persona usa su vocabulario y no el de la ley: dice "receta" donde la ley
+ * dice "secreto industrial". Por eso se parte de la curaduría de la figura
+ * preclasificada y se completa con lo léxico.
+ */
+export function contextoParaConsulta(pregunta: string): Articulo[] {
+  const figura = preclasificar(pregunta);
+  const curados = articulosPara(figura, pregunta);
+  const vistos = new Set(curados.map((a) => a.id));
+  let presupuesto = PRESUPUESTO - curados.reduce((n, a) => n + a.texto.length, 0);
+
+  const salida = [...curados];
+  for (const a of buscarArticulos(pregunta, 5)) {
+    if (vistos.has(a.id) || presupuesto - a.texto.length < 0) continue;
+    salida.push(a);
+    vistos.add(a.id);
+    presupuesto -= a.texto.length;
+  }
+  return salida;
+}
+
 /** Búsqueda abierta en los cuatro ordenamientos, para la consulta libre. */
 export function buscarArticulos(pregunta: string, limite = 10): Articulo[] {
   const tokens = tokenizar(pregunta);
   if (tokens.length === 0) return [];
   let presupuesto = PRESUPUESTO;
   const salida: Articulo[] = [];
-  const ordenados = TODOS.map((a) => ({ a, punto: puntuar(a, tokens) }))
+  const ordenados = TODOS.map((a, i) => ({ a, punto: puntuarPorIndice(i, tokens) }))
     .filter((x) => x.punto > 0)
     .sort((x, y) => y.punto - x.punto);
   for (const { a } of ordenados) {

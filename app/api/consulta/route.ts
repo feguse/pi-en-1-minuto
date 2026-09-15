@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { buscarArticulos, comoContexto } from "../../corpus";
+import { comoContexto, contextoParaConsulta } from "../../corpus";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -122,7 +122,7 @@ export async function POST(request: Request) {
   }
   pregunta = pregunta.slice(0, LIMITE_CARACTERES);
 
-  const articulos = buscarArticulos(pregunta, 10);
+  const articulos = contextoParaConsulta(pregunta);
 
   const fundamentos: Fundamento[] = articulos.map((a) => ({
     sigla: a.sigla,
