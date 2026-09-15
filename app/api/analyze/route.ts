@@ -1,5 +1,11 @@
 import { NextResponse } from "next/server";
-import { analisisDemo, validarAnalisis, type RespuestaAnalisis } from "../../lib";
+import {
+  analisisDemo,
+  validarAnalisis,
+  validarDetalle,
+  type Analisis,
+  type RespuestaAnalisis,
+} from "../../lib";
 import { clasesNizaPara, comoContexto, contextoParaAnalisis } from "../../corpus";
 
 export const runtime = "nodejs";
@@ -107,13 +113,6 @@ CAMPOS:
   luego el límite o el riesgo, dicho sin dramatizarlo;
   y cierra con lo que falta saber para tener certeza.
   Cita los artículos entre corchetes conforme los uses, no al final en bloque.
-- "elementos_protegibles": de 2 a 5 elementos CONCRETOS tomados de la descripción del usuario, no genéricos.
-- "siguientes_pasos": exactamente 3 acciones prácticas y accionables.
-- "figuras_complementarias": de 1 a 3 figuras adicionales que podrían explorarse.
-- "advertencias": de 1 a 3 riesgos, supuestos o datos faltantes relevantes para ESTE caso.
-- "que_no_protege": de 2 a 3 límites reales de la figura principal. Es el campo que evita falsas expectativas.
-- "plazos_clave": de 2 a 3 plazos o vigencias que importan en este caso.
-- "clases_niza": solo si hay un componente marcario. De 1 a 3 clases probables con el formato "Clase 30 — café preparado". Si no aplica, arreglo vacío.
 - "requiere_profesional": booleano, conforme al criterio de arriba.
 - "motivo_escalamiento": si es true, una frase que le diga a la persona por qué su caso necesita revisión profesional. Si es false, cadena vacía.
 - "plazo_critico": una frase accionable si detectaste un plazo corriendo. Cadena vacía si no hay.
@@ -121,57 +120,65 @@ CAMPOS:
 
 Responde ÚNICAMENTE con un objeto JSON válido, sin texto adicional ni bloques de código.`;
 
-const ESQUEMA = {
-  type: "object",
-  additionalProperties: false,
-  required: [
-    "categoria",
-    "proteccion_principal",
-    "autoridad",
-    "explicacion",
-    "elementos_protegibles",
-    "siguientes_pasos",
-    "figuras_complementarias",
-    "advertencias",
-    "que_no_protege",
-    "plazos_clave",
-    "clases_niza",
-    "requiere_profesional",
-    "motivo_escalamiento",
-    "plazo_critico",
-    "confianza",
-  ],
-  properties: {
-    categoria: {
-      type: "string",
-      enum: [
-        "marca o signo distintivo",
-        "aviso comercial",
-        "nombre comercial",
-        "patente o modelo de utilidad",
-        "diseno industrial",
-        "secreto industrial",
-        "derecho de autor o reserva de derechos",
-        "denominacion de origen o indicacion geografica",
-        "combinacion de varias",
-      ],
-    },
-    proteccion_principal: { type: "string" },
-    autoridad: { type: "string" },
-    explicacion: { type: "string" },
-    elementos_protegibles: { type: "array", items: { type: "string" } },
-    siguientes_pasos: { type: "array", items: { type: "string" } },
-    figuras_complementarias: { type: "array", items: { type: "string" } },
-    advertencias: { type: "array", items: { type: "string" } },
-    que_no_protege: { type: "array", items: { type: "string" } },
-    plazos_clave: { type: "array", items: { type: "string" } },
-    clases_niza: { type: "array", items: { type: "string" } },
-    requiere_profesional: { type: "boolean" },
-    motivo_escalamiento: { type: "string" },
-    plazo_critico: { type: "string" },
-    confianza: { type: "string", enum: ["alto", "medio", "bajo"] },
+/** Segunda fase: la figura ya está decidida, solo se desarrollan los apoyos. */
+const INSTRUCCIONES_DETALLE = `Eres un abogado mexicano de propiedad intelectual. Ya emitiste una orientación preliminar sobre el caso que se te describe y ya decidiste la figura aplicable. Ahora desarrollas ÚNICAMENTE los apoyos de esa orientación, sin volver a clasificar ni repetir el razonamiento.
+
+Apóyate en los artículos vigentes que se te proporcionan. Cítalos entre corchetes cuando uses un dato concreto: [LFPPI Artículo 173]. No cites artículos que no aparezcan en el material. No inventes plazos: si un plazo no está en los artículos proporcionados, descríbelo en palabras sin dar cifras.
+
+Español de México, para alguien sin formación jurídica. Frases cortas, verbo directo, sin transiciones reflejas ni adjetivos vacíos.
+
+- "elementos_protegibles": de 2 a 5 elementos CONCRETOS tomados de la descripción, no genéricos.
+- "siguientes_pasos": exactamente 3 acciones que la persona pueda hacer esta semana.
+- "figuras_complementarias": de 1 a 3 figuras adicionales que podrían explorarse.
+- "advertencias": de 1 a 3 datos que faltan o riesgos propios de ESTE caso.
+- "que_no_protege": de 2 a 3 límites reales de la figura. Evita falsas expectativas.
+- "plazos_clave": de 2 a 3 vigencias o plazos que importan aquí.
+- "clases_niza": solo si hay componente marcario, de 1 a 3, con el formato "Clase 30 — café preparado". Arreglo vacío si no aplica.
+
+Responde ÚNICAMENTE con un objeto JSON válido.`;
+
+const CAMPOS_RAPIDA = {
+  categoria: {
+    type: "string",
+    enum: [
+      "marca o signo distintivo",
+      "aviso comercial",
+      "nombre comercial",
+      "patente o modelo de utilidad",
+      "diseno industrial",
+      "secreto industrial",
+      "derecho de autor o reserva de derechos",
+      "denominacion de origen o indicacion geografica",
+      "combinacion de varias",
+    ],
   },
+  proteccion_principal: { type: "string" },
+  autoridad: { type: "string" },
+  explicacion: { type: "string" },
+  plazo_critico: { type: "string" },
+  requiere_profesional: { type: "boolean" },
+  motivo_escalamiento: { type: "string" },
+  confianza: { type: "string", enum: ["alto", "medio", "bajo"] },
 } as const;
+
+const CAMPOS_DETALLE = {
+  elementos_protegibles: { type: "array", items: { type: "string" } },
+  siguientes_pasos: { type: "array", items: { type: "string" } },
+  figuras_complementarias: { type: "array", items: { type: "string" } },
+  advertencias: { type: "array", items: { type: "string" } },
+  que_no_protege: { type: "array", items: { type: "string" } },
+  plazos_clave: { type: "array", items: { type: "string" } },
+  clases_niza: { type: "array", items: { type: "string" } },
+} as const;
+
+function esquemaDe(campos: Record<string, unknown>) {
+  return {
+    type: "object",
+    additionalProperties: false,
+    required: Object.keys(campos),
+    properties: campos,
+  };
+}
 
 /** Extrae el primer objeto JSON de un texto, tolerando cercas de código. */
 function extraerJSON(texto: string): unknown {
@@ -188,14 +195,47 @@ function extraerJSON(texto: string): unknown {
   }
 }
 
+/** Toma de un Analisis completo solo los campos de la segunda fase. */
+function detalleDe(a: Analisis) {
+  return {
+    elementos_protegibles: a.elementos_protegibles,
+    siguientes_pasos: a.siguientes_pasos,
+    figuras_complementarias: a.figuras_complementarias,
+    advertencias: a.advertencias,
+    que_no_protege: a.que_no_protege,
+    plazos_clave: a.plazos_clave,
+    clases_niza: a.clases_niza,
+  };
+}
+
 export async function POST(request: Request) {
   let idea = "";
+  let fase: "rapida" | "detalle" = "rapida";
+  let figuraDecidida = "";
+  let rutaDecidida = "";
 
   try {
-    const cuerpo = (await request.json()) as { idea?: unknown };
+    const cuerpo = (await request.json()) as {
+      idea?: unknown;
+      fase?: unknown;
+      categoria?: unknown;
+      proteccion_principal?: unknown;
+    };
     idea = typeof cuerpo.idea === "string" ? cuerpo.idea.trim() : "";
+    if (cuerpo.fase === "detalle") fase = "detalle";
+    figuraDecidida = typeof cuerpo.categoria === "string" ? cuerpo.categoria : "";
+    rutaDecidida =
+      typeof cuerpo.proteccion_principal === "string" ? cuerpo.proteccion_principal : "";
   } catch {
     return NextResponse.json({ error: "Solicitud inválida." }, { status: 400 });
+  }
+
+  // La segunda fase no tiene sentido sin saber qué figura se decidió.
+  if (fase === "detalle" && !figuraDecidida) {
+    return NextResponse.json(
+      { error: "Falta la figura sobre la que desarrollar el detalle." },
+      { status: 400 },
+    );
   }
 
   if (idea.length < 15) {
@@ -211,8 +251,12 @@ export async function POST(request: Request) {
 
   // Modo demo: sin clave configurada, se devuelve un resultado simulado local.
   if (!apiKey) {
+    const simulado = analisisDemo(idea);
+    if (fase === "detalle") {
+      return NextResponse.json({ detalle: detalleDe(simulado), demo: true });
+    }
     const respuesta: RespuestaAnalisis = {
-      resultado: analisisDemo(idea),
+      resultado: simulado,
       demo: true,
       motivo: "sin_llave",
     };
@@ -240,6 +284,7 @@ export async function POST(request: Request) {
       .map((n) => `- Clase ${n.clase} — ${n.termino}`)
       .join("\n");
 
+    const esRapida = fase === "rapida";
     const modelo = process.env.OPENROUTER_MODEL || MODELO_POR_DEFECTO;
 
     const pedir = (formato: unknown) =>
@@ -253,11 +298,14 @@ export async function POST(request: Request) {
           max_tokens: MAX_TOKENS,
           response_format: formato,
           messages: [
-            { role: "system", content: INSTRUCCIONES },
+            { role: "system", content: esRapida ? INSTRUCCIONES : INSTRUCCIONES_DETALLE },
             {
               role: "user",
               content:
                 `Descripción del usuario:\n"""${idea}"""\n\n` +
+                (esRapida
+                  ? ""
+                  : `FIGURA YA DECIDIDA: ${figuraDecidida}\nRUTA YA SUGERIDA: ${rutaDecidida}\n\n`) +
                 (sugerenciasNiza
                   ? `TÉRMINOS DEL NOMENCLÁTOR DE NIZA que podrían aplicar (son una ayuda, verifícalos):\n${sugerenciasNiza}\n\n`
                   : "") +
@@ -285,7 +333,11 @@ export async function POST(request: Request) {
 
     const FORMATO_ESQUEMA = {
       type: "json_schema",
-      json_schema: { name: "analisis_pi", strict: true, schema: ESQUEMA },
+      json_schema: {
+        name: esRapida ? "analisis_pi" : "detalle_pi",
+        strict: true,
+        schema: esquemaDe(esRapida ? CAMPOS_RAPIDA : CAMPOS_DETALLE),
+      },
     };
     const FORMATO_OBJETO = { type: "json_object" };
 
@@ -308,6 +360,9 @@ export async function POST(request: Request) {
       if (!contenido) {
         // Degradación controlada: mejor una orientación local etiquetada como
         // simulada que un error en pantalla a media demostración.
+        if (fase === "detalle") {
+          return NextResponse.json({ detalle: detalleDe(analisisDemo(idea)), demo: true });
+        }
         const respaldo: RespuestaAnalisis = {
           resultado: analisisDemo(idea),
           demo: true,
@@ -316,6 +371,10 @@ export async function POST(request: Request) {
         return NextResponse.json(respaldo);
       }
       bruto = extraerJSON(contenido);
+    }
+
+    if (fase === "detalle") {
+      return NextResponse.json({ detalle: validarDetalle(bruto), demo: false });
     }
 
     const resultado = validarAnalisis(bruto);

@@ -303,6 +303,31 @@ export function validarAnalisis(datos: unknown): Analisis {
   };
 }
 
+/** Campos que produce la segunda fase, una vez decidida la figura. */
+export type Detalle = Pick<
+  Analisis,
+  | "elementos_protegibles"
+  | "siguientes_pasos"
+  | "figuras_complementarias"
+  | "advertencias"
+  | "que_no_protege"
+  | "plazos_clave"
+  | "clases_niza"
+>;
+
+export function validarDetalle(datos: unknown): Detalle {
+  const bruto = (datos && typeof datos === "object" ? datos : {}) as Record<string, unknown>;
+  return {
+    elementos_protegibles: aLista(bruto.elementos_protegibles, 6),
+    siguientes_pasos: aLista(bruto.siguientes_pasos, 3),
+    figuras_complementarias: aLista(bruto.figuras_complementarias, 4),
+    advertencias: aLista(bruto.advertencias, 4),
+    que_no_protege: aLista(bruto.que_no_protege, 4),
+    plazos_clave: aLista(bruto.plazos_clave, 4),
+    clases_niza: aLista(bruto.clases_niza, 5),
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Modo demo local (sin OpenRouter)
 // ---------------------------------------------------------------------------

@@ -1181,3 +1181,36 @@ select {
   margin-right: var(--pi-2);
   vertical-align: middle;
 }
+
+/* ---------- Segunda fase en curso ---------- */
+
+.pi-detalle-cargando {
+  display: flex;
+  align-items: center;
+  gap: var(--pi-3);
+  color: var(--pi-muted);
+  font-size: 15px;
+  padding: var(--pi-3) var(--pi-4);
+  background: var(--pi-surface);
+  border: 1px dashed var(--pi-line);
+  border-radius: var(--pi-radius-sm);
+}
+
+.pi-detalle-punto {
+  width: 9px;
+  height: 9px;
+  border-radius: var(--pi-radius-pill);
+  background: var(--pi-teal-500);
+  flex: 0 0 auto;
+  animation: pi-late 1.2s ease-in-out infinite;
+}
+
+@keyframes pi-late {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}

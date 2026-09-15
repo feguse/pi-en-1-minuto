@@ -28,6 +28,7 @@ import {
   LETRA_CHIQUITA,
   RECURSOS,
   type Analisis,
+  type Detalle,
   type RespuestaAnalisis,
 } from "./lib";
 
@@ -74,6 +75,7 @@ export default function Pagina() {
   const [demo, setDemo] = useState(false);
   const [motivoDemo, setMotivoDemo] = useState<string | undefined>(undefined);
   const [consulta, setConsulta] = useState<RespuestaConsulta | null>(null);
+  const [cargandoDetalle, setCargandoDetalle] = useState(false);
   const analizador = useRef<HTMLDivElement>(null);
 
   const entrada = modo === "proteger" ? idea : pregunta;
@@ -84,6 +86,34 @@ export default function Pagina() {
     setResultado(null);
     setConsulta(null);
     setError(null);
+  }
+
+  /**
+   * Segunda fase, en segundo plano: desarrolla los apoyos mientras la persona
+   * ya está leyendo el dictamen. Si falla, el resultado principal se queda.
+   */
+  async function pedirDetalle(texto: string, base: Analisis) {
+    setCargandoDetalle(true);
+    try {
+      const r = await fetch("/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          idea: texto,
+          fase: "detalle",
+          categoria: base.categoria,
+          proteccion_principal: base.proteccion_principal,
+        }),
+      });
+      const d = (await r.json()) as { detalle?: Detalle };
+      if (d.detalle) {
+        setResultado((previo) => (previo ? { ...previo, ...d.detalle } : previo));
+      }
+    } catch {
+      // Silencioso a propósito: el dictamen ya está en pantalla.
+    } finally {
+      setCargandoDetalle(false);
+    }
   }
 
   async function enviar() {
@@ -98,10 +128,11 @@ export default function Pagina() {
 
     try {
       if (modo === "proteger") {
+        // Primera fase: lo indispensable. Se muestra en cuanto llega.
         const r = await fetch("/api/analyze", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ idea: idea.trim() }),
+          body: JSON.stringify({ idea: idea.trim(), fase: "rapida" }),
         });
         const d = (await r.json()) as Partial<RespuestaAnalisis> & { error?: string };
         if (!r.ok || !d.resultado) {
@@ -111,6 +142,7 @@ export default function Pagina() {
         setResultado(d.resultado);
         setDemo(Boolean(d.demo));
         setMotivoDemo(d.motivo);
+        pedirDetalle(idea.trim(), d.resultado);
       } else {
         const r = await fetch("/api/consulta", {
           method: "POST",
@@ -304,6 +336,13 @@ export default function Pagina() {
                         </Card>
                       )}
                     </div>
+                  )}
+
+                  {cargandoDetalle && (
+                    <p className="pi-detalle-cargando" aria-live="polite">
+                      <span className="pi-detalle-punto" aria-hidden="true" />
+                      Preparando los pasos, los plazos y los límites de esta figura…
+                    </p>
                   )}
 
                   <div className="pi-acordeones">
