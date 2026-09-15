@@ -210,8 +210,10 @@ export default function Pagina() {
         setResultado(d.resultado);
         setDemo(Boolean(d.demo));
         setMotivoDemo(d.motivo);
-        pedirDictamen(idea.trim(), d.resultado);
-        pedirDetalle(idea.trim(), d.resultado);
+        if (!d.resultado.fuera_de_materia) {
+          pedirDictamen(idea.trim(), d.resultado);
+          pedirDetalle(idea.trim(), d.resultado);
+        }
       } else {
         const r = await fetch("/api/consulta", {
           method: "POST",
@@ -400,15 +402,24 @@ export default function Pagina() {
 
                   {resultado.plazo_critico && <PlazoCritico texto={resultado.plazo_critico} />}
 
+                  {resultado.fuera_de_materia ? (
+                    <Card className="pi-fuera">
+                      <h2>Esto no es materia de propiedad intelectual</h2>
+                      <p>{resultado.proteccion_principal}</p>
+                      {resultado.motivo_escalamiento && <p>{resultado.motivo_escalamiento}</p>}
+                    </Card>
+                  ) : (
                   <RecommendationCard
                     resultado={resultado}
                     tipo={ETIQUETAS_CATEGORIA[resultado.categoria]}
                     clase={CLASE_CATEGORIA[resultado.categoria]}
                     dictando={dictando}
                   />
+                  )}
 
-                  {(resultado.elementos_protegibles.length > 0 ||
-                    resultado.siguientes_pasos.length > 0) && (
+                  {!resultado.fuera_de_materia &&
+                    (resultado.elementos_protegibles.length > 0 ||
+                      resultado.siguientes_pasos.length > 0) && (
                     <div className="pi-grid-2">
                       {resultado.elementos_protegibles.length > 0 && (
                         <Card title="Qué parte podrías proteger" icono="escudo" color="teal">
@@ -438,6 +449,7 @@ export default function Pagina() {
                     </p>
                   )}
 
+                  {!resultado.fuera_de_materia && (
                   <div className="pi-acordeones">
                     {resultado.que_no_protege.length > 0 && (
                       <Acordeon titulo="Qué no cubre esta figura" icono="escudo" color="orange">
@@ -485,6 +497,7 @@ export default function Pagina() {
                       </Acordeon>
                     )}
                   </div>
+                  )}
 
                   <div className="pi-actions">
                     <Button variant="secondary" onClick={editar}>
