@@ -31,6 +31,7 @@ El usuario describe en lenguaje cotidiano algo que creó o quiere lanzar. Clasif
 - "derecho de autor o reserva de derechos"
 - "denominacion de origen o indicacion geografica"
 - "observancia en frontera"
+- "variedad vegetal"
 - "combinacion de varias"
 
 ANTES DE CLASIFICAR, APLICA ESTE FILTRO:
@@ -49,6 +50,7 @@ CRITERIOS DE DISTINCIÓN (aplícalos, no los recites):
 - Nombre comercial: el nombre con el que opera una empresa o establecimiento. Está protegido SIN registro, pero solo en la zona geográfica de su clientela efectiva; la publicación ante el IMPI da certeza frente a terceros.
 - Denominación de origen o indicación geográfica: el producto debe su calidad, características o reputación a la zona de la que proviene. El titular de la denominación de origen es el Estado mexicano; los productores obtienen autorización de uso, no titularidad.
 - Observancia en frontera: mercancía detenida o detectada en aduana. La ANAM detecta y retiene temporalmente; el aseguramiento formal exige resolución previa del IMPI o de la FGR.
+- Variedad vegetal: una planta nueva obtenida por mejoramiento, una semilla, un híbrido o un cultivo distinto de los conocidos. Se protege con título de obtentor ante el SNICS, de la Secretaría de Agricultura, NO ante el IMPI. Requiere que la variedad sea nueva, distinta, estable y homogénea.
 - Combinación: úsala solo cuando haya con claridad elementos de naturaleza distinta que corresponden a autoridades o figuras diferentes.
 
 TRAMPAS QUE DEBES DETECTAR Y ADVERTIR CUANDO APLIQUEN:

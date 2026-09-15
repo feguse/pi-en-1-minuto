@@ -10,6 +10,7 @@ export const CATEGORIAS = [
   "derecho de autor o reserva de derechos",
   "denominacion de origen o indicacion geografica",
   "observancia en frontera",
+  "variedad vegetal",
   "combinacion de varias",
 ] as const;
 
@@ -25,6 +26,7 @@ export const ETIQUETAS_CATEGORIA: Record<Categoria, string> = {
   "derecho de autor o reserva de derechos": "Derecho de autor o reserva de derechos",
   "denominacion de origen o indicacion geografica": "Denominación de origen o indicación geográfica",
   "observancia en frontera": "Observancia en frontera (aduanas)",
+  "variedad vegetal": "Variedad vegetal (título de obtentor)",
   "combinacion de varias": "Combinación de varias figuras",
 };
 
@@ -39,6 +41,7 @@ export const AUTORIDAD: Record<Categoria, string> = {
   "derecho de autor o reserva de derechos": "Indautor",
   "denominacion de origen o indicacion geografica": "IMPI",
   "observancia en frontera": "ANAM para la alerta; IMPI o FGR para la medida",
+  "variedad vegetal": "SNICS, de la Secretaría de Agricultura",
   "combinacion de varias": "IMPI e Indautor, según el elemento",
 };
 
@@ -53,6 +56,7 @@ export const CLASE_CATEGORIA: Record<Categoria, string> = {
   "derecho de autor o reserva de derechos": "cat-autor",
   "denominacion de origen o indicacion geografica": "cat-denominacion",
   "observancia en frontera": "cat-frontera",
+  "variedad vegetal": "cat-vegetal",
   "combinacion de varias": "cat-combinacion",
 };
 
@@ -504,6 +508,7 @@ function detectarCategoria(valor: unknown): Categoria | null {
   if (texto.includes("denominacion de origen") || texto.includes("indicacion geografica")) {
     return "denominacion de origen o indicacion geografica";
   }
+  if (texto.includes("obtentor") || texto.includes("variedad vegetal")) return "variedad vegetal";
   if (texto.includes("frontera") || texto.includes("aduana") || texto.includes("anam")) {
     return "observancia en frontera";
   }
@@ -997,6 +1002,50 @@ const PLANTILLAS: Record<Categoria, Analisis> = {
     plazo_critico: "",
     confianza: "medio",
   },
+  "variedad vegetal": {
+    categoria: "variedad vegetal",
+    proteccion_principal: "Título de obtentor ante el SNICS",
+    autoridad: "SNICS, de la Secretaría de Agricultura",
+    explicacion:
+      "Lo que describes es una variedad vegetal nueva, no un producto industrial ni un signo. Esa creación se protege con un título de obtentor, que tramita el SNICS y no el IMPI. Se exige que la variedad sea nueva, distinta, estable y homogénea, y que tenga una denominación propia. El derecho a ser reconocido como obtentor es inalienable e imprescriptible.",
+    elementos_protegibles: [
+      "La variedad vegetal en sí, por sus caracteres pertinentes",
+      "La denominación de la variedad",
+      "El material de propagación o reproducción",
+    ],
+    siguientes_pasos: [
+      "Documenta los caracteres que distinguen tu variedad de las ya conocidas.",
+      "Consulta con el SNICS los requisitos de la solicitud y las pruebas de campo aplicables.",
+      "Evita comercializarla antes de solicitar: la novedad depende de ello.",
+    ],
+    figuras_complementarias: [
+      "Marca para el nombre comercial con que se venda la semilla",
+      "Secreto industrial sobre líneas parentales",
+      "Inscripción en el Catálogo Nacional de Variedades Vegetales",
+    ],
+    advertencias: [
+      "El título de obtentor lo otorga el SNICS, no el IMPI: es una vía distinta.",
+      "Falta saber si la variedad ya se comercializó y desde cuándo.",
+      "Usar la variedad como fuente de investigación para mejorar otras no requiere tu consentimiento.",
+    ],
+    que_no_protege: [
+      "No impide que otros investiguen a partir de tu variedad para obtener una distinta.",
+      "No protege el nombre comercial: eso corresponde a la marca.",
+      "No alcanza a variedades que no sean distintas de la tuya.",
+    ],
+    plazos_clave: [
+      "La novedad se compromete si la variedad se comercializó antes de solicitar.",
+      "La vigencia del título depende de la especie de que se trate.",
+      "El SNICS puede requerir pruebas de campo que toman ciclos completos.",
+    ],
+    clases_niza: [],
+    fuera_de_materia: false,
+    requiere_profesional: true,
+    motivo_escalamiento:
+      "Los títulos de obtentor exigen pruebas técnicas de distinción, homogeneidad y estabilidad que conviene preparar con asesoría especializada.",
+    plazo_critico: "",
+    confianza: "medio",
+  },
   "combinacion de varias": {
     categoria: "combinacion de varias",
     proteccion_principal: "Estrategia combinada de propiedad intelectual",
@@ -1059,6 +1108,10 @@ const PISTAS: { categoria: Categoria; palabras: string[] }[] = [
   {
     categoria: "diseno industrial",
     palabras: ["forma", "apariencia", "diseno", "estetica", "ornamental", "aspecto", "silueta", "empaque"],
+  },
+  {
+    categoria: "variedad vegetal",
+    palabras: ["variedad vegetal", "obtentor", "semilla", "cultivo", "hibrido", "germoplasma", "mejoramiento genetico", "planta nueva", "snics", "injerto", "porta injerto"],
   },
   {
     categoria: "observancia en frontera",

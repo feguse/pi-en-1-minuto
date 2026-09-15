@@ -1425,3 +1425,9 @@ select {
   --cat-soft: #e4eef4;
   --cat-ink: var(--pi-navy-950);
 }
+
+.cat-vegetal {
+  --cat: var(--pi-green-600);
+  --cat-soft: var(--pi-green-100);
+  --cat-ink: var(--pi-green-600);
+}

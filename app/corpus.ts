@@ -10,6 +10,8 @@ import lfda from "../corpus/lfda.json";
 import reglamentoLfda from "../corpus/reglamento-lfda.json";
 import leyAduanera from "../corpus/ley-aduanera.json";
 import rgce from "../corpus/rgce.json";
+import variedades from "../corpus/variedades-vegetales.json";
+import reglamentoVariedades from "../corpus/reglamento-variedades.json";
 import nizaIndice from "../corpus/niza-indice.json";
 import { preclasificar, type Categoria } from "./lib";
 
@@ -31,6 +33,8 @@ const CORPUS: Record<string, Articulo[]> = {
   RLFDA: reglamentoLfda as unknown as Articulo[],
   LA: leyAduanera as unknown as Articulo[],
   RGCE: rgce as unknown as Articulo[],
+  LFVV: variedades as unknown as Articulo[],
+  RLFVV: reglamentoVariedades as unknown as Articulo[],
 };
 
 const TODOS: Articulo[] = [
@@ -40,6 +44,8 @@ const TODOS: Articulo[] = [
   ...reglamentoLfda,
   ...leyAduanera,
   ...rgce,
+  ...variedades,
+  ...reglamentoVariedades,
 ] as unknown as Articulo[];
 
 type Rango = { sigla: keyof typeof CORPUS; desde: number; hasta: number };
@@ -69,6 +75,9 @@ const NUCLEARES: Partial<Record<Categoria, Rango[]>> = {
   ],
   "denominacion de origen o indicacion geografica": [
     { sigla: "LFPPI", desde: 264, hasta: 266 },
+  ],
+  "variedad vegetal": [
+    { sigla: "LFVV", desde: 2, hasta: 5 },
   ],
   "observancia en frontera": [
     // el extracto de la fracción XXVIII, no el artículo 144 entero
@@ -109,6 +118,10 @@ const AMBITO: Record<Categoria, Rango[]> = {
   ],
   "denominacion de origen o indicacion geografica": [
     { sigla: "LFPPI", desde: 264, hasta: 326 },
+  ],
+  "variedad vegetal": [
+    { sigla: "LFVV", desde: 1, hasta: 48 },
+    { sigla: "RLFVV", desde: 1, hasta: 89 },
   ],
   "observancia en frontera": [
     { sigla: "RGCE", desde: 249, hasta: 2410 },
