@@ -860,14 +860,14 @@ a {
   position: relative;
   display: grid;
   place-items: center;
-  min-height: 260px;
+  min-height: 300px;
   animation: pi-entra 0.7s cubic-bezier(0.2, 0.7, 0.3, 1) both;
 }
 
 .pi-logo-hero {
   position: relative;
   z-index: 2;
-  width: clamp(230px, 62vw, 430px);
+  width: min(500px, 92%);
   height: auto;
   display: block;
   animation: pi-flota 6s ease-in-out infinite;
@@ -1103,7 +1103,7 @@ a {
 }
 
 .pi-anillo {
-  width: min(430px, 96%);
+  width: min(520px, 100%);
   height: auto;
   aspect-ratio: 1;
 }
@@ -1134,7 +1134,7 @@ a {
 
 @media (max-width: 767px) {
   .pi-logomark {
-    min-height: 210px;
+    min-height: 240px;
   }
   .pi-footer-inner {
     flex-direction: column;
