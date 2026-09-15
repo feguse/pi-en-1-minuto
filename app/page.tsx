@@ -522,7 +522,11 @@ export default function Pagina() {
                   </div>
 
                   <p className="pi-letra-chiquita">{LETRA_CHIQUITA}</p>
-                  <AyudaProfesional />
+                  <AyudaProfesional
+                    motivo={
+                      consulta.requiere_profesional ? consulta.motivo_escalamiento : undefined
+                    }
+                  />
                 </>
               )}
             </div>

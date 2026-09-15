@@ -532,6 +532,8 @@ export type RespuestaConsulta = {
   respuesta: string;
   fundamentos: Fundamento[];
   sin_sustento: boolean;
+  requiere_profesional?: boolean;
+  motivo_escalamiento?: string;
   demo: boolean;
 };
 

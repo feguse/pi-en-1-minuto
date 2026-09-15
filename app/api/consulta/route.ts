@@ -5,7 +5,7 @@ export const runtime = "nodejs";
 export const maxDuration = 60;
 
 const MODELO_POR_DEFECTO = "openai/gpt-4o-mini";
-const MAX_TOKENS = 2600;
+const MAX_TOKENS = 3200;
 const TIEMPO_LIMITE_MS = 45000;
 const LIMITE_CARACTERES = 2000;
 
@@ -22,6 +22,8 @@ export type RespuestaConsulta = {
   respuesta: string;
   fundamentos: Fundamento[];
   sin_sustento: boolean;
+  requiere_profesional: boolean;
+  motivo_escalamiento: string;
   demo: boolean;
 };
 
@@ -44,7 +46,52 @@ CÓMO ESCRIBES:
 - La incertidumbre se enuncia y se sigue, sin disculpas: "esto no garantiza que", "pudiera ser una opción viable".
 - Cierra señalando qué haría falta saber para dar una respuesta firme.
 
-Responde ÚNICAMENTE con un objeto JSON con estas claves: "respuesta" (string), "articulos_citados" (arreglo de strings con la forma "LFPPI Artículo 173"), "sin_sustento" (booleano).`;
+Si el caso excede lo que una orientación preliminar puede resolver —hay un conflicto en curso, un tercero usando lo ajeno, dudas de titularidad, contratos de por medio o dinero comprometido— responde igual con lo que sí se pueda decir y pon "requiere_profesional" en true, explicando en una frase por qué.
+
+Responde ÚNICAMENTE con un objeto JSON con estas claves: "respuesta" (string), "articulos_citados" (arreglo de strings con la forma "LFPPI Artículo 173"), "sin_sustento" (booleano), "requiere_profesional" (booleano), "motivo_escalamiento" (string, vacío si no aplica).`;
+
+const ESQUEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: [
+    "respuesta",
+    "articulos_citados",
+    "sin_sustento",
+    "requiere_profesional",
+    "motivo_escalamiento",
+  ],
+  properties: {
+    respuesta: { type: "string" },
+    articulos_citados: { type: "array", items: { type: "string" } },
+    sin_sustento: { type: "boolean" },
+    requiere_profesional: { type: "boolean" },
+    motivo_escalamiento: { type: "string" },
+  },
+} as const;
+
+/**
+ * Rescata prosa utilizable de una respuesta que no parseó como JSON.
+ * Vale más un texto imperfecto del modelo que una disculpa.
+ */
+function rescatarProsa(texto: string): string {
+  const sinCercas = texto.replace(/```(?:json)?/gi, "").trim();
+  const m = sinCercas.match(/"respuesta"\s*:\s*"((?:[^"\\]|\\.)*)"/);
+  if (m) {
+    try {
+      return JSON.parse(`"${m[1]}"`);
+    } catch {
+      /* sigue */
+    }
+  }
+  // Sin comillas reconocibles: se limpia el andamiaje y se usa lo que quede.
+  const plano = sinCercas
+    .replace(/^\s*\{[\s\S]*?"respuesta"\s*:\s*/i, "")
+    .replace(/[{}\[\]]/g, " ")
+    .replace(/"(respuesta|articulos_citados|sin_sustento|requiere_profesional|motivo_escalamiento)"\s*:/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  return plano.length > 120 ? plano : "";
+}
 
 function extraerJSON(texto: string): unknown {
   const limpio = texto.trim().replace(/^```(?:json)?/i, "").replace(/```$/, "").trim();
@@ -96,6 +143,8 @@ export async function POST(request: Request) {
           : "Modo demo: encontramos las disposiciones aplicables, pero el servicio de redacción no está configurado. Abajo puedes leer los artículos localizados.",
       fundamentos,
       sin_sustento: articulos.length === 0,
+      requiere_profesional: false,
+      motivo_escalamiento: "",
       demo: true,
     };
     return NextResponse.json(respaldo);
@@ -103,6 +152,16 @@ export async function POST(request: Request) {
 
   const control = new AbortController();
   const temporizador = setTimeout(() => control.abort(), TIEMPO_LIMITE_MS);
+
+  /** Respuesta de último recurso: útil, no una disculpa. */
+  const conLoQueHay = (texto: string, motivo: string): RespuestaConsulta => ({
+    respuesta: texto,
+    fundamentos,
+    sin_sustento: false,
+    requiere_profesional: true,
+    motivo_escalamiento: motivo,
+    demo: true,
+  });
 
   try {
     const encabezados: Record<string, string> = {
@@ -112,58 +171,107 @@ export async function POST(request: Request) {
     if (process.env.OPENROUTER_SITE_URL) encabezados["HTTP-Referer"] = process.env.OPENROUTER_SITE_URL;
     if (process.env.OPENROUTER_SITE_NAME) encabezados["X-Title"] = process.env.OPENROUTER_SITE_NAME;
 
-    const llamada = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: encabezados,
-      signal: control.signal,
-      body: JSON.stringify({
-        model: process.env.OPENROUTER_MODEL || MODELO_POR_DEFECTO,
-        temperature: 0.45,
-        max_tokens: MAX_TOKENS,
-        response_format: { type: "json_object" },
-        messages: [
-          { role: "system", content: INSTRUCCIONES },
-          {
-            role: "user",
-            content:
-              `ARTÍCULOS DISPONIBLES:\n\n${comoContexto(articulos)}\n\n` +
-              `DUDA DE LA PERSONA:\n"""${pregunta}"""`,
-          },
-        ],
-      }),
-    });
+    const pedir = (formato: unknown) =>
+      fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: encabezados,
+        signal: control.signal,
+        body: JSON.stringify({
+          model: process.env.OPENROUTER_MODEL || MODELO_POR_DEFECTO,
+          temperature: 0.45,
+          max_tokens: MAX_TOKENS,
+          reasoning: { effort: "low" },
+          response_format: formato,
+          messages: [
+            { role: "system", content: INSTRUCCIONES },
+            {
+              role: "user",
+              content:
+                `ARTÍCULOS DISPONIBLES:\n\n${comoContexto(articulos)}\n\n` +
+                `DUDA DE LA PERSONA:\n"""${pregunta}"""`,
+            },
+          ],
+        }),
+      });
 
-    if (!llamada.ok) {
-      console.error("OpenRouter /consulta respondió", llamada.status, (await llamada.text()).slice(0, 300));
-      const respaldo: RespuestaConsulta = {
-        respuesta:
-          "El servicio de redacción no respondió. Abajo están las disposiciones que localizamos sobre tu caso.",
-        fundamentos,
-        sin_sustento: false,
-        demo: true,
+    const textoDe = async (llamada: Response): Promise<string | null> => {
+      if (!llamada.ok) {
+        console.error("OpenRouter /consulta", llamada.status, (await llamada.text()).slice(0, 300));
+        return null;
+      }
+      const datos = (await llamada.json()) as {
+        choices?: { message?: { content?: string }; finish_reason?: string }[];
       };
-      return NextResponse.json(respaldo);
+      return datos.choices?.[0]?.message?.content ?? null;
+    };
+
+    // Tres intentos, de más estructurado a más permisivo.
+    let contenido = await textoDe(
+      await pedir({
+        type: "json_schema",
+        json_schema: { name: "consulta_pi", strict: true, schema: ESQUEMA },
+      }),
+    );
+    if (!contenido) contenido = await textoDe(await pedir({ type: "json_object" }));
+
+    if (!contenido) {
+      return NextResponse.json(
+        conLoQueHay(
+          "No pudimos redactar una respuesta automática para tu caso, pero sí localizamos las disposiciones aplicables: puedes leerlas abajo. Por lo que describes, conviene que un abogado revise los documentos antes de actuar.",
+          "El servicio de redacción no respondió y tu caso involucra elementos que conviene revisar con documentos a la vista.",
+        ),
+      );
     }
 
-    const datos = (await llamada.json()) as { choices?: { message?: { content?: string } }[] };
-    const contenido = datos.choices?.[0]?.message?.content;
-    if (!contenido) throw new Error("Respuesta vacía del modelo.");
+    let bruto: Record<string, unknown> | null = null;
+    try {
+      bruto = extraerJSON(contenido) as Record<string, unknown>;
+    } catch {
+      console.error("JSON ilegible en /consulta:", contenido.slice(0, 300));
+    }
 
-    const bruto = extraerJSON(contenido) as Record<string, unknown>;
+    // Si el JSON no se pudo leer, se rescata la prosa antes de rendirse.
+    if (!bruto) {
+      const prosa = rescatarProsa(contenido);
+      if (prosa) {
+        return NextResponse.json({
+          respuesta: prosa,
+          fundamentos,
+          sin_sustento: false,
+          requiere_profesional: true,
+          motivo_escalamiento:
+            "La respuesta se recuperó de forma parcial; conviene que un abogado la revise antes de actuar.",
+          demo: false,
+        } satisfies RespuestaConsulta);
+      }
+      return NextResponse.json(
+        conLoQueHay(
+          "No pudimos redactar una respuesta automática para tu caso, pero sí localizamos las disposiciones aplicables: puedes leerlas abajo.",
+          "No logramos redactar la orientación; conviene una revisión profesional del caso.",
+        ),
+      );
+    }
+
     const texto = typeof bruto.respuesta === "string" ? bruto.respuesta.trim() : "";
-    if (!texto) throw new Error("La respuesta del modelo está incompleta.");
+    if (!texto) {
+      const prosa = rescatarProsa(contenido);
+      return NextResponse.json(
+        conLoQueHay(
+          prosa ||
+            "No pudimos redactar una respuesta automática para tu caso, pero sí localizamos las disposiciones aplicables: puedes leerlas abajo.",
+          "No logramos redactar la orientación; conviene una revisión profesional del caso.",
+        ),
+      );
+    }
 
-    // Solo se muestran como fundamento los artículos que el modelo realmente citó.
+    const numeroDe = (articulo: string) => articulo.replace(/[^\d]/g, "");
     const citados = Array.isArray(bruto.articulos_citados)
       ? bruto.articulos_citados.map((x) => String(x).toLowerCase())
       : [];
-    const numeroDe = (articulo: string) => articulo.replace(/[^\d]/g, "");
     const usados = citados.length
       ? fundamentos.filter((f) => {
           const n = numeroDe(f.articulo);
-          return citados.some(
-            (c) => c.includes(f.sigla.toLowerCase()) && numeroDe(c) === n,
-          );
+          return citados.some((c) => c.includes(f.sigla.toLowerCase()) && numeroDe(c) === n);
         })
       : [];
 
@@ -171,19 +279,20 @@ export async function POST(request: Request) {
       respuesta: texto,
       fundamentos: usados.length ? usados : fundamentos.slice(0, 5),
       sin_sustento: bruto.sin_sustento === true,
+      requiere_profesional: bruto.requiere_profesional === true,
+      motivo_escalamiento:
+        typeof bruto.motivo_escalamiento === "string" ? bruto.motivo_escalamiento : "",
       demo: false,
     };
     return NextResponse.json(respuesta);
   } catch (error) {
     console.error("Fallo en /api/consulta", error);
-    const respaldo: RespuestaConsulta = {
-      respuesta:
-        "No pudimos redactar la respuesta en este momento. Abajo están las disposiciones que localizamos sobre tu caso.",
-      fundamentos,
-      sin_sustento: false,
-      demo: true,
-    };
-    return NextResponse.json(respaldo);
+    return NextResponse.json(
+      conLoQueHay(
+        "La consulta tardó más de lo esperado. Abajo están las disposiciones que localizamos sobre tu caso.",
+        "No completamos la orientación automática; conviene una revisión profesional.",
+      ),
+    );
   } finally {
     clearTimeout(temporizador);
   }
