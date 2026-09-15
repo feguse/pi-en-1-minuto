@@ -142,6 +142,21 @@ export const EJEMPLOS: Ejemplo[] = [
       "Hago bordados con motivos de mi comunidad y los aplico en prendas que vendo en ferias y por internet.",
   },
   {
+    etiqueta: "La salsa de mi suegra",
+    texto:
+      "Hice una salsa tan picante que mi suegra dejó de opinar sobre mi sazón. La receta es un secreto de familia y quiero embotellarla y venderla con nombre propio.",
+  },
+  {
+    etiqueta: "Mi perro es famoso",
+    texto:
+      "Mi perro pone una cara que se hizo viral. Con esa cara dibujé un personaje, le puse nombre y ahora me piden playeras y tazas con él.",
+  },
+  {
+    etiqueta: "Dobla ropa (a veces)",
+    texto:
+      "Armé una máquina que dobla la ropa sola. Todavía falla los martes, pero el mecanismo lo inventé yo y nadie más lo tiene.",
+  },
+  {
     etiqueta: "Método de calibración",
     texto:
       "Encontré una manera propia de calibrar un sensor que mejora su precisión. No la he contado fuera de mi equipo.",
@@ -194,6 +209,16 @@ export const EJEMPLOS_PROBLEMA: Ejemplo[] = [
     etiqueta: "Se me venció el registro",
     texto:
       "Me di cuenta de que mi registro de marca venció y no lo renové a tiempo. Sigo usando la marca todos los días.",
+  },
+  {
+    etiqueta: "La taquería con K",
+    texto:
+      "Mi vecino abrió una taquería con el mismo nombre que la mía pero escrito con K. Dice que así ya es otra cosa y que no me puedo quejar.",
+  },
+  {
+    etiqueta: "La carne asada de 2019",
+    texto:
+      "Un primo dice que la idea del negocio fue suya porque la comentó en una carne asada en 2019, y ahora quiere parte de la marca.",
   },
   {
     etiqueta: "Me mandaron una carta",
