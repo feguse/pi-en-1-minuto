@@ -161,6 +161,56 @@ export const EJEMPLOS: Ejemplo[] = [
     texto:
       "Encontré una manera propia de calibrar un sensor que mejora su precisión. No la he contado fuera de mi equipo.",
   },
+  {
+    etiqueta: "Lentes con limpiaparabrisas",
+    texto:
+      "Inventé un gorro con limpiaparabrisas diminutos para los lentes cuando llueve. Mis amigos se burlan, pero funciona y nadie más lo vende.",
+  },
+  {
+    etiqueta: "Los Amparos Directos",
+    texto:
+      "Mi banda de garage se llama Los Amparos Directos. Ya tenemos dos canciones grabadas, un logotipo y playeras que vendemos en los tocadas.",
+  },
+  {
+    etiqueta: "Traductor de ladridos",
+    texto:
+      "Hice una aplicación que dice traducir lo que ladra mi perro. Es puro invento mío, pero la gente la descarga y ya tiene nombre e ícono.",
+  },
+  {
+    etiqueta: "Tamales de lujo",
+    texto:
+      "A mi puesto de tamales le puse un nombre que suena a marca italiana de lujo. Vendo afuera del metro y ya se me hizo conocido.",
+  },
+  {
+    etiqueta: "Gelatinas del jefe",
+    texto:
+      "Diseñé un molde para hacer gelatinas con la cara de mi jefe. Se venden muy bien en oficinas y quiero producirlas en serie.",
+  },
+  {
+    etiqueta: "Software de consultorios",
+    texto:
+      "Desarrollé un programa de facturación para consultorios médicos y lo vendo por suscripción mensual con una marca propia.",
+  },
+  {
+    etiqueta: "Catálogo fotográfico",
+    texto:
+      "Tengo un catálogo de fotografías de arquitectura que licencio a revistas y despachos. Las tomé todas yo.",
+  },
+  {
+    etiqueta: "Tueste propio",
+    texto:
+      "Creé una mezcla de café de especialidad y un método de tueste que desarrollé a prueba y error para mi cafetería.",
+  },
+  {
+    etiqueta: "Mobiliario del restaurante",
+    texto:
+      "Diseñé las mesas y las lámparas de mi restaurante. Me las han pedido tanto que quiero venderlas por separado.",
+  },
+  {
+    etiqueta: "Escuela de natación",
+    texto:
+      "Fundé una escuela de natación con nombre, logotipo y un método de enseñanza propio que documenté para mis instructores.",
+  },
 ];
 
 /** Banco de ejemplos del modo "tengo un problema". */
@@ -224,6 +274,56 @@ export const EJEMPLOS_PROBLEMA: Ejemplo[] = [
     etiqueta: "Me mandaron una carta",
     texto:
       "Recibí una carta de un despacho exigiéndome dejar de usar mi nombre comercial y darles una respuesta en diez días.",
+  },
+  {
+    etiqueta: "Mi ex y el Instagram",
+    texto:
+      "Mi ex se llevó la cuenta de Instagram del negocio cuando terminamos. Dice que el nombre lo inventó ella y no me la devuelve.",
+  },
+  {
+    etiqueta: "El influencer se adjudicó",
+    texto:
+      "Un influencer dijo en un video que mi producto era creación suya. Ahora la gente le compra a él pensando que es el original.",
+  },
+  {
+    etiqueta: "Logo al revés",
+    texto:
+      "Mandé hacer mil playeras y el proveedor imprimió mi logotipo al revés. Ahora él las vende por su cuenta como edición limitada.",
+  },
+  {
+    etiqueta: "Los pasteles de mi tía",
+    texto:
+      "Mi tía vende mis pasteles con mi receta y mi nombre en otra ciudad. Dice que no pasa nada porque somos familia.",
+  },
+  {
+    etiqueta: "La libreta de 2015",
+    texto:
+      "Registré mi marca y un señor me escribió diciendo que él la tenía apuntada en una libreta desde 2015 y que se la debo.",
+  },
+  {
+    etiqueta: "Notificación del IMPI",
+    texto:
+      "Me llegó una notificación del IMPI sobre un procedimiento de declaración administrativa contra mi registro de marca.",
+  },
+  {
+    etiqueta: "Distribuidor sin contrato",
+    texto:
+      "Un distribuidor sigue usando mi marca en su publicidad y sus facturas, aunque el contrato con él terminó hace meses.",
+  },
+  {
+    etiqueta: "Falsificaciones en aduana",
+    texto:
+      "Me avisaron que hay productos con mi marca detenidos en una aduana y yo no los fabriqué ni autoricé.",
+  },
+  {
+    etiqueta: "Registraron mi marca antes",
+    texto:
+      "Una empresa extranjera registró en México la marca que yo ya usaba aquí, y ahora me exige que deje de usarla.",
+  },
+  {
+    etiqueta: "Se fue con todo",
+    texto:
+      "Un empleado renunció y se llevó la base de clientes y el proceso de producción que solo él y yo conocíamos.",
   },
 ];
 
