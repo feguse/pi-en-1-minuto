@@ -15,6 +15,8 @@ import {
   AVISO_LEGAL,
   EJEMPLOS,
   ETIQUETAS_CATEGORIA,
+  CLASE_CATEGORIA,
+  FIGURAS,
   RECURSOS,
   type Analisis,
   type RespuestaAnalisis,
@@ -87,16 +89,42 @@ export default function Pagina() {
         </div>
       </header>
 
-      <main className="pi-shell pi-main">
-        <div className="pi-hero">
-          <p className="pi-eyebrow">Propiedad industrial en México</p>
-          <h1>Descubre una ruta inicial para proteger tu idea</h1>
-          <p>
-            Describe con tus palabras lo que creaste. En un minuto obtienes una orientación
-            preliminar sobre qué figura de propiedad industrial podrías investigar ante el IMPI.
-          </p>
-        </div>
+      <section className="pi-hero-band">
+        <div className="pi-shell pi-hero-inner">
+          <div className="pi-hero-copy">
+            <p className="pi-eyebrow">Propiedad industrial en México</p>
+            <h1>Descubre una ruta inicial para proteger tu idea</h1>
+            <p>
+              Describe con tus palabras lo que creaste. En un minuto obtienes una orientación
+              preliminar sobre qué figura de propiedad industrial podrías investigar ante el IMPI.
+            </p>
+            <div className="pi-figuras">
+              {FIGURAS.map((figura) => (
+                <span key={figura.nombre} className={`pi-figura ${figura.clase}`}>
+                  {figura.nombre}
+                </span>
+              ))}
+            </div>
+          </div>
 
+          <div className="pi-logomark">
+            <svg className="pi-anillo" viewBox="0 0 400 400" aria-hidden="true">
+              <circle className="a1" cx="200" cy="200" r="184" />
+              <circle className="a2" cx="200" cy="200" r="158" />
+              <circle className="a3" cx="200" cy="200" r="134" />
+            </svg>
+            <img
+              className="pi-logo-hero"
+              src="/brand/pi-en-1-minuto-logo.png"
+              alt="PI en 1 Minuto"
+              width={2172}
+              height={724}
+            />
+          </div>
+        </div>
+      </section>
+
+      <main className="pi-shell pi-main">
         <Card>
           <Textarea
             id="idea"
@@ -169,10 +197,11 @@ export default function Pagina() {
             <RecommendationCard
               resultado={resultado}
               tipo={ETIQUETAS_CATEGORIA[resultado.categoria]}
+              clase={CLASE_CATEGORIA[resultado.categoria]}
             />
 
             <div className="pi-grid">
-              <Card title="Qué podrías proteger">
+              <Card title="Qué podrías proteger" icono="escudo" color="teal">
                 <ul className="pi-list">
                   {resultado.elementos_protegibles.map((elemento, i) => (
                     <li key={i}>{elemento}</li>
@@ -180,7 +209,7 @@ export default function Pagina() {
                 </ul>
               </Card>
 
-              <Card title="Siguientes pasos">
+              <Card title="Siguientes pasos" icono="pasos" color="navy">
                 <ol className="pi-list">
                   {resultado.siguientes_pasos.map((paso, i) => (
                     <li key={i}>{paso}</li>
@@ -191,7 +220,7 @@ export default function Pagina() {
 
             <div className="pi-grid">
               {resultado.figuras_complementarias.length > 0 && (
-                <Card title="Figuras complementarias">
+                <Card title="Figuras complementarias" icono="capas" color="violet">
                   <ul className="pi-list">
                     {resultado.figuras_complementarias.map((figura, i) => (
                       <li key={i}>{figura}</li>
@@ -201,7 +230,7 @@ export default function Pagina() {
               )}
 
               {resultado.advertencias.length > 0 && (
-                <Card title="Advertencias e información faltante">
+                <Card title="Advertencias e información faltante" icono="alerta" color="orange">
                   <ul className="pi-list pi-list--warn">
                     {resultado.advertencias.map((advertencia, i) => (
                       <li key={i}>{advertencia}</li>
@@ -229,7 +258,10 @@ export default function Pagina() {
       </main>
 
       <footer className="pi-footer">
-        <div className="pi-shell">PI en 1 Minuto · Orientación preliminar de propiedad industrial</div>
+        <div className="pi-shell pi-footer-inner">
+          <span>PI en 1 Minuto · Orientación preliminar de propiedad industrial</span>
+          <span className="pi-firma">FGS</span>
+        </div>
       </footer>
     </>
   );

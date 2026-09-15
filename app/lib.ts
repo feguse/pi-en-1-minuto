@@ -18,6 +18,24 @@ export const ETIQUETAS_CATEGORIA: Record<Categoria, string> = {
   "combinacion de varias": "Combinación de varias figuras",
 };
 
+/** Clase de color por figura. Alimenta las variables --cat de globals.css. */
+export const CLASE_CATEGORIA: Record<Categoria, string> = {
+  "marca o signo distintivo": "cat-marca",
+  "patente o modelo de utilidad": "cat-patente",
+  "diseno industrial": "cat-diseno",
+  "secreto industrial": "cat-secreto",
+  "combinacion de varias": "cat-combinacion",
+};
+
+/** Las cinco figuras, en el orden en que se muestran bajo el hero. */
+export const FIGURAS: { nombre: string; clase: string }[] = [
+  { nombre: "Marca", clase: "cat-marca" },
+  { nombre: "Patente o modelo de utilidad", clase: "cat-patente" },
+  { nombre: "Diseño industrial", clase: "cat-diseno" },
+  { nombre: "Secreto industrial", clase: "cat-secreto" },
+  { nombre: "Combinación", clase: "cat-combinacion" },
+];
+
 export const NIVELES = ["alto", "medio", "bajo"] as const;
 export type Confianza = (typeof NIVELES)[number];
 

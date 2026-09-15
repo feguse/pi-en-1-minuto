@@ -35,20 +35,82 @@ export function Button({
 export function Card({
   title,
   tone = "surface",
+  icono,
+  color = "teal",
   className = "",
   children,
 }: {
   title?: string;
   tone?: "surface" | "info" | "flat";
+  icono?: Glifo;
+  color?: ColorIcono;
   className?: string;
   children: ReactNode;
 }) {
   const modificador = tone === "info" ? " pi-card--info" : tone === "flat" ? " pi-card--flat" : "";
   return (
     <section className={`pi-card${modificador} ${className}`.trim()}>
-      {title && <h3 className="pi-card-title">{title}</h3>}
+      {title && icono && (
+        <div className="pi-card-head">
+          <span className={`pi-ico pi-ico--${color}`} aria-hidden="true">
+            <Icono nombre={icono} />
+          </span>
+          <h3>{title}</h3>
+        </div>
+      )}
+      {title && !icono && <h3 className="pi-card-title">{title}</h3>}
       {children}
     </section>
+  );
+}
+
+/* ---------- Iconos ---------- */
+
+export type Glifo = "escudo" | "pasos" | "capas" | "alerta" | "reloj";
+export type ColorIcono = "teal" | "navy" | "orange" | "violet" | "green";
+
+const TRAZOS: Record<Glifo, ReactNode> = {
+  escudo: <path d="M10 2.5 16.5 5v5c0 4-3 6.5-6.5 7.5C6.5 16.5 3.5 14 3.5 10V5L10 2.5Z" />,
+  pasos: (
+    <>
+      <path d="M3.5 5.5h13M3.5 10h13M3.5 14.5h9" />
+    </>
+  ),
+  capas: (
+    <>
+      <path d="M10 2.8 17 6.5 10 10.2 3 6.5l7-3.7Z" />
+      <path d="m3 10.6 7 3.7 7-3.7" />
+    </>
+  ),
+  alerta: (
+    <>
+      <path d="M10 3.2 17.5 16.4h-15L10 3.2Z" />
+      <path d="M10 8v3.6M10 14.1v.1" />
+    </>
+  ),
+  reloj: (
+    <>
+      <circle cx="10" cy="11" r="6.4" />
+      <path d="M10 7.8V11l2.2 1.4M8 2.8h4" />
+    </>
+  ),
+};
+
+export function Icono({ nombre }: { nombre: Glifo }) {
+  return (
+    <svg
+      width="19"
+      height="19"
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {TRAZOS[nombre]}
+    </svg>
   );
 }
 
@@ -162,12 +224,14 @@ export function ConfidenceBadge({ nivel }: { nivel: Confianza }) {
 export function RecommendationCard({
   resultado,
   tipo,
+  clase,
 }: {
   resultado: Analisis;
   tipo: string;
+  clase: string;
 }) {
   return (
-    <Card tone="info" className="pi-reco">
+    <Card tone="info" className={`pi-reco ${clase}`}>
       <div className="pi-reco-head">
         <div>
           <p className="pi-reco-label">Ruta preliminar sugerida</p>
@@ -257,6 +321,7 @@ export function LoadingSteps() {
         <svg className="pi-arc" width="56" height="56" viewBox="0 0 56 56" aria-hidden="true">
           <circle className="pi-arc-track" cx="28" cy="28" r="24" />
           <circle className="pi-arc-run" cx="28" cy="28" r="24" />
+          <circle className="pi-arc-run2" cx="28" cy="28" r="24" />
         </svg>
         <ol className="pi-steps">
           {PASOS.map((paso, i) => (

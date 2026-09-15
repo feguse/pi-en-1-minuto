@@ -752,3 +752,393 @@ a {
     stroke-dasharray: 120 46;
   }
 }
+
+/* ==========================================================================
+   Capa de color y movimiento
+   Amplía el sistema base: color por figura de PI, banda del hero y
+   animación del logotipo. El logotipo nunca se recolorea ni se deforma:
+   solo se anima su contenedor.
+   ========================================================================== */
+
+:root {
+  --pi-violet-600: #6d4aa6;
+  --pi-violet-100: #efe9fa;
+  --pi-green-600: #16794a;
+  --pi-green-100: #ddf3e8;
+  --pi-orange-100: #ffeede;
+  --pi-navy-100: #e3eefb;
+
+  /* color activo de la figura clasificada */
+  --cat: var(--pi-teal-500);
+  --cat-soft: var(--pi-teal-100);
+  --cat-ink: var(--pi-teal-700);
+}
+
+.cat-marca {
+  --cat: var(--pi-teal-500);
+  --cat-soft: var(--pi-teal-100);
+  --cat-ink: var(--pi-teal-700);
+}
+.cat-patente {
+  --cat: var(--pi-navy-700);
+  --cat-soft: var(--pi-navy-100);
+  --cat-ink: var(--pi-navy-700);
+}
+.cat-diseno {
+  --cat: var(--pi-orange-500);
+  --cat-soft: var(--pi-orange-100);
+  --cat-ink: var(--pi-orange-600);
+}
+.cat-secreto {
+  --cat: var(--pi-violet-600);
+  --cat-soft: var(--pi-violet-100);
+  --cat-ink: var(--pi-violet-600);
+}
+.cat-combinacion {
+  --cat: var(--pi-green-600);
+  --cat-soft: var(--pi-green-100);
+  --cat-ink: var(--pi-green-600);
+}
+
+/* ---------- Encabezado: logotipo más grande ---------- */
+
+.pi-logo {
+  height: 40px;
+}
+
+@media (min-width: 768px) {
+  .pi-logo {
+    height: 50px;
+  }
+  .pi-header-inner {
+    min-height: 84px;
+  }
+}
+
+/* ---------- Banda del hero ---------- */
+
+.pi-hero-band {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--pi-surface);
+  background-image:
+    radial-gradient(60% 80% at 12% 0%, var(--pi-teal-100) 0%, transparent 62%),
+    radial-gradient(48% 70% at 88% 10%, var(--pi-navy-100) 0%, transparent 60%),
+    radial-gradient(38% 60% at 62% 100%, var(--pi-orange-100) 0%, transparent 58%);
+  border-bottom: 1px solid var(--pi-border);
+}
+
+.pi-hero-inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: var(--pi-4);
+  align-items: center;
+  padding: var(--pi-5) 0 var(--pi-6);
+}
+
+@media (min-width: 900px) {
+  .pi-hero-inner {
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: var(--pi-8);
+    padding: var(--pi-8) 0;
+  }
+}
+
+.pi-hero-copy {
+  max-width: 34ch;
+}
+
+.pi-hero-copy p {
+  margin-top: var(--pi-2);
+  color: var(--pi-text-muted);
+}
+
+/* ---------- Logotipo grande y animado ---------- */
+
+.pi-logomark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 260px;
+  animation: pi-entra 0.7s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+.pi-logo-hero {
+  position: relative;
+  z-index: 2;
+  width: clamp(230px, 62vw, 430px);
+  height: auto;
+  display: block;
+  animation: pi-flota 6s ease-in-out infinite;
+}
+
+.pi-anillo {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.pi-anillo circle {
+  fill: none;
+  stroke-linecap: round;
+  transform-origin: 50% 50%;
+}
+
+.pi-anillo .a1 {
+  stroke: var(--pi-teal-500);
+  stroke-width: 3;
+  stroke-dasharray: 150 480;
+  opacity: 0.75;
+  animation: pi-gira 14s linear infinite;
+}
+
+.pi-anillo .a2 {
+  stroke: var(--pi-orange-500);
+  stroke-width: 3;
+  stroke-dasharray: 60 520;
+  opacity: 0.7;
+  animation: pi-gira 9s linear infinite reverse;
+}
+
+.pi-anillo .a3 {
+  stroke: var(--pi-navy-700);
+  stroke-width: 2;
+  stroke-dasharray: 26 560;
+  opacity: 0.45;
+  animation: pi-gira 20s linear infinite;
+}
+
+@keyframes pi-gira {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pi-flota {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-9px);
+  }
+}
+
+@keyframes pi-entra {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.95);
+  }
+}
+
+/* ---------- Tira de figuras ---------- */
+
+.pi-figuras {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pi-1);
+  margin-top: var(--pi-3);
+}
+
+.pi-figura {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  border-radius: var(--pi-radius-pill);
+  background: var(--cat-soft);
+  color: var(--cat-ink);
+  border: 1px solid transparent;
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 600;
+}
+
+.pi-figura::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border-radius: var(--pi-radius-pill);
+  background: var(--cat);
+  flex: 0 0 auto;
+}
+
+/* ---------- Resultado con el color de la figura ---------- */
+
+.pi-reco {
+  background: var(--cat-soft) !important;
+  border-left: 5px solid var(--cat);
+}
+
+.pi-reco-label {
+  color: var(--cat-ink);
+}
+
+.pi-reco-why {
+  border-top-color: color-mix(in srgb, var(--cat) 30%, transparent);
+}
+
+/* ---------- Encabezados de tarjeta con icono ---------- */
+
+.pi-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: var(--pi-2);
+}
+
+.pi-ico {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+}
+
+.pi-ico--teal {
+  background: var(--pi-teal-500);
+}
+.pi-ico--navy {
+  background: var(--pi-navy-700);
+}
+.pi-ico--orange {
+  background: var(--pi-orange-500);
+}
+.pi-ico--violet {
+  background: var(--pi-violet-600);
+}
+.pi-ico--green {
+  background: var(--pi-green-600);
+}
+
+.pi-card-head h3 {
+  margin: 0;
+  font-size: 17px;
+  line-height: 24px;
+}
+
+/* ---------- Recursos con color ---------- */
+
+.pi-resource {
+  border-top: 3px solid var(--cat);
+}
+
+.pi-resources > :nth-child(1) {
+  --cat: var(--pi-teal-500);
+}
+.pi-resources > :nth-child(2) {
+  --cat: var(--pi-orange-500);
+}
+.pi-resources > :nth-child(3) {
+  --cat: var(--pi-navy-700);
+}
+.pi-resources > :nth-child(4) {
+  --cat: var(--pi-violet-600);
+}
+
+/* ---------- Chips de ejemplo con color ---------- */
+
+.pi-chip::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: var(--pi-radius-pill);
+  background: var(--cat);
+  margin-right: 8px;
+  flex: 0 0 auto;
+}
+
+.pi-chips > :nth-child(1) {
+  --cat: var(--pi-teal-500);
+}
+.pi-chips > :nth-child(2) {
+  --cat: var(--pi-navy-700);
+}
+.pi-chips > :nth-child(3) {
+  --cat: var(--pi-orange-500);
+}
+.pi-chips > :nth-child(4) {
+  --cat: var(--pi-violet-600);
+}
+
+.pi-chip[aria-pressed="true"] {
+  background: var(--cat-soft);
+  border-color: var(--cat);
+  color: var(--pi-navy-900);
+}
+
+/* ---------- Arco de carga tricolor ---------- */
+
+.pi-arc .pi-arc-run {
+  stroke: var(--pi-teal-500);
+}
+
+.pi-arc .pi-arc-run2 {
+  fill: none;
+  stroke: var(--pi-orange-500);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 18 132;
+  transform-origin: 50% 50%;
+  animation: pi-gira 2.1s linear infinite reverse;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pi-logo-hero,
+  .pi-logomark,
+  .pi-anillo circle {
+    animation: none !important;
+  }
+}
+
+/* ---------- Ajustes de la banda del hero y el pie ---------- */
+
+.pi-main {
+  padding-top: var(--pi-5);
+}
+
+.pi-anillo {
+  width: min(430px, 96%);
+  height: auto;
+  aspect-ratio: 1;
+}
+
+.pi-hero-band .pi-hero {
+  padding: 0;
+  max-width: none;
+}
+
+.pi-footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pi-2);
+}
+
+.pi-firma {
+  font-family: var(--pi-font-display);
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: 0.12em;
+  color: var(--pi-navy-900);
+  border: 1px solid var(--pi-border);
+  background: var(--pi-surface);
+  border-radius: var(--pi-radius-pill);
+  padding: 5px 14px;
+}
+
+@media (max-width: 767px) {
+  .pi-logomark {
+    min-height: 210px;
+  }
+  .pi-footer-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--pi-1);
+  }
+}
