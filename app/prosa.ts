@@ -23,6 +23,10 @@ const CONFESIONES: RegExp[] = [
   /\bno\s+(?:puedo|podemos)\s+determinar\b[^.;:]*\b(?:con|a\s+partir\s+de)\s+(?:las?|los)\b/i,
   // El mismo giro al revés: "con los artículos disponibles no puedo..."
   /\b(?:con|a\s+partir\s+de)\s+(?:las?|los)\s+(?:disposicion\w*|art[íi]culo\w*|normativ\w*|informaci[óo]n)\b[^.;:]*\bno\s+(?:puedo|podemos|se\s+puede|es\s+posible)\b/i,
+  // El giro desnudo, sin negación detrás: "las disposiciones que tenemos",
+  // "los artículos que se me proporcionaron". Nunca es buena prosa. Ojo: no
+  // debe tocar "las disposiciones que lo rigen", que sí lo es.
+  /\b(?:las?|los)\s+(?:disposicion\w*|art[íi]culo\w*|norma\w*)\s+que\s+(?:tenemos|tengo|manejamos|consultamos|nos\s+(?:dieron|proporcionaron)|se\s+me\s+(?:dieron|proporcionaron))\b/i,
   // Disculpas: la incertidumbre se enuncia y se sigue.
   /\b(?:lamentablemente|desafortunadamente|por\s+desgracia)\b/i,
   // Nombrar la máquina.
