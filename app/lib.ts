@@ -1095,21 +1095,21 @@ const PLANTILLAS: Record<Categoria, Analisis> = {
 const PISTAS: { categoria: Categoria; palabras: string[] }[] = [
   {
     categoria: "secreto industrial",
-    palabras: ["secreto", "reserva dentro", "confidencial", "formula", "receta", "no divulgar"],
+    palabras: ["secreto", "reserva dentro", "confidencial", "formula", "receta", "mezcla", "no divulgar", "no lo he contado", "no la he contado", "nadie mas lo sabe", "base de clientes", "lista de clientes", "cartera de clientes", "proceso interno", "know how", "metodo propio", "proveedores"],
   },
   {
     categoria: "derecho de autor o reserva de derechos",
-    palabras: ["personaje", "revista", "libro", "cancion", "musica", "pintura", "dibujo", "ilustracion", "fotografia", "guion", "obra", "editorial", "comic", "novela", "escribi"],
+    palabras: ["personaje", "revista", "libro", "cancion", "musica", "pintura", "dibujo", "ilustracion", "fotografia", "foto", "guion", "obra", "editorial", "comic", "novela", "escribi", "catalogo", "compilacion", "bordado", "software", "programa", "aplicacion", "codigo fuente", "videojuego", "curso", "manual", "mural", "grafico"],
   },
   {
     categoria: "patente o modelo de utilidad",
     // "invento" quedó fuera a propósito: al normalizar acentos es idéntica
     // al verbo "inventó", y "el nombre lo inventó ella" no es una patente.
-    palabras: ["mecanismo", "invencion", "dispositivo", "aparato", "maquina", "proceso tecnico", "funciona", "tecnologia", "algoritmo", "prototipo", "sensor"],
+    palabras: ["mecanismo", "invencion", "dispositivo", "aparato", "maquina", "proceso tecnico", "funciona", "tecnologia", "algoritmo", "prototipo", "sensor", "modelo de utilidad", "herramienta", "utensilio", "farmaceutico", "quimico"],
   },
   {
     categoria: "diseno industrial",
-    palabras: ["forma", "apariencia", "diseno", "estetica", "ornamental", "aspecto", "silueta", "empaque"],
+    palabras: ["forma", "apariencia", "diseno", "estetica", "ornamental", "aspecto", "silueta", "empaque", "mobiliario", "mueble", "molde", "envase", "disene", "disenar", "como se ve"],
   },
   {
     categoria: "variedad vegetal",
@@ -1125,70 +1125,63 @@ const PISTAS: { categoria: Categoria; palabras: string[] }[] = [
   },
   {
     categoria: "aviso comercial",
-    palabras: ["eslogan", "slogan", "frase publicitaria", "lema", "frase que"],
+    palabras: ["eslogan", "slogan", "frase publicitaria", "lema", "frase que", "campana publicitaria"],
   },
   {
     categoria: "nombre comercial",
-    palabras: ["nombre de mi negocio", "nombre del establecimiento", "rotulo", "letrero del local"],
+    palabras: ["nombre comercial", "nombre de mi negocio", "nombre del establecimiento", "nombre de mi tienda", "nombre del local", "rotulo", "letrero del local"],
   },
   {
     categoria: "marca o signo distintivo",
-    palabras: ["marca", "nombre", "logo", "logotipo", "eslogan", "etiqueta", "vender", "negocio", "tienda", "identidad"],
+    // Lista deliberadamente genérica: va al final y sus palabras pesan uno.
+    // "eslogan" no está aquí, vive en aviso comercial, para que no empate.
+    palabras: ["marca", "nombre", "logo", "logotipo", "etiqueta", "negocio", "tienda", "identidad"],
   },
 ];
-
-/**
- * Dos figuras se detectan por palabras con precisión casi total, y el modelo
- * insiste en etiquetarlas por el derecho de fondo aunque acierte en el
- * contenido. Aquí se corrige la etiqueta sin tocar el resto de la respuesta.
- * Deliberadamente restrictivo: solo términos que no aparecen por casualidad.
- */
-const SENALES_DIRECTAS: { categoria: Categoria; patron: RegExp; y?: RegExp }[] = [
-  {
-    categoria: "observancia en frontera",
-    patron: /\b(aduana|aduanal|aduanera|anam|contenedor|despacho aduanero|base marcaria|recinto fiscal|pedimento)\b/i,
-  },
-  // Términos inequívocos por sí solos.
-  {
-    categoria: "variedad vegetal",
-    patron: /\b(obtentor|variedad(?:es)? vegetal(?:es)?|snics|germoplasma|porta ?injerto)\b/i,
-  },
-  // Nadie dice "variedad vegetal" al contar su caso: dice "una variedad de
-  // aguacate". Por eso se exige además un contexto agrícola.
-  {
-    categoria: "variedad vegetal",
-    patron: /\b(variedad(?:es)?|hibrido|cultivar|semilla(?:s)?)\b/i,
-    y: /\b(planta|cultivo|agricol|mejoramiento genetico|cosecha|injerto|vegetal|sequia|grano|fruto|arbol|maiz|trigo|frijol|agave|aguacate|cafeto|sorgo|chile|jitomate|flor)\b/i,
-  },
-];
-
-/**
- * Corrige la categoría cuando la descripción contiene una señal inequívoca.
- * No toca el dictamen ni ningún otro campo.
- */
-export function corregirCategoria(idea: string, propuesta: Categoria): Categoria {
-  const texto = normalizar(idea);
-  for (const s of SENALES_DIRECTAS) {
-    if (s.patron.test(texto) && (!s.y || s.y.test(texto))) return s.categoria;
-  }
-  return propuesta;
-}
 
 /**
  * Clasificación barata por palabras clave. Sirve para dos cosas: el modo demo
  * y decidir qué artículos recuperar ANTES de llamar al modelo.
+ *
+ * Gana la figura con más señal, no la primera de la lista. Antes bastaba una
+ * palabra genérica como "nombre" para que un catálogo de fotografías se fuera
+ * a marcas, y tres coincidencias cualesquiera mandaban el caso a "combinación
+ * de varias", que es donde la recuperación se queda sin ámbito y empieza a
+ * citar cualquier ley.
  */
 export function preclasificar(idea: string): Categoria {
   const texto = normalizar(idea);
   // Por palabra completa, no por subcadena: "lo inventó ella" no debe
-  // engancharse con la pista "invento" y volverse una patente.
+  // engancharse con la pista "invento" y volverse una patente. El plural sí
+  // cuenta: "fotografías" tenía que enganchar con "fotografia" y no lo hacía.
   const contiene = (frase: string) => {
     const escapada = frase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    return new RegExp(`(^|[^a-z0-9ñ])${escapada}([^a-z0-9ñ]|$)`).test(texto);
+    return new RegExp(`(^|[^a-z0-9ñ])${escapada}(e?s)?([^a-z0-9ñ]|$)`).test(texto);
   };
-  const coincidencias = PISTAS.filter((pista) => pista.palabras.some(contiene));
-  if (coincidencias.length === 0 || coincidencias.length >= 3) return "combinacion de varias";
-  return coincidencias[0].categoria;
+
+  // Una frase de varias palabras vale doble: "denominación de origen" dice
+  // mucho más que "nombre".
+  const puntaje = new Map<Categoria, number>();
+  for (const pista of PISTAS) {
+    let suma = 0;
+    for (const palabra of pista.palabras) {
+      if (contiene(palabra)) suma += palabra.includes(" ") ? 2 : 1;
+    }
+    if (suma > 0) puntaje.set(pista.categoria, suma);
+  }
+
+  // Mixto de verdad: tres figuras con señal propia, no tres palabras sueltas.
+  if ([...puntaje.values()].filter((n) => n >= 2).length >= 3) {
+    return "combinacion de varias";
+  }
+  const posicion = new Map(PISTAS.map((p, i) => [p.categoria, i]));
+  const orden = [...puntaje.entries()].sort(
+    (a, b) => b[1] - a[1] || posicion.get(a[0])! - posicion.get(b[0])!,
+  );
+  // El desempate es el orden de PISTAS, que va de lo específico a lo genérico:
+  // entre "aplicación" y "nombre" gana la obra, no la marca.
+  if (orden.length === 0) return "combinacion de varias";
+  return orden[0][0];
 }
 
 /** Resultado simulado para el modo demo. */

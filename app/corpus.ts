@@ -131,6 +131,19 @@ const NUCLEARES: Partial<Record<Categoria, Rango[]>> = {
     { sigla: "LFVV", desde: 9, hasta: 9 }, // la denominación de la variedad no
     // puede chocar con una marca registrada: el cruce entre SNICS e IMPI
   ],
+  // El caso mixto era el agujero: sin núcleo y sin ámbito, la búsqueda libre
+  // se quedaba en cero y la persona recibía "no encontramos disposiciones"
+  // por preguntar algo tan normal como el mobiliario de su restaurante. Este
+  // piso no decide la figura, dibuja el mapa: qué puede ser marca, qué se
+  // patenta, qué es diseño, qué es secreto, qué nace protegido sin registro.
+  "combinacion de varias": [
+    { sigla: "LFPPI", desde: 48, hasta: 48 }, // qué se patenta
+    { sigla: "LFPPI", desde: 66, hasta: 66 }, // dibujo y modelo industrial
+    { sigla: "LFPPI", desde: 163, hasta: 163 }, // secreto industrial
+    { sigla: "LFPPI", desde: 172, hasta: 172 }, // qué puede ser marca
+    { sigla: "LFPPI", desde: 206, hasta: 206 }, // nombre comercial sin registro
+    { sigla: "LFDA", desde: 13, hasta: 13 }, // las ramas del derecho de autor
+  ],
   "observancia en frontera": [
     { sigla: "LA", desde: 1440, hasta: 1440 },
     { sigla: "LA", desde: 148, hasta: 149 },
@@ -300,6 +313,11 @@ const ORDENAMIENTOS: Partial<Record<Categoria, string[]>> = {
   "diseno industrial": ["LFPPI", "RLFPPI"],
   "secreto industrial": ["LFPPI", "RLFPPI"],
   "denominacion de origen o indicacion geografica": ["LFPPI", "RLFPPI"],
+  // Un caso mixto no llega a aduanas ni a variedades vegetales por descarte:
+  // a esas dos se entra por señal directa, no por no haber encontrado otra
+  // cosa. Sin este candado, "se fue mi empleado con la base de clientes"
+  // terminaba citando el artículo 165 de la Ley Aduanera.
+  "combinacion de varias": ["LFPPI", "RLFPPI", "LFDA", "RLFDA"],
 };
 
 // 16,000 y no 14,000: los cuatro nucleares de marca ocupan 13,456 por sí

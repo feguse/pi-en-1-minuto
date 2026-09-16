@@ -193,10 +193,33 @@ Para revisar, la pregunta por artículo es:
   > No se requiere del consentimiento del obtentor de una variedad vegetal para utilizarla: I.- Como fuente o insumo de investigación para el mejoramiento genético de otras variedades …
 - **LFVV artículo 7** — nueva, distinta, estable, homogénea y el plazo: un año enajenada en México, seis en el extranjero
   > Se otorgará el título de obtentor de una variedad vegetal, siempre y cuando ésta sea: I.- Nueva. Tendrá esta característica la variedad vegetal o su material de propagación cuando:…
-- **LFVV artículo 9** — la denominación de la variedad no puede chocar con una marca registrada: el cruce entre SNICS e IMPI
+- **LFVV artículo 9** — la denominación de la variedad no puede chocar con una marca registrada: el cruce entre SNICS e IMPI El caso mixto era el agujero: sin núcleo y sin ámbito, la búsqueda libre se quedaba en cero y la persona recibía "no encontramos disposiciones" por preguntar algo tan normal como el mobiliario de su restaurante. Este piso no decide la figura, dibuja el mapa: qué puede ser marca, qué se patenta, qué es diseño, qué es secreto, qué nace protegido sin registro.
   > En la solicitud del título de obtentor se propondrá una denominación de la variedad, la cual para ser aprobada, deberá ser diferente a cualquiera otra existente en el país o en el …
 
 *3 rangos, 3,948 de 24,000 caracteres del contexto (16%).*
+
+**Tu revisión:** ¿quitar alguno? ¿agregar cuál?
+
+---
+
+## Combinacion de varias
+
+*Autoridad: IMPI e Indautor, según el elemento*
+
+- **LFPPI artículo 48** — qué se patenta
+  > Serán patentables las invenciones en todos los campos de la tecnología que sean nuevas, resultado de una actividad inventiva y susceptibles de aplicación industrial, en los término…
+- **LFPPI artículo 66** — dibujo y modelo industrial
+  > Los diseños industriales comprenden a: I.- Los dibujos industriales, que son toda combinación de figuras, líneas o colores que se incorporen a un producto industrial o artesanal co…
+- **LFPPI artículo 163** — secreto industrial
+  > Para efectos de este Título, se entenderá p or: I.- Secreto industrial, a toda información de aplicación industrial o comercial que guarde la persona que ejerce su control legal co…
+- **LFPPI artículo 172** — qué puede ser marca
+  > Pueden constituir una marca los siguientes signos: I.- Las denominaciones, letras, números, elementos figurativos y combinaciones de colores, así como los hologramas; II.- Las form…
+- **LFPPI artículo 206** — nombre comercial sin registro
+  > El nombre comercial de una empresa o establecimiento industrial, comercial o de servicios y el derecho a su uso exclusivo estarán protegidos, sin necesidad de registro. La protecci…
+- **LFDA artículo 13** — las ramas del derecho de autor
+  > Los derechos de autor a que se refiere esta Ley se reconocen respecto de las obras de las siguientes ramas: I. Literaria; II. Musical, con o sin letra; III. Dramática; IV. Danza; V…
+
+*6 rangos, 5,429 de 24,000 caracteres del contexto (22%).*
 
 **Tu revisión:** ¿quitar alguno? ¿agregar cuál?
 

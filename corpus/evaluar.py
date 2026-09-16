@@ -26,21 +26,31 @@ def cargar_corpus():
 def leer_pistas():
     """Lee las PISTAS directamente de lib.ts para no duplicar criterio."""
     s = open(os.path.join(RAIZ, "app", "lib.ts"), encoding="utf-8").read()
-    b = s[s.index("const PISTAS"):s.index("/**\n * Clasificación barata")]
+    b = s[s.index("const PISTAS"):s.index("export function preclasificar")]
     out = []
     for m in re.finditer(r'categoria:\s*"([^"]+)",\s*\n(?:\s*//[^\n]*\n)*\s*palabras:\s*\[([^\]]*)\]', b):
         out.append((m.group(1), re.findall(r'"([^"]+)"', m.group(2))))
     return out
 
 def contiene(texto, frase):
-    return re.search(rf"(^|[^a-z0-9ñ]){re.escape(frase)}([^a-z0-9ñ]|$)", texto) is not None
+    """Espejo de lo que hace lib.ts: palabra completa, con plural opcional."""
+    return re.search(rf"(^|[^a-z0-9ñ]){re.escape(frase)}(e?s)?([^a-z0-9ñ]|$)", texto) is not None
 
 def preclasificar(texto, pistas):
+    """Espejo de preclasificar() en lib.ts. Si allá cambia, aquí también."""
     n = norm(texto)
-    hits = [c for c, ps in pistas if any(contiene(n, p) for p in ps)]
-    if not hits or len(hits) >= 3:
+    puntaje = {}
+    for categoria, palabras in pistas:
+        suma = sum((2 if " " in p else 1) for p in palabras if contiene(n, p))
+        if suma:
+            puntaje[categoria] = suma
+    if sum(1 for v in puntaje.values() if v >= 2) >= 3:
         return "combinacion de varias"
-    return hits[0]
+    pos = {c: i for i, (c, _) in enumerate(pistas)}
+    orden = sorted(puntaje.items(), key=lambda x: (-x[1], pos[x[0]]))
+    if not orden:
+        return "combinacion de varias"
+    return orden[0][0]
 
 def main():
     docs = cargar_corpus()
