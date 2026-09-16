@@ -29,12 +29,10 @@ Para revisar, la pregunta por artículo es:
   > Pueden constituir una marca los siguientes signos: I.- Las denominaciones, letras, números, elementos figurativos y combinaciones de colores, así como los hologramas; II.- Las form…
 - **LFPPI artículo 173** — qué NO es registrable
   > No serán registrables como marca: I.- Los nombres técnicos o de uso común de los productos o servicios que pretenden distinguirse con la marca, así como aquellas palabras, denomina…
-- **LFPPI artículo 178** — vigencia de diez años
+- **LFPPI artículo 178** — vigencia de diez años El 233, declaración de uso al tercer año, lo propuse y lo quitaste. Sigue en el ámbito: la búsqueda lo trae cuando el caso habla de uso.
   > El registro de marca tendrá una vigencia de diez años contados a partir de la fecha de su otorgamiento y podrá renovarse por períodos de la misma duración. Al momento de solicitar …
-- **LFPPI artículo 233** — declaración de uso al tercer año. PROPUESTA: es la forma más común de perder un registro vivo, y nadie que pregunte "quiero registrar mi marca" va a escribir la palabra "uso".
-  > La marca deberá usarse en territorio nacional, tal como fue registrada o con modificaciones que no alteren su carácter distintivo. La persona titular de una marca deberá declarar s…
 
-*5 rangos, 14,303 de 24,000 caracteres del contexto (59%).*
+*4 rangos, 13,456 de 24,000 caracteres del contexto (56%).*
 
 **Tu revisión:** ¿quitar alguno? ¿agregar cuál?
 

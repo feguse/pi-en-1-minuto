@@ -69,9 +69,8 @@ const NUCLEARES: Partial<Record<Categoria, Rango[]>> = {
     // olores, hologramas, formas. Habilita, no describe.
     { sigla: "LFPPI", desde: 173, hasta: 173 }, // qué NO es registrable
     { sigla: "LFPPI", desde: 178, hasta: 178 }, // vigencia de diez años
-    { sigla: "LFPPI", desde: 233, hasta: 233 }, // declaración de uso al tercer
-    // año. PROPUESTA: es la forma más común de perder un registro vivo, y nadie
-    // que pregunte "quiero registrar mi marca" va a escribir la palabra "uso".
+    // El 233, declaración de uso al tercer año, lo propuse y lo quitaste.
+    // Sigue en el ámbito: la búsqueda lo trae cuando el caso habla de uso.
   ],
   "aviso comercial": [
     { sigla: "LFPPI", desde: 200, hasta: 201 }, // requiere registro, y qué es:
