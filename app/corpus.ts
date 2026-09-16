@@ -57,7 +57,11 @@ const NUCLEARES: Partial<Record<Categoria, Rango[]>> = {
   // definitorio solo entra cuando la figura es desconocida para el usuario.
   // PROVISIONAL: curaduría propuesta, pendiente de revisión del autor.
   "marca o signo distintivo": [
-    { sigla: "LFPPI", desde: 173, hasta: 173 }, // impedimentos: el que decide
+    { sigla: "LFPPI", desde: 171, hasta: 171 }, // qué es una marca
+    { sigla: "LFPPI", desde: 172, hasta: 172 }, // qué PUEDE serlo: sonidos,
+    // olores, hologramas, formas. Habilita, no describe: quien no sabe que su
+    // empaque puede ser marca, nunca lo va a preguntar.
+    { sigla: "LFPPI", desde: 173, hasta: 173 }, // qué NO es registrable
     { sigla: "LFPPI", desde: 178, hasta: 178 }, // vigencia de diez años
   ],
   "aviso comercial": [
@@ -266,7 +270,10 @@ const ORDENAMIENTOS: Partial<Record<Categoria, string[]>> = {
   "denominacion de origen o indicacion geografica": ["LFPPI", "RLFPPI"],
 };
 
-const PRESUPUESTO = 14000;
+// 16,000 y no 14,000: los cuatro nucleares de marca ocupan 13,456 por sí
+// solos, y con el tope anterior la búsqueda no aportaba nada en el caso más
+// frecuente. Son ~550 tokens más de entrada, menos de un centavo por consulta.
+const PRESUPUESTO = 16000;
 
 /**
  * Artículos pertinentes para la figura clasificada: primero los nucleares,
