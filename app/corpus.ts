@@ -51,53 +51,85 @@ const TODOS: Articulo[] = [
 type Rango = { sigla: keyof typeof CORPUS; desde: number; hasta: number };
 
 /** Artículos que SIEMPRE se incluyen para la figura, sin importar la consulta. */
+//
+// Criterio de curaduría: entra el artículo que CAMBIA lo que la persona haría.
+// Eso incluye dos clases que se ven opuestas y no lo son:
+//   - el que habilita: le dice que su empaque, su foto o su bordado sí cabe en
+//     la figura. Quien no sabe que cabe, nunca lo va a preguntar, y por eso la
+//     búsqueda por palabras jamás va a traer ese artículo.
+//   - el que excluye o pone plazo: le tumba una expectativa o le pone una fecha.
+// Queda fuera lo puramente definitorio que el modelo ya sabe, y lo que la
+// búsqueda sí puede encontrar sola porque la persona usaría esas palabras.
+//
+// PROVISIONAL: curaduría propuesta, pendiente de revisión del autor.
 const NUCLEARES: Partial<Record<Categoria, Rango[]>> = {
-  // Criterio: manda el artículo que EXCLUYE, no el que define. El modelo ya
-  // sabe qué es una marca; lo que necesita es saber qué la tumba. Un artículo
-  // definitorio solo entra cuando la figura es desconocida para el usuario.
-  // PROVISIONAL: curaduría propuesta, pendiente de revisión del autor.
   "marca o signo distintivo": [
     { sigla: "LFPPI", desde: 171, hasta: 171 }, // qué es una marca
     { sigla: "LFPPI", desde: 172, hasta: 172 }, // qué PUEDE serlo: sonidos,
-    // olores, hologramas, formas. Habilita, no describe: quien no sabe que su
-    // empaque puede ser marca, nunca lo va a preguntar.
+    // olores, hologramas, formas. Habilita, no describe.
     { sigla: "LFPPI", desde: 173, hasta: 173 }, // qué NO es registrable
     { sigla: "LFPPI", desde: 178, hasta: 178 }, // vigencia de diez años
+    { sigla: "LFPPI", desde: 233, hasta: 233 }, // declaración de uso al tercer
+    // año. PROPUESTA: es la forma más común de perder un registro vivo, y nadie
+    // que pregunte "quiero registrar mi marca" va a escribir la palabra "uso".
   ],
   "aviso comercial": [
-    { sigla: "LFPPI", desde: 201, hasta: 201 }, // qué es: figura poco conocida
+    { sigla: "LFPPI", desde: 200, hasta: 201 }, // requiere registro, y qué es:
+    // el contraste con el 206 del nombre comercial es la mitad de la respuesta
     { sigla: "LFPPI", desde: 204, hasta: 205 }, // vigencia y remisión a marcas
   ],
   "nombre comercial": [
-    { sigla: "LFPPI", desde: 206, hasta: 206 }, // protegido sin registro, zona
+    { sigla: "LFPPI", desde: 206, hasta: 207 }, // protegido sin registro, zona
+    // de clientela efectiva, y la publicación que presume la buena fe
     { sigla: "LFPPI", desde: 210, hasta: 211 }, // qué no se publica, y vigencia
   ],
   "patente o modelo de utilidad": [
-    { sigla: "LFPPI", desde: 45, hasta: 45 }, // novedad, actividad, aplicación
-    { sigla: "LFPPI", desde: 47, hasta: 47 }, // no se consideran invenciones
-    { sigla: "LFPPI", desde: 49, hasta: 49 }, // no serán patentables
-    { sigla: "LFPPI", desde: 58, hasta: 58 }, // modelo de utilidad
+    { sigla: "LFPPI", desde: 47, hasta: 49 }, // 47 no son invenciones (aquí se
+    // va el software a derecho de autor), 48 habilita en todos los campos de la
+    // tecnología —el equivalente del 172—, 49 no patentables (aquí se van las
+    // plantas a variedades vegetales y los métodos de tratamiento)
+    { sigla: "LFPPI", desde: 52, hasta: 52 }, // los doce meses de gracia tras
+    // divulgar. Quien ya enseñó su invento en una feria cree que lo perdió todo
+    { sigla: "LFPPI", desde: 58, hasta: 59 }, // modelo de utilidad: qué es y que
+    // no le exigen actividad inventiva. Es la ruta barata que nadie pregunta
   ],
   "diseno industrial": [
-    { sigla: "LFPPI", desde: 65, hasta: 65 },
-    { sigla: "LFPPI", desde: 67, hasta: 68 }, // el 68 separa diseño de patente
+    { sigla: "LFPPI", desde: 65, hasta: 68 }, // 65 registrabilidad, 66 dibujo y
+    // modelo industrial —habilita: el estampado de una tela y la forma de una
+    // silla—, 67 grado significativo, 68 separa diseño de función técnica
+    { sigla: "LFPPI", desde: 78, hasta: 78 }, // cinco años renovables: el diseño
+    // es la única figura industrial que se renueva tan seguido
   ],
   "secreto industrial": [
     { sigla: "LFPPI", desde: 163, hasta: 164 }, // medidas razonables y límites
+    { sigla: "LFPPI", desde: 166, hasta: 167 }, // el deber de quien accede por
+    // su trabajo, y la responsabilidad de quien contrata para llevarse el
+    // secreto. Es el caso real: el empleado que se va con la base de clientes
   ],
   "derecho de autor o reserva de derechos": [
+    { sigla: "LFDA", desde: 5, hasta: 5 }, // ya está protegido desde que se fijó
+    // en un soporte: el registro no constituye el derecho
+    { sigla: "LFDA", desde: 13, hasta: 13 }, // las ramas: fotografía, programas
+    // de cómputo, arte aplicado incluido el diseño textil, compilaciones
     { sigla: "LFDA", desde: 14, hasta: 14 }, // la idea no se protege
     { sigla: "LFDA", desde: 29, hasta: 29 }, // vida del autor más cien años
     { sigla: "LFDA", desde: 188, hasta: 188 }, // no son materia de reserva
     { sigla: "LFDA", desde: 190, hasta: 190 }, // vigencia de las reservas
   ],
   "denominacion de origen o indicacion geografica": [
-    { sigla: "LFPPI", desde: 264, hasta: 264 },
+    { sigla: "LFPPI", desde: 264, hasta: 265 }, // denominación de origen e
+    // indicación geográfica: la segunda es la ruta menos exigente y la mitad de
+    // la figura que el nombre de la categoría promete y nadie conoce
+    { sigla: "LFPPI", desde: 268, hasta: 268 }, // son bienes nacionales: no se
+    // "obtienen", se autoriza su uso. Corrige la confusión más común
     { sigla: "LFPPI", desde: 271, hasta: 271 }, // lo que no puede protegerse
   ],
   "variedad vegetal": [
     { sigla: "LFVV", desde: 4, hasta: 5 }, // derechos y excepciones
     { sigla: "LFVV", desde: 7, hasta: 7 }, // nueva, distinta, estable, homogénea
+    // y el plazo: un año enajenada en México, seis en el extranjero
+    { sigla: "LFVV", desde: 9, hasta: 9 }, // la denominación de la variedad no
+    // puede chocar con una marca registrada: el cruce entre SNICS e IMPI
   ],
   "observancia en frontera": [
     { sigla: "LA", desde: 1440, hasta: 1440 },
@@ -273,7 +305,11 @@ const ORDENAMIENTOS: Partial<Record<Categoria, string[]>> = {
 // 16,000 y no 14,000: los cuatro nucleares de marca ocupan 13,456 por sí
 // solos, y con el tope anterior la búsqueda no aportaba nada en el caso más
 // frecuente. Son ~550 tokens más de entrada, menos de un centavo por consulta.
-const PRESUPUESTO = 16000;
+// Techo de caracteres de corpus que viaja en cada prompt. Subió de 16,000 a
+// 24,000 al crecer los núcleos: el artículo 173, que es el corazón de cualquier
+// respuesta de marcas, mide 11,305 caracteres él solo y con el techo anterior
+// no dejaba lugar para el artículo que el caso concreto sí necesitaba.
+const PRESUPUESTO = 24000;
 
 /**
  * Artículos pertinentes para la figura clasificada: primero los nucleares,
@@ -303,7 +339,7 @@ export function articulosPara(categoria: Categoria, descripcion: string): Articu
     elegidos.push(a);
     vistos.add(a.id);
     presupuesto -= a.texto.length;
-    if (elegidos.length >= 8) break;
+    if (elegidos.length >= 10) break;
   }
 
   return elegidos;
