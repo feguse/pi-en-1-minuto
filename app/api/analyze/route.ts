@@ -8,6 +8,7 @@ import {
 } from "../../lib";
 import { clasesNizaPara, comoContexto, contextoParaAnalisis } from "../../corpus";
 import { corregirCategoria, PRACTICA_ADUANAS } from "../../lib";
+import { sinConfesiones } from "../../prosa";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -430,6 +431,9 @@ export async function POST(request: Request) {
     const resultado = {
       ...validado,
       categoria: corregirCategoria(idea, validado.categoria),
+      // Mismo criterio para la prosa: lo que el prompt no cierra en dos
+      // intentos, se cierra aquí. Ver app/prosa.ts.
+      explicacion: sinConfesiones(validado.explicacion),
     };
     if (resultado.categoria !== validado.categoria) {
       console.log("categoria corregida", validado.categoria, "->", resultado.categoria);

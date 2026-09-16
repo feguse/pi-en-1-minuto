@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { sinConfesiones, tieneConfesion } from "../../prosa";
 import { comoContexto, contextoParaConsulta } from "../../corpus";
 
 export const runtime = "nodejs";
@@ -304,8 +305,11 @@ export async function POST(request: Request) {
         })
       : [];
 
+    const limpio = sinConfesiones(texto);
+    if (tieneConfesion(limpio)) console.log("prosa: confesión no filtrada en /consulta");
+
     const respuesta: RespuestaConsulta = {
-      respuesta: texto,
+      respuesta: limpio,
       fundamentos: usados.length ? usados : fundamentos.slice(0, 5),
       sin_sustento: bruto.sin_sustento === true,
       requiere_profesional: bruto.requiere_profesional === true,

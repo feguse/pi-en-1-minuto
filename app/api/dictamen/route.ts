@@ -6,6 +6,7 @@
 
 import { analisisDemo, preclasificar, type Categoria } from "../../lib";
 import { comoContexto, contextoParaAnalisis } from "../../corpus";
+import { filtroDeOraciones } from "../../prosa";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -169,6 +170,7 @@ export async function POST(request: Request) {
       const lector = llamada.body!.getReader();
       const dec = new TextDecoder();
       const cod = new TextEncoder();
+      const filtro = filtroDeOraciones();
       let resto = "";
       try {
         for (;;) {
@@ -187,7 +189,10 @@ export async function POST(request: Request) {
                 choices?: { delta?: { content?: string } }[];
               };
               const trozo = j.choices?.[0]?.delta?.content;
-              if (trozo) controlador.enqueue(cod.encode(trozo));
+              if (trozo) {
+                const limpio = filtro.empujar(trozo);
+                if (limpio) controlador.enqueue(cod.encode(limpio));
+              }
             } catch {
               // fragmento incompleto: se ignora y sigue
             }
@@ -196,6 +201,10 @@ export async function POST(request: Request) {
       } catch (error) {
         console.error("Flujo del dictamen interrumpido", error);
       } finally {
+        // La última oración se queda retenida hasta aquí: sin este cierre,
+        // el dictamen terminaría cortado a media frase.
+        const ultima = filtro.cerrar();
+        if (ultima) controlador.enqueue(cod.encode(ultima));
         controlador.close();
       }
     },
