@@ -52,35 +52,50 @@ type Rango = { sigla: keyof typeof CORPUS; desde: number; hasta: number };
 
 /** Artículos que SIEMPRE se incluyen para la figura, sin importar la consulta. */
 const NUCLEARES: Partial<Record<Categoria, Rango[]>> = {
+  // Criterio: manda el artículo que EXCLUYE, no el que define. El modelo ya
+  // sabe qué es una marca; lo que necesita es saber qué la tumba. Un artículo
+  // definitorio solo entra cuando la figura es desconocida para el usuario.
+  // PROVISIONAL: curaduría propuesta, pendiente de revisión del autor.
   "marca o signo distintivo": [
-    { sigla: "LFPPI", desde: 170, hasta: 173 },
+    { sigla: "LFPPI", desde: 173, hasta: 173 }, // impedimentos: el que decide
+    { sigla: "LFPPI", desde: 178, hasta: 178 }, // vigencia de diez años
   ],
   "aviso comercial": [
-    { sigla: "LFPPI", desde: 200, hasta: 201 },
-    { sigla: "LFPPI", desde: 173, hasta: 173 },
+    { sigla: "LFPPI", desde: 201, hasta: 201 }, // qué es: figura poco conocida
+    { sigla: "LFPPI", desde: 204, hasta: 205 }, // vigencia y remisión a marcas
   ],
   "nombre comercial": [
-    { sigla: "LFPPI", desde: 206, hasta: 206 },
-    { sigla: "LFPPI", desde: 173, hasta: 173 },
+    { sigla: "LFPPI", desde: 206, hasta: 206 }, // protegido sin registro, zona
+    { sigla: "LFPPI", desde: 210, hasta: 211 }, // qué no se publica, y vigencia
   ],
   "patente o modelo de utilidad": [
-    { sigla: "LFPPI", desde: 45, hasta: 47 },
-    { sigla: "LFPPI", desde: 58, hasta: 58 },
+    { sigla: "LFPPI", desde: 45, hasta: 45 }, // novedad, actividad, aplicación
+    { sigla: "LFPPI", desde: 47, hasta: 47 }, // no se consideran invenciones
+    { sigla: "LFPPI", desde: 49, hasta: 49 }, // no serán patentables
+    { sigla: "LFPPI", desde: 58, hasta: 58 }, // modelo de utilidad
   ],
-  "diseno industrial": [{ sigla: "LFPPI", desde: 65, hasta: 67 }],
-  "secreto industrial": [{ sigla: "LFPPI", desde: 163, hasta: 165 }],
+  "diseno industrial": [
+    { sigla: "LFPPI", desde: 65, hasta: 65 },
+    { sigla: "LFPPI", desde: 67, hasta: 68 }, // el 68 separa diseño de patente
+  ],
+  "secreto industrial": [
+    { sigla: "LFPPI", desde: 163, hasta: 164 }, // medidas razonables y límites
+  ],
   "derecho de autor o reserva de derechos": [
-    { sigla: "LFDA", desde: 11, hasta: 13 },
-    { sigla: "LFDA", desde: 29, hasta: 29 },
+    { sigla: "LFDA", desde: 14, hasta: 14 }, // la idea no se protege
+    { sigla: "LFDA", desde: 29, hasta: 29 }, // vida del autor más cien años
+    { sigla: "LFDA", desde: 188, hasta: 188 }, // no son materia de reserva
+    { sigla: "LFDA", desde: 190, hasta: 190 }, // vigencia de las reservas
   ],
   "denominacion de origen o indicacion geografica": [
-    { sigla: "LFPPI", desde: 264, hasta: 266 },
+    { sigla: "LFPPI", desde: 264, hasta: 264 },
+    { sigla: "LFPPI", desde: 271, hasta: 271 }, // lo que no puede protegerse
   ],
   "variedad vegetal": [
-    { sigla: "LFVV", desde: 2, hasta: 5 },
+    { sigla: "LFVV", desde: 4, hasta: 5 }, // derechos y excepciones
+    { sigla: "LFVV", desde: 7, hasta: 7 }, // nueva, distinta, estable, homogénea
   ],
   "observancia en frontera": [
-    // el extracto de la fracción XXVIII, no el artículo 144 entero
     { sigla: "LA", desde: 1440, hasta: 1440 },
     { sigla: "LA", desde: 148, hasta: 149 },
     { sigla: "RGCE", desde: 2410, hasta: 2410 },
@@ -96,10 +111,14 @@ const AMBITO: Record<Categoria, Rango[]> = {
     { sigla: "RLFPPI", desde: 55, hasta: 102 },
   ],
   "aviso comercial": [
+    { sigla: "LFPPI", desde: 173, hasta: 173 },
     { sigla: "LFPPI", desde: 200, hasta: 205 },
     { sigla: "LFPPI", desde: 214, hasta: 238 },
   ],
-  "nombre comercial": [{ sigla: "LFPPI", desde: 206, hasta: 213 }],
+  "nombre comercial": [
+    { sigla: "LFPPI", desde: 173, hasta: 173 },
+    { sigla: "LFPPI", desde: 206, hasta: 213 },
+  ],
   "patente o modelo de utilidad": [
     { sigla: "LFPPI", desde: 12, hasta: 12 },
     { sigla: "LFPPI", desde: 36, hasta: 64 },
