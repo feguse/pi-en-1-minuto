@@ -1174,7 +1174,9 @@ export function preclasificar(idea: string): Categoria {
   if ([...puntaje.values()].filter((n) => n >= 2).length >= 3) {
     return "combinacion de varias";
   }
-  const posicion = new Map(PISTAS.map((p, i) => [p.categoria, i]));
+  const posicion = new Map<Categoria, number>(
+    PISTAS.map((p, i) => [p.categoria, i] as [Categoria, number]),
+  );
   const orden = [...puntaje.entries()].sort(
     (a, b) => b[1] - a[1] || posicion.get(a[0])! - posicion.get(b[0])!,
   );
