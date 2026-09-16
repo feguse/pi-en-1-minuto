@@ -27,14 +27,29 @@ export type RespuestaConsulta = {
   demo: boolean;
 };
 
-const INSTRUCCIONES = `Eres un abogado mexicano de propiedad intelectual. Respondes la duda de una persona sin formación jurídica apoyándote ÚNICAMENTE en los artículos que se te proporcionan.
+const INSTRUCCIONES = `Eres un abogado mexicano de propiedad intelectual. Respondes la duda de una persona sin formación jurídica. Fundamentas cada afirmación en las disposiciones que acompañan a la consulta, nunca en tu memoria.
 
 REGLAS INQUEBRANTABLES:
-- Responde solo con base en los artículos proporcionados. No uses conocimiento externo sobre plazos, requisitos o procedimientos.
+- Cada afirmación se sostiene en una disposición transcrita. No uses conocimiento externo sobre plazos, requisitos o procedimientos.
 - Cita los artículos entre corchetes al usarlos, así: [LFPPI Artículo 173].
-- Si los artículos proporcionados NO contienen lo necesario para responder, dilo con claridad y pon "sin_sustento" en true. No rellenes con lo que creas recordar.
+- Si las disposiciones transcritas no alcanzan para responder, pon "sin_sustento" en true y redacta conforme a la regla de abajo. No rellenes con lo que creas recordar.
 - No afirmes que algo es registrable ni garantices resultados.
-- No cites artículos que no aparezcan en el material proporcionado.
+- No cites artículos que no estén transcritos.
+
+LO QUE NUNCA APARECE EN TU RESPUESTA:
+- Nunca hables de tus fuentes como si fueran un inventario que te entregaron:
+  nada de "los artículos proporcionados", "con la información disponible",
+  "según el material que tengo", "en el corpus", "con los artículos que
+  tenemos". Un abogado no escribe "con los documentos que me dieron"; da su
+  opinión y cita la norma. La cita entre corchetes ya dice de dónde sale.
+- Nunca describas tu propio proceso, tus límites como sistema, ni el hecho de
+  ser una herramienta automática.
+- Cuando la norma aplicable no alcance para responder, no lo confieses como
+  carencia tuya. Dilo como lo diría un abogado: de qué depende la respuesta y
+  qué habría que revisar para darla. Compara:
+    NO: "Con los artículos disponibles no puedo determinar si es registrable."
+    SÍ: "Si es registrable depende de que el diseño no se haya divulgado antes
+        de la solicitud; habría que revisar cuándo se publicó por primera vez."
 
 CÓMO ESCRIBES:
 - Español de México, para alguien sin formación jurídica. Explica el término técnico la primera vez, en la misma frase.
@@ -139,8 +154,8 @@ export async function POST(request: Request) {
     const respaldo: RespuestaConsulta = {
       respuesta:
         articulos.length === 0
-          ? "No encontramos disposiciones en la Ley Federal de Protección a la Propiedad Industrial, la Ley Federal del Derecho de Autor ni sus reglamentos que se refieran a lo que describes. Puede que el tema quede fuera de la propiedad intelectual, o que convenga plantearlo con otras palabras."
-          : "Modo demo: encontramos las disposiciones aplicables, pero el servicio de redacción no está configurado. Abajo puedes leer los artículos localizados.",
+          ? "Lo que describes no encuentra respaldo en la Ley Federal de Protección a la Propiedad Industrial, la Ley Federal del Derecho de Autor ni sus reglamentos. Puede que el asunto quede fuera de la propiedad intelectual, o que convenga plantearlo con otras palabras."
+          : "Modo de demostración: el servicio de redacción no está configurado. Abajo quedan las disposiciones aplicables al caso.",
       fundamentos,
       sin_sustento: articulos.length === 0,
       requiere_profesional: false,
@@ -187,7 +202,7 @@ export async function POST(request: Request) {
             {
               role: "user",
               content:
-                `ARTÍCULOS DISPONIBLES:\n\n${comoContexto(articulos)}\n\n` +
+                `DISPOSICIONES APLICABLES AL CASO:\n\n${comoContexto(articulos)}\n\n` +
                 `DUDA DE LA PERSONA:\n"""${pregunta}"""`,
             },
           ],
@@ -217,7 +232,7 @@ export async function POST(request: Request) {
     if (!contenido) {
       return NextResponse.json(
         conLoQueHay(
-          "No pudimos redactar una respuesta automática para tu caso, pero sí localizamos las disposiciones aplicables: puedes leerlas abajo. Por lo que describes, conviene que un abogado revise los documentos antes de actuar.",
+          "Tu caso necesita una revisión más detenida de la que alcanza una orientación preliminar. Estas son las disposiciones que lo rigen; conviene leerlas con un abogado antes de tomar una decisión.",
           "El servicio de redacción no respondió y tu caso involucra elementos que conviene revisar con documentos a la vista.",
         ),
       );
@@ -246,8 +261,8 @@ export async function POST(request: Request) {
       }
       return NextResponse.json(
         conLoQueHay(
-          "No pudimos redactar una respuesta automática para tu caso, pero sí localizamos las disposiciones aplicables: puedes leerlas abajo.",
-          "No logramos redactar la orientación; conviene una revisión profesional del caso.",
+          "Tu caso necesita una revisión más detenida de la que alcanza una orientación preliminar. Estas son las disposiciones que lo rigen.",
+          "El caso admite más de una lectura; conviene que un abogado revise los documentos antes de actuar.",
         ),
       );
     }
@@ -258,8 +273,8 @@ export async function POST(request: Request) {
       return NextResponse.json(
         conLoQueHay(
           prosa ||
-            "No pudimos redactar una respuesta automática para tu caso, pero sí localizamos las disposiciones aplicables: puedes leerlas abajo.",
-          "No logramos redactar la orientación; conviene una revisión profesional del caso.",
+            "Tu caso necesita una revisión más detenida de la que alcanza una orientación preliminar. Estas son las disposiciones que lo rigen.",
+          "El caso admite más de una lectura; conviene que un abogado revise los documentos antes de actuar.",
         ),
       );
     }
@@ -289,8 +304,8 @@ export async function POST(request: Request) {
     console.error("Fallo en /api/consulta", error);
     return NextResponse.json(
       conLoQueHay(
-        "La consulta tardó más de lo esperado. Abajo están las disposiciones que localizamos sobre tu caso.",
-        "No completamos la orientación automática; conviene una revisión profesional.",
+        "Esta consulta pide una revisión más detenida de la que alcanza una orientación preliminar. Estas son las disposiciones aplicables a lo que describes.",
+        "El caso pide una revisión profesional antes de actuar.",
       ),
     );
   } finally {
