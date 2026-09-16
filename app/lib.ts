@@ -1140,6 +1140,43 @@ const PISTAS: { categoria: Categoria; palabras: string[] }[] = [
 ];
 
 /**
+ * Dos figuras se detectan por palabras con precisión casi total, y el modelo
+ * insiste en etiquetarlas por el derecho de fondo aunque acierte en el
+ * contenido. Aquí se corrige la etiqueta sin tocar el resto de la respuesta.
+ * Deliberadamente restrictivo: solo términos que no aparecen por casualidad.
+ */
+const SENALES_DIRECTAS: { categoria: Categoria; patron: RegExp; y?: RegExp }[] = [
+  {
+    categoria: "observancia en frontera",
+    patron: /\b(aduana|aduanal|aduanera|anam|contenedor|despacho aduanero|base marcaria|recinto fiscal|pedimento)\b/i,
+  },
+  // Términos inequívocos por sí solos.
+  {
+    categoria: "variedad vegetal",
+    patron: /\b(obtentor|variedad(?:es)? vegetal(?:es)?|snics|germoplasma|porta ?injerto)\b/i,
+  },
+  // Nadie dice "variedad vegetal" al contar su caso: dice "una variedad de
+  // aguacate". Por eso se exige además un contexto agrícola.
+  {
+    categoria: "variedad vegetal",
+    patron: /\b(variedad(?:es)?|hibrido|cultivar|semilla(?:s)?)\b/i,
+    y: /\b(planta|cultivo|agricol|mejoramiento genetico|cosecha|injerto|vegetal|sequia|grano|fruto|arbol|maiz|trigo|frijol|agave|aguacate|cafeto|sorgo|chile|jitomate|flor)\b/i,
+  },
+];
+
+/**
+ * Corrige la categoría cuando la descripción contiene una señal inequívoca.
+ * No toca el dictamen ni ningún otro campo.
+ */
+export function corregirCategoria(idea: string, propuesta: Categoria): Categoria {
+  const texto = normalizar(idea);
+  for (const s of SENALES_DIRECTAS) {
+    if (s.patron.test(texto) && (!s.y || s.y.test(texto))) return s.categoria;
+  }
+  return propuesta;
+}
+
+/**
  * Clasificación barata por palabras clave. Sirve para dos cosas: el modo demo
  * y decidir qué artículos recuperar ANTES de llamar al modelo.
  *
