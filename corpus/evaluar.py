@@ -36,9 +36,23 @@ def contiene(texto, frase):
     """Espejo de lo que hace lib.ts: palabra completa, con plural opcional."""
     return re.search(rf"(^|[^a-z0-9ñ]){re.escape(frase)}(e?s)?([^a-z0-9ñ]|$)", texto) is not None
 
+def leer_senales():
+    """Señales directas de lib.ts: deciden antes que cualquier pista."""
+    s = open(os.path.join(RAIZ, "app", "lib.ts"), encoding="utf-8").read()
+    b = s[s.index("const SENALES_DIRECTAS"):s.index("export function corregirCategoria")]
+    out = []
+    for m in re.finditer(r'categoria:\s*"([^"]+)",\s*\n\s*patron:\s*/(.+?)/i,(?:\s*\n(?:\s*//[^\n]*\n)*\s*y:\s*/(.+?)/i,)?', b):
+        out.append((m.group(1), m.group(2), m.group(3)))
+    return out
+
+SENALES = leer_senales()
+
 def preclasificar(texto, pistas):
     """Espejo de preclasificar() en lib.ts. Si allá cambia, aquí también."""
     n = norm(texto)
+    for cat, patron, y in SENALES:
+        if re.search(patron, n) and (not y or re.search(y, n)):
+            return cat
     puntaje = {}
     for categoria, palabras in pistas:
         suma = sum((2 if " " in p else 1) for p in palabras if contiene(n, p))

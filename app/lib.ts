@@ -1188,6 +1188,18 @@ export function corregirCategoria(idea: string, propuesta: Categoria): Categoria
  */
 export function preclasificar(idea: string): Categoria {
   const texto = normalizar(idea);
+
+  // Las mismas señales inequívocas que corrigen la etiqueta al final deben
+  // decidir también qué se recupera. Sin esto, "una variedad de maíz
+  // resistente a la sequía" traía el mapa general de figuras de la Ley de
+  // Propiedad Industrial en vez de la Ley Federal de Variedades Vegetales:
+  // la respuesta salía con la etiqueta correcta y el fundamento equivocado.
+  for (const senal of SENALES_DIRECTAS) {
+    if (senal.patron.test(texto) && (!senal.y || senal.y.test(texto))) {
+      return senal.categoria;
+    }
+  }
+
   // Por palabra completa, no por subcadena: "lo inventó ella" no debe
   // engancharse con la pista "invento" y volverse una patente. El plural sí
   // cuenta: "fotografías" tenía que enganchar con "fotografia" y no lo hacía.
