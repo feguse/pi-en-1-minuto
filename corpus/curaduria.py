@@ -41,8 +41,9 @@ for linea in bloque.splitlines():
         nota = linea.split("//", 1)[1].strip() if "//" in linea else ""
         figuras[-1][1].append([r.group(1), int(r.group(2)), int(r.group(3)), nota])
         continue
-    # comentario suelto: continúa la nota del rango anterior
-    if (c := re.match(r"\s*//\s?(.+)", linea)) and figuras and figuras[-1][1]:
+    # comentario suelto: continúa la nota del rango anterior. Los que empiezan
+    # con NOTA: son del curador, no de un artículo, y no se pegan a ninguno.
+    if (c := re.match(r"\s*//\s?(?!NOTA:)(.+)", linea)) and figuras and figuras[-1][1]:
         figuras[-1][1][-1][3] = (figuras[-1][1][-1][3] + " " + c.group(1)).strip()
 
 salida = ["""# Curaduría del corpus — artículos que se inyectan siempre
