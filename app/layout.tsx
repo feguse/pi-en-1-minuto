@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { DM_Sans, Sora } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -39,7 +40,13 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es-MX" className={`${dmSans.variable} ${sora.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        {/* Analitica de Vercel: cuenta visitas, sin cookies y sin tocar lo que
+            la persona escribe en el formulario. El interruptor del panel no
+            sirve solo; este componente es el que emite. */}
+        <Analytics />
+      </body>
     </html>
   );
 }
